@@ -1,0 +1,1227 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>工厂供电技术答题系统</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#6366f1',
+                        secondary: '#8b5cf6',
+                        success: '#22c55e',
+                        danger: '#ef4444',
+                        warning: '#f59e0b',
+                        dark: '#0f172a',
+                        darker: '#0b1120',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                },
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .gradient-header {
+                background: linear-gradient(90deg, #4f46e5 0%, #8b5cf6 100%);
+            }
+            .card-shadow {
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            }
+            .option-hover:hover {
+                background-color: rgba(99, 102, 241, 0.1);
+                border-color: #6366f1;
+            }
+            .taunt-animation {
+                animation: shake 0.5s ease-in-out;
+            }
+            @keyframes shake {
+                0%, 100% { transform: translateX(0); }
+                10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+                20%, 40%, 60%, 80% { transform: translateX(5px); }
+            }
+            .taunt-modal {
+                animation: fadeIn 0.3s ease-in-out;
+            }
+            @keyframes fadeIn {
+                from { opacity: 0; transform: scale(0.9); }
+                to { opacity: 1; transform: scale(1); }
+            }
+        }
+    </style>
+</head>
+<body class="bg-darker text-gray-100 min-h-screen font-sans">
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+        <!-- 头部标题 -->
+        <div class="gradient-header rounded-xl p-6 mb-8 text-center card-shadow">
+            <h1 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold mb-2 flex items-center justify-center gap-3">
+                <i class="fa fa-bolt"></i>
+                工厂供电技术答题系统
+            </h1>
+            <p class="text-white/80 text-[clamp(0.9rem,1.5vw,1.1rem)]">
+                单选·填空·简答·计算 | 点击即判分 | 答错自动抽象嘲讽
+            </p>
+        </div>
+
+        <!-- 功能按钮区 -->
+        <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-6">
+            <button id="answer-mode" class="bg-success hover:bg-success/90 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-all">
+                <i class="fa fa-file-text-o"></i>
+                <span>答题模式</span>
+            </button>
+            <button id="review-mode" class="bg-gray-700 hover:bg-gray-600 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-all">
+                <i class="fa fa-book"></i>
+                <span>背题模式</span>
+            </button>
+            <button id="random-mode" class="bg-gray-700 hover:bg-gray-600 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-all">
+                <i class="fa fa-random"></i>
+                <span>随机出题</span>
+            </button>
+            <button id="wrong-book" class="bg-gray-700 hover:bg-gray-600 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-all">
+                <i class="fa fa-times"></i>
+                <span>错题本</span>
+            </button>
+            <button id="reset-data" class="bg-gray-700 hover:bg-gray-600 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-all">
+                <i class="fa fa-refresh"></i>
+                <span>重置数据</span>
+            </button>
+        </div>
+
+        <!-- 统计数据区 -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+            <div class="bg-dark rounded-lg p-4 text-center card-shadow">
+                <div id="correct-count" class="text-2xl font-bold text-success mb-1">0</div>
+                <div class="text-gray-400 text-sm flex items-center justify-center gap-1">
+                    <i class="fa fa-check"></i> 正确
+                </div>
+            </div>
+            <div class="bg-dark rounded-lg p-4 text-center card-shadow">
+                <div id="wrong-count" class="text-2xl font-bold text-danger mb-1">0</div>
+                <div class="text-gray-400 text-sm flex items-center justify-center gap-1">
+                    <i class="fa fa-times"></i> 错误
+                </div>
+            </div>
+            <div class="bg-dark rounded-lg p-4 text-center card-shadow">
+                <div id="total-count" class="text-2xl font-bold text-white mb-1">0</div>
+                <div class="text-gray-400 text-sm flex items-center justify-center gap-1">
+                    <i class="fa fa-file-o"></i> 总计
+                </div>
+            </div>
+            <div class="bg-dark rounded-lg p-4 text-center card-shadow">
+                <div id="accuracy" class="text-2xl font-bold text-primary mb-1">0%</div>
+                <div class="text-gray-400 text-sm flex items-center justify-center gap-1">
+                    <i class="fa fa-dashboard"></i> 正确率
+                </div>
+            </div>
+        </div>
+
+        <!-- 进度条 -->
+        <div class="w-full bg-gray-700 rounded-full h-2.5 mb-8">
+            <div id="progress-bar" class="bg-primary h-2.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+        </div>
+
+        <!-- 题目区域 -->
+        <div class="bg-dark rounded-xl p-6 mb-8 card-shadow">
+            <div class="flex justify-between items-center mb-6">
+                <span id="question-type" class="bg-green-500/20 text-green-400 px-3 py-1 rounded-full text-sm font-medium">单选题</span>
+                <span id="question-number" class="text-gray-400">第 1 / 55 题</span>
+            </div>
+            
+            <h2 id="question-text" class="text-xl font-medium mb-8 leading-relaxed">
+                题目加载中...
+            </h2>
+            
+            <div id="options-container" class="space-y-4 mb-8">
+                <!-- 选项将通过JS动态生成 -->
+            </div>
+            
+            <div id="explanation-container" class="hidden bg-blue-900/20 border border-blue-500/30 rounded-lg p-4 mb-8">
+                <h3 class="text-blue-400 font-medium mb-2 flex items-center gap-2">
+                    <i class="fa fa-info-circle"></i> 答案解析
+                </h3>
+                <p id="explanation-text" class="text-gray-300"></p>
+            </div>
+            
+            <!-- 填空题输入框 -->
+            <div id="fill-blank-container" class="hidden mb-8">
+                <input type="text" id="fill-blank-input" placeholder="请输入答案，按回车确认" class="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary transition-all">
+            </div>
+            
+            <!-- 简答题输入框 -->
+            <div id="essay-container" class="hidden mb-8">
+                <textarea id="essay-input" rows="4" placeholder="请输入答案，按Ctrl+回车确认" class="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary transition-all resize-none"></textarea>
+            </div>
+        </div>
+
+        <!-- 导航按钮 -->
+        <div class="flex justify-between">
+            <button id="prev-btn" class="bg-gray-700 hover:bg-gray-600 text-white font-medium py-3 px-6 rounded-lg flex items-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                <i class="fa fa-chevron-left"></i>
+                上一题
+            </button>
+            <button id="next-btn" class="bg-primary hover:bg-primary/90 text-white font-medium py-3 px-8 rounded-lg flex items-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                下一题
+                <i class="fa fa-chevron-right"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- 嘲讽弹窗 -->
+    <div id="taunt-modal" class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 hidden">
+        <div class="bg-dark rounded-xl p-6 max-w-md mx-4 card-shadow taunt-modal">
+            <div class="text-center">
+                <div class="text-5xl mb-4">🤡</div>
+                <h3 id="taunt-text" class="text-xl font-bold text-danger mb-4">这都能错？你是真的菜！</h3>
+                <button id="close-taunt" class="bg-primary hover:bg-primary/90 text-white font-medium py-2 px-6 rounded-lg transition-all">
+                    我知道了
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ========== 55道题专属嘲讽库 ==========
+        // 每道题3条变体，答错时随机选一条
+        const questionTaunts = {
+            // === 单选题嘲讽（22题）===
+            0: [
+                "大中型工厂进线电压35~220kV都记不住？你是要把380V直接怼到发电厂去吗？",
+                "进线、配电、车间电压三档都分不清，你这脑子怕是只有220V的承载力。",
+                "选错？建议你去复习一下工厂供电第一章，别在这丢人现眼。"
+            ],
+            1: [
+                "变压器二次侧额定电压高5%还是10%都分不清？阻抗大小是白学的？",
+                "这题还错？变压器补偿线路压降考了八百遍了，你是在梦游吗？",
+                "二次侧电压高5%或10%，这都不会？你怕是连变压器铭牌都没看过。"
+            ],
+            2: [
+                "发电机额定电压比同级电网高5%都选错？你是打算让发电机直接裸奔吗？",
+                "发电机要补偿线路压降所以高5%，这都不懂？建议重修电机学。",
+                "选错了吧？发电机额定电压高5%，不是10%！别把发电机当变压器用。"
+            ],
+            3: [
+                "中性点不接地系统单相接地故障分析都错？故障相电压为0都选不对？",
+                "单相接地故障相电压为零、非故障相升高√3倍，这都不会？你是在考电工证吗？",
+                "故障相电压为0这么基础的知识点都错，建议回炉重造。"
+            ],
+            4: [
+                "30分钟最大平均负荷作为发热条件依据都记不住？你打算用1分钟还是1小时？",
+                "配电设计用30min最大平均负荷选导体截面，这都错？你是来凑数的吧？",
+                "发热条件依据30min，不是20min也不是60min，长点脑子吧。"
+            ],
+            5: [
+                "需要系数法还要乘以同时系数，这都忘了？各干线最大负荷又不同时出现！",
+                "变电所计算负荷=各干线之和×同时系数，这么简单的公式都错？",
+                "同时系数的意义就是各干线峰值不同时出现，这都不懂？白学了。"
+            ],
+            6: [
+                "加了电容补偿电流反而变大？你是觉得无功功率越大电流越小吗？",
+                "补偿后无功减小、视在功率减小、电流减小，这都反着选？你物理是体育老师教的？",
+                "电容补偿是减小电流不是增大电流，这么简单的道理都不明白？"
+            ],
+            7: [
+                "尖峰电流持续1~2秒都选错？你以为是15秒还是30秒？电动机的启动时间心里没数？",
+                "尖峰电流就是1~2s的启动电流，用来校验动稳定，这都错？",
+                "持续1~2s的尖峰电流都记不住，你还学什么工厂供电？"
+            ],
+            8: [
+                "短路危害效应选错了？电动效应和热效应都分不清？短路不就是大电流产生电动力和高温吗？",
+                "短路危害：电动效应（电动力）+ 热效应（高温），这都不会？你是来搞笑的吧？",
+                "选错？短路时大电流产生电动力和热效应，不是什么电磁效应集肤效应，长点记性。"
+            ],
+            9: [
+                "高压开关设备都分不清？隔离开关、负荷开关、断路器，三个基本设备都搞混？",
+                "高压隔离开关+高压负荷开关+高压断路器，这都不会？你怕是连实物图都没看过。",
+                "负荷开关必须配合熔断器切除短路故障，这都选错？建议去现场看看再说。"
+            ],
+            10: [
+                "RN2型熔断器是电压互感器专用的，不是变压器也不是电缆，这都错？",
+                "RN2→电压互感器保护，RN1→变压器/线路保护，分不清？你熔丝都认不全。",
+                "电压互感器专用熔断器RN2都选错，你打算用RN1去保护互感器？"
+            ],
+            11: [
+                "隔离开关没有灭弧装置不能通断负荷电流，这都不会？你敢带电拉闸试试？",
+                "隔离开关没灭弧装置，只能隔离电源造明显断开点，选错？你是在玩命吗？",
+                "隔离开关不能接通和切断负荷电流，这是安全常识！你选了有灭弧装置？呵呵。"
+            ],
+            12: [
+                "负荷开关能通断负荷电流但不能切断短路电流，必须配熔断器，这都错？",
+                "负荷开关+熔断器才能切除短路故障，负荷开关自己搞不定短路电流，选错了吧？",
+                "高压负荷开关的特点：能通断负荷，不能切短路，配熔断器使用。三条都记不住？"
+            ],
+            13: [
+                "电压互感器二次侧100V，不能短路！二次侧短路产生大电流烧坏互感器，这都错？",
+                "PT二次侧100V，短路→大电流→烧坏设备，这么危险的操作你都选错？",
+                "电压互感器二次额定100V，使用时绝不能短路，这是安全红线！你踩了。"
+            ],
+            14: [
+                "电流互感器二次侧5A，不能开路！开路产生高压电死人，这都不会？",
+                "CT二次侧5A，开路→高压→危险！这都不会？你是要把值班电工电成焦炭吗？",
+                "电流互感器二次侧绝对不能开路，开路电压可达数千伏，选错了小心出人命。"
+            ],
+            15: [
+                "高压配电优先采用放射式，可靠性最高，这都选错？树干式环形都行？",
+                "放射式每条线路独立、故障互不影响，可靠性最高，这是基础知识！",
+                "高压配电首选放射式，不是树干式也不是环形，选错了去翻课本第一章。"
+            ],
+            16: [
+                "环形接线就是两端供电的树干式，这都选错？你连接线图都没看过？",
+                "环形接线=两端供电的树干式，这个本质都抓不住？白学了。",
+                "环形接线的实质是两端供电的树干式，选错的同学建议重修供电系统。"
+            ],
+            17: [
+                "导线截面选小了→电阻大→损耗大→电压降大→供电质量差，这链条都理不清？",
+                "截面过小：电能损耗增加、电压质量下降，选错？你是打算让设备全烧坏吗？",
+                "导线截面选择过小的后果都选错，你是不在乎电费还是不在乎设备寿命？"
+            ],
+            18: [
+                "反时限过电流保护：电流越大动作越快，成反比！这都选错？",
+                "反时限：动作时间与短路电流大小成反比，电流大→动作快，这么直观都错？",
+                "反时限的特点就是电流越大动作时间越短，你选了固定时间？那是定时限！"
+            ],
+            19: [
+                "定时限过电流保护动作时间固定，不随短路电流变化，这都搞混？",
+                "定时限=固定时间，反时限=与电流成反比，两种都分不清？你是在梦游吗？",
+                "定时限保护动作时间固定，选了'与短路电流成反比'？那是反时限的特性！"
+            ],
+            20: [
+                "断路器位置信号就是显示断路器工作位置的，合闸还是分闸，这都错？",
+                "位置信号显示断路器状态，不是预告信号也不是事故信号，功能都分不清？",
+                "断路器位置信号→显示工作状态，选错？你连信号回路分类都不懂。"
+            ],
+            21: [
+                "预告信号是设备不正常或故障初期报警，不是事故信号也不是位置信号，这都错？",
+                "预告信号→不正常状态报警，让值班员及时处理，选错？你是等炸了再处理吗？",
+                "事故信号是故障发生后，预告信号是故障发生前/初期，时序都搞反了？"
+            ],
+
+            // === 填空题嘲讽（20题，索引22-41）===
+            22: [
+                "衡量电能质量的基本参数：频率和电压！这都不会？你连电能质量是什么都不知道？",
+                "频率+电压=电能质量两大基本参数，选错？你是来学工厂供电还是来学厨师的？",
+                "电能质量参数都填不上？频率稳不稳、电压合不合格，这是供电人的基本素养！"
+            ],
+            23: [
+                "短路形式：三相短路、两相短路、单相短路、两相接地短路，四种都记不全？",
+                "短路形式四种：三相、两相、单相、两相接地，少写一个？你短路经验不够丰富啊。",
+                "两相接地短路都忘了？短路类型都填不全，你打算漏掉一种故障不管吗？"
+            ],
+            24: [
+                "一次电路（一次回路）承担输送和分配电能，这都填错？一二次都分不清？",
+                "一次电路=输送分配电能，二次回路=控制保护监测，这都搞混？你是在瞎填吗？",
+                "变配电所中输送分配电能的是一次电路，不是二次回路，别把高低搞反了。"
+            ],
+            25: [
+                "低压刀熔开关=刀开关+熔断器双重功能，这都填不上？",
+                "刀熔开关兼具隔离和短路保护功能，填错？你是打算只装刀开关不装熔断器？",
+                "低压刀熔开关：刀开关的隔离功能+熔断器的保护功能，两个功能都忘了一个？"
+            ],
+            26: [
+                "电流互感器接线：一相式、两相V形、两相电流差、三相Y形，四种方案都填不全？",
+                "CT四种接线方案都记不住？一相式、V形、电流差、Y形，少一个都不行！",
+                "电流互感器接线方案四种，填错？你是只用过一种接线吗？眼界太窄了。"
+            ],
+            27: [
+                "导线截面选择四条件：发热、电压损耗、经济电流密度、机械强度，少一个？",
+                "发热条件、电压损耗、经济电流密度、机械强度，四个条件都填不上？白学了。",
+                "导线选择四个基本条件都记不全，你选线材全靠拍脑袋吗？"
+            ],
+            28: [
+                "母线又称汇流排，任务是汇集和分配电能，这都填错？",
+                "母线=汇流排，功能：汇集+分配电能，填不上？你是把母线当地线用了吗？",
+                "母线（汇流排）的作用是汇集和分配，不是传输也不是保护，搞清楚。"
+            ],
+            29: [
+                "工厂变电所大多用油浸式变压器，高层建筑用干式变压器（防火要求），这都搞混？",
+                "油浸式（工厂）+干式（高层），填错？你是打算在高层楼里灌一屋子变压器油吗？",
+                "高层建筑用干式变压器是因为防火，油浸式会着火！这都不懂？"
+            ],
+            30: [
+                "6~10kV配电变压器常用Yyn0和Dyn11两种联结组，填不上？",
+                "Yyn0和Dyn11，变压器联结组都记不住？你接线的吗？",
+                "配电变压器两大联结组：Yyn0、Dyn11，选错？你是只会一种接法吗？"
+            ],
+            31: [
+                "电流互感器二次侧不得开路（产生高压），电压互感器二次侧不得短路（产生大电流），填反了？",
+                "CT不能开路，PT不能短路，这都填反？你要不把两个都禁了吧。",
+                "CT开路→高压危险，PT短路→大电流烧坏，安全红线都搞反？你是要出人命的。"
+            ],
+            32: [
+                "高压配电所母线通常采用单母线制，多路进线时采用分段单母线制，这都填不上？",
+                "单母线制是基础，分段单母线是多路进线的升级版，填错？你连主接线形式都不懂。",
+                "高压配电所母线：单母线制（单路进线）或分段单母线制（多路进线），这么简单都错？"
+            ],
+            33: [
+                "相同条件下电缆比架空导线输送功率大、输送距离远，这都填反了？",
+                "电缆绝缘好、电抗小，输送功率更大距离更远，填反？你是觉得架空线更强？",
+                "电缆vs架空线：电缆输送功率更大、距离更远，不是更小更近！别搞反了。"
+            ],
+            34: [
+                "过电流保护：熔断器保护+低压断路器保护，两种都填不上？",
+                "工厂供电过电流保护就两种：熔断器（便宜）和低压断路器（智能），填错？你打算用保险丝代替断路器？",
+                "熔断器保护和低压断路器保护，过电流保护的两种基本形式，都忘了？"
+            ],
+            35: [
+                "电磁式中间继电器：弥补主继电器触点数量不足或触点容量不足，这都填不上？",
+                "中间继电器就是扩展触点数量和容量的，填错？你是打算让主继电器直接带不动负载吗？",
+                "中间继电器的作用：补触点数量、补触点容量，两个功能都忘了？"
+            ],
+            36: [
+                "感应式电流继电器：过电流保护兼电流速断保护，双功能都填不上？",
+                "感应式电流继电器一个顶俩：过电流+电流速断，填错？你是只用一个功能浪费另一个？",
+                "感应式电流继电器实现过电流和电流速断双重保护，填不上？白装了。"
+            ],
+            37: [
+                "二次回路：控制、指示、监测、保护一次电路运行，四个功能都填不全？",
+                "二次回路四大功能：控制、指示、监测、保护，少一个？你这二次回路是残废版的。",
+                "二次回路用来控制、指示、监测、保护一次电路，四个词都填不对？"
+            ],
+            38: [
+                "红灯亮=断路器合闸位置，绿灯亮=断路器分闸位置，这都填反了？",
+                "红灯=合闸（闭合），绿灯=分闸（断开），填反？你是红绿灯不分吗？",
+                "高压断路器红灯亮表示合闸、绿灯亮表示分闸，这么直观都错？"
+            ],
+            39: [
+                "红灯闪光=自动合闸，绿灯闪光=自动跳闸，这都搞混？",
+                "红灯闪光→自动合闸，绿灯闪光→自动跳闸，填反？你是打算合闸跳闸不分吗？",
+                "断路器事故状态：红灯闪光=自动合闸，绿灯闪光=自动跳闸，别搞反了。"
+            ],
+            40: [
+                "高压断路器操作机构三种：电磁操作、弹簧操作、手动操作，填不上？",
+                "电磁、弹簧、手动，三种操作机构都记不住？你以为断路器都是自动的吗？",
+                "高压断路器操作机构：电磁式、弹簧式、手动式，三种类型都忘了？"
+            ],
+            41: [
+                "自动重合闸装置（ARD）使断路器跳闸后自动重合恢复供电，填不上？",
+                "ARD=自动重合闸，跳闸→延时→重合，这么经典的保护都忘了？",
+                "架空线路短路跳闸后自动重合恢复供电，这个过程叫自动重合闸（ARD），填错？"
+            ],
+
+            // === 简答题嘲讽（9题，索引42-50）===
+            42: [
+                "电力系统=发输变配用的整体，电力网=线路+变电所，这都答不上？",
+                "电力系统是发电输电变电配电用电的整体，电力网是线路和变电所的集合，基本概念都错？",
+                "连电力系统和电力网的定义都答不对，你学了一学期工厂供电学了些什么？"
+            ],
+            43: [
+                "变压器T1一次侧6.3kV（等于发电机电压），二次侧121kV（高10%），这都算错？",
+                "发电机出口变压器一次侧等于发电机电压6.3kV，二次侧高10%为121kV，计算都不会？",
+                "变压器额定电压计算：接发电机时一次侧=发电机电压，二次侧=电网电压×(1+10%)，公式都记错？"
+            ],
+            44: [
+                "高压断路器不仅能通断负荷电流，还能切断短路电流！基本功能都答不全？",
+                "QF的功能：通断正常负荷+承受短路电流+自动跳闸切除故障，三条都写不全？",
+                "高压断路器是电力系统中最重要的开关设备，功能都答不上？你见过断路器实物吗？"
+            ],
+            45: [
+                "隔离开关作用：隔离高压电源+造成明显断开点，为什么不能带电操作？因为没有灭弧装置！",
+                "隔离开关没灭弧装置，带电操作会拉弧烧设备，这个原因都答不上？",
+                "隔离开关的作用和不能带电操作的原因都答错？你是打算带电拉闸现场直播吗？"
+            ],
+            46: [
+                "互感器功能：隔离（安全）+变换（标准化信号100V/5A），两大功能都答不全？",
+                "互感器隔离保证安全，变换使仪表标准化，两个功能都忘了？你用互感器干什么的？",
+                "互感器的两大核心功能：隔离高压+变换为标准信号，答不上？白装了互感器。"
+            ],
+            47: [
+                "主接线基本要求：安全、可靠、灵活、经济，四大要求都答不全？",
+                "主接线图：系统式（运行用）+装置式（施工用），两种都分不清？",
+                "基本要求四个词：安全、可靠、灵活、经济，绘图方式两种：系统式和装置式，都答错？"
+            ],
+            48: [
+                "单台主变压器小变电所三种方案：隔离开关-熔断器、负荷开关-熔断器、隔离开关-断路器，都答不上？",
+                "小型变电所高压侧三种典型主接线方案都记不住？你实际设计过变电所吗？",
+                "只装一台主变压器的小变电所，高压侧三种方案都答不全，白学了。"
+            ],
+            49: [
+                "过电流保护工作原理：KA启动→KT延时→KS和KM动作→QF跳闸，流程都理不清？",
+                "电流继电器启动→时间继电器延时→信号继电器和中间继电器→断路器跳闸，步骤都错了？",
+                "过电流保护框图工作原理都答不对，你保护整定是怎么算的？"
+            ],
+            50: [
+                "反时限优点：简单经济、继电器少、可同时实现电流速断；缺点：整定麻烦、误差大、越靠近电源动作越长。这都答不上？",
+                "反时限优缺点都答不全？优点是简单经济，缺点是整定麻烦且越靠近电源动作时间越长，记住了没？",
+                "反时限过电流保护的优缺点都答错，你是用反时限还是定时限都分不清吗？"
+            ],
+
+            // === 计算题嘲讽（4题，索引51-54）===
+            51: [
+                "需要系数法：Kd×总容量=计算负荷；二项式法：bPeΣ+cPx，两种算法都搞混？",
+                "需要系数法P30=Kd×Pe，二项式法P30=bPeΣ+cPx，公式都写错？你计算过程是编的吗？",
+                "计算题第一题都算不对？需要系数法和二项式法，两种方法的公式和结果都搞混了。"
+            ],
+            52: [
+                "有名值法求短路电流：电力系统电抗+线路电抗+变压器电抗=总电抗→短路电流→短路容量，步骤都错了？",
+                "短路电流计算：先算各元件电抗→求总电抗→If=U/(√3×XΣ)→短路容量S=√3×U×I，流程都理不清？",
+                "有名值法计算短路电流，从电抗计算到短路容量，步骤都答不对？你是在瞎编吗？"
+            ],
+            53: [
+                "并列运行负荷按阻抗反比分配，ZT*=Uk%×Sd/(100×SN)，公式都写错？",
+                "变压器并列运行负荷分配按阻抗标幺值反比，T1阻抗大反而过负荷？计算都搞反了？",
+                "两台变压器并列运行，负荷分配按阻抗反比，T1过负荷13.5%，这都算不对？"
+            ],
+            54: [
+                "按发热条件选导线：查载流量表→相线≥计算电流→中性线≥0.5倍相线→PE线≥0.5倍相线，步骤都错了？",
+                "BLX-500型铝芯橡皮线，30°C时50mm²载流量163A>150A满足要求，中性线25mm²，PE线25mm²，这都算错？",
+                "发热条件选导线截面，相线50mm²、N线25mm²、PE线25mm²，型号表示BLX-500-(3×50+1×25+PE25)，都答不上？"
+            ]
+        };
+
+        // 题目数据 - 工厂供电技术（55题完整版）
+        const questions = [
+            // ============ 一、选择题（共22题）============
+            {
+                type: 'single',
+                question: '具有总降压变电所的大中型工厂供电系统的进线电压，厂区高压配电电压以及车间1000V以下的电压等级分别为（）。',
+                options: ['35~220kV，6~10kV，220/380V', '10~35kV，3~6kV，220/380V', '35~220kV，3~6kV，380/660V', '110~220kV，10~35kV，220/380V'],
+                answer: 0,
+                explanation: '大中型工厂供电系统中，进线电压一般为35~220kV，厂区高压配电电压为6~10kV，车间低压为220/380V。'
+            },
+            {
+                type: 'single',
+                question: '电力变压器二次侧的额定电压比电网电压高（）。',
+                options: ['2.5%', '5%', '10%', '5%或10%'],
+                answer: 3,
+                explanation: '变压器二次侧额定电压比对应电网电压高5%（当变压器阻抗较小）或10%（当变压器阻抗较大），故选D。'
+            },
+            {
+                type: 'single',
+                question: '发电机的额定电压一般高于同级电网电压（）。',
+                options: ['2.5%', '5%', '10%', '5%或10%'],
+                answer: 1,
+                explanation: '发电机额定电压一般高于同级电网电压5%，以补偿线路电压损耗。'
+            },
+            {
+                type: 'single',
+                question: '中性点不接地系统发生单相接地故障后，故障相电压为，非故障相电压为，故障相接地电容电流为正常时的（）倍。',
+                options: ['0，原来的√3倍，2倍', '0，不变，3倍', '0，不变，√3倍', '0，原来的√3倍，3倍'],
+                answer: 3,
+                explanation: '单相接地时故障相电压为0，非故障相电压升高为原来的√3倍，故障相接地电容电流为正常时的3倍。'
+            },
+            {
+                type: 'single',
+                question: '在配电设计中，通常采用（）的最大平均负荷作为按发热条件选择电器或导体的依据。',
+                options: ['20min', '30min', '60min', '90min'],
+                answer: 1,
+                explanation: '配电设计中通常采用30min的最大平均负荷作为按发热条件选择电器或导体的依据。'
+            },
+            {
+                type: 'single',
+                question: '当采用需要系数法计算负荷时，变电所或配电所的计算负荷，为各配电干线计算负荷之和再乘以（）。',
+                options: ['换算系数', '同时系数', '需要系数', '计算系数'],
+                answer: 1,
+                explanation: '变电所或配电所的计算负荷为各配电干线计算负荷之和再乘以同时系数，以反映各干线最大负荷不同时出现的实际情况。'
+            },
+            {
+                type: 'single',
+                question: '在相同的有功功率及无功功率条件下，加入电容补偿后的计算电流比不加入电容补偿所对应的计算电流（）。',
+                options: ['小', '大', '相等', '无法确定'],
+                answer: 0,
+                explanation: '加入电容补偿后，无功功率减小，视在功率减小，因此计算电流变小。'
+            },
+            {
+                type: 'single',
+                question: '尖峰电流指单台或多台用电设备持续时间为（）左右的最大负荷电流。',
+                options: ['1~2s', '5~6s', '15~20s', '30~40s'],
+                answer: 0,
+                explanation: '尖峰电流是持续1~2s左右的最大负荷电流，用于校验电器和导体的动稳定。'
+            },
+            {
+                type: 'single',
+                question: '电力线路发生短路时一般会产生危害效应有（）。',
+                options: ['电磁效应、集肤效应', '集肤效应、热效应', '电动效应、热效应', '电动效应、电磁效应'],
+                answer: 2,
+                explanation: '短路时产生很大的短路电流通过电器和导体，会产生电动效应（电动力）和热效应（高温），对设备造成危害。'
+            },
+            {
+                type: 'single',
+                question: '常见的高压开关设备有：____、____和____；其中必须和高压熔断器配合来切除短路故障的是（）。',
+                options: ['高压隔离开关，高压负荷开关，高压断路器，高压负荷开关', '高压断路器，高压负荷开关，刀熔开关，高压断路器', '自动空气开关，刀闸开关，高压负荷开关，高压负荷开关', '自动空气开关，高压负荷开关，高压隔离开关，高压隔离开关'],
+                answer: 0,
+                explanation: '常见高压开关设备有高压隔离开关、高压负荷开关和高压断路器。其中高压负荷开关必须和高压熔断器配合来切除短路故障。'
+            },
+            {
+                type: 'single',
+                question: 'RN2型高压熔断器可用作（）的保护。',
+                options: ['变压器', '电力线路', '电压互感器', '高压电缆'],
+                answer: 2,
+                explanation: 'RN2型高压熔断器是电压互感器专用熔断器，用于电压互感器的短路保护。'
+            },
+            {
+                type: 'single',
+                question: '高压隔离开关隔离高压电源，保证设备和线路的安全检修，下列说法正确的是：（）。',
+                options: ['有灭弧装置，能接通和切断负荷电流', '有灭弧装置，不能接通和切断负荷电流', '没有灭弧装置，能接通和切断负荷电流', '没有灭弧装置，不能接通和切断负荷电流'],
+                answer: 3,
+                explanation: '高压隔离开关没有灭弧装置，不能接通和切断负荷电流，只能用于隔离电源，造成明显断开点。'
+            },
+            {
+                type: 'single',
+                question: '关于高压负荷开关的特点，下列说法正确的是：（）。',
+                options: ['能通断一定的负荷电流和过负荷电流，能切断短路电流故障', '能通断一定的负荷电流和过负荷电流，不能切断短路电流故障', '不能通断一定的负荷电流和过负荷电流，能切断短路电流故障', '不能通断一定的负荷电流和过负荷电流，不能切断短路电流故障'],
+                answer: 1,
+                explanation: '高压负荷开关能通断一定的负荷电流和过负荷电流，但不能切断短路电流，必须与熔断器配合使用。'
+            },
+            {
+                type: 'single',
+                question: '电压互感器的二次侧额定电压为____，使用时二次侧不能____。（）',
+                options: ['50V，短路', '100V，开路', '100V，短路', '50V，开路'],
+                answer: 2,
+                explanation: '电压互感器二次侧额定电压为100V，使用时二次侧不能短路，否则会产生很大的短路电流。'
+            },
+            {
+                type: 'single',
+                question: '电流互感器的二次侧额定电流为____，使用时要注意二次侧不能____。（）',
+                options: ['50A，短路', '5A，开路', '5A，短路', '50A，开路'],
+                answer: 1,
+                explanation: '电流互感器二次侧额定电流为5A（或1A），使用时二次侧不能开路，否则会产生很高的电压。'
+            },
+            {
+                type: 'single',
+                question: '高压配电系统的高压线路宜优先采用（）接线，因为其供电可靠性较高。',
+                options: ['系统式', '树干式', '环形', '放射式'],
+                answer: 3,
+                explanation: '放射式接线供电可靠性最高，每条线路独立供电，故障互不影响，是高压配电的首选接线方式。'
+            },
+            {
+                type: 'single',
+                question: '高压电力线路接线方式中，实质上是两端提供的树干式接线的接线方式为（）。',
+                options: ['放射式接线', '树干式接线', '环形接线', '开环式接线'],
+                answer: 2,
+                explanation: '环形接线本质上是两端供电的树干式接线，供电可靠性较高。'
+            },
+            {
+                type: 'single',
+                question: '合理选择导线和电缆截面在技术上和经济上都是必要的，导线截面选择过小则会出现（）。',
+                options: ['有色金属的消耗量增加', '初始投资显著增加', '电能损耗降低', '运行费用电压电能损耗大，难以保证供电质量'],
+                answer: 3,
+                explanation: '导线截面过小会导致电阻增大，电能损耗增加，电压降增大，难以保证供电质量。'
+            },
+            {
+                type: 'single',
+                question: '工厂高压线路的反时限过电流保护装置的动作具有（）。',
+                options: ['短路电流超过整定值时，动作时间是固定的', '动作时间与短路电流大小成反比', '短路电流超过整定值时就动作', '短路电压超过整定值时，动作时间是固定的'],
+                answer: 1,
+                explanation: '反时限过电流保护的动作时间与短路电流大小成反比，电流越大动作越快。'
+            },
+            {
+                type: 'single',
+                question: '工厂高压线路的定时限过电流保护装置的动作具有（）。',
+                options: ['短路电流超过整定值时动作，时间是固定的', '动作时间与短路电流大小成反比', '短路电流超过整定值时就动作', '短路电压超过整定值时，动作时间是固定的'],
+                answer: 0,
+                explanation: '定时限过电流保护的动作时间是固定的，不随短路电流大小变化。'
+            },
+            {
+                type: 'single',
+                question: '工厂供电装置中，显示断路器正常工作的位置状态的属于（）。',
+                options: ['信号回路', '预告信号', '事故信号', '位置信号'],
+                answer: 3,
+                explanation: '位置信号用于显示断路器当前的工作位置状态（合闸或分闸）。'
+            },
+            {
+                type: 'single',
+                question: '在一次设备出现不正常状态时或在故障初期发出的报警信号。值班员可根据（）及时处理。',
+                options: ['断路器位置信号', '信号回路', '预告信号', '事故信号'],
+                answer: 2,
+                explanation: '预告信号在一次设备出现不正常状态或故障初期发出报警，提示值班人员及时处理。'
+            },
+
+            // ============ 二、填空题（共20题）============
+            {
+                type: 'fill',
+                question: '衡量电能质量的基本参数：____、____。',
+                answer: ['频率', '电压'],
+                explanation: '频率和电压是衡量电能质量的两个基本参数。'
+            },
+            {
+                type: 'fill',
+                question: '短路的形式有三相短路、两相短路、____和____。',
+                answer: ['单相短路', '两相接地短路'],
+                explanation: '短路形式包括三相短路、两相短路、单相短路和两相接地短路。'
+            },
+            {
+                type: 'fill',
+                question: '变配电所中承担____和____电能任务的电路称为一次电路。',
+                answer: ['输送', '分配'],
+                explanation: '一次电路（一次回路）承担输送和分配电能的任务。'
+            },
+            {
+                type: 'fill',
+                question: '低压刀熔开关具有____和____的双重功能。',
+                answer: ['刀开关', '熔断器'],
+                explanation: '低压刀熔开关兼具刀开关的隔离功能和熔断器的短路保护功能。'
+            },
+            {
+                type: 'fill',
+                question: '电流互感器接线方案有____、____。',
+                answer: ['两相V形接线', '三相Y形接线'],
+                explanation: '电流互感器常用的接线方案包括两相V形接线和三相Y形接线。'
+            },
+            {
+                type: 'fill',
+                question: '选择导线和电缆截面时必须满足下列条件：____、____。',
+                answer: ['发热条件', '经济电流密度'],
+                explanation: '导线和电缆截面选择的基本条件包括发热条件和经济电流密度。'
+            },
+            {
+                type: 'fill',
+                question: '供电系统中的____，又称汇流排，其任务是____电能。',
+                answer: ['母线', '汇集'],
+                explanation: '母线又称汇流排，用于汇集和分配电能。'
+            },
+            {
+                type: 'fill',
+                question: '工厂变电所大多采用____变压器，高层建筑大都采用____变压器。',
+                answer: ['油浸式', '干式'],
+                explanation: '工厂变电所多用油浸式变压器，高层建筑因防火要求多用干式变压器。'
+            },
+            {
+                type: 'fill',
+                question: '常用6~10kV配电变压器有____和____两种常用的联结组。',
+                answer: ['Yyn0', 'Dyn11'],
+                explanation: '6~10kV配电变压器常用Yyn0和Dyn11两种联结组。'
+            },
+            {
+                type: 'fill',
+                question: '电流互感器在工作时其二次侧不得____，电压互感器在工作时其二次侧不得____。',
+                answer: ['开路', '短路'],
+                explanation: '电流互感器二次侧不得开路（会产生高压），电压互感器二次侧不得短路（会产生大电流）。'
+            },
+            {
+                type: 'fill',
+                question: '常见的高压开关设备有：____、高压负荷开关和____。',
+                answer: ['高压隔离开关', '高压断路器'],
+                explanation: '常见的高压开关设备有高压隔离开关、高压负荷开关和高压断路器。'
+            },
+            {
+                type: 'fill',
+                question: '在相同电压等级和截面积相同条件下，电缆比架空导线输送功率____，输送距离____。',
+                answer: ['大', '远'],
+                explanation: '电缆因绝缘好、电抗小，在相同条件下比架空导线输送功率更大、距离更远。'
+            },
+            {
+                type: 'fill',
+                question: '工厂供电系统的过电流保护装置有：____保护、____保护。',
+                answer: ['熔断器', '继电保护'],
+                explanation: '工厂供电系统的过电流保护主要有熔断器保护和继电保护。'
+            },
+            {
+                type: 'fill',
+                question: '电磁式中间继电器在继电保护装置中的作用是弥补主继电器____或____。',
+                answer: ['触点数量不足', '触点容量不足'],
+                explanation: '中间继电器用于扩展触点数量或增大触点容量。'
+            },
+            {
+                type: 'fill',
+                question: '感应式电流继电器在电力系统中用于____保护兼____保护。',
+                answer: ['过电流', '电流速断'],
+                explanation: '感应式电流继电器可实现过电流保护和电流速断保护双重功能。'
+            },
+            {
+                type: 'fill',
+                question: '工厂供电系统或变配电所的二次回路是指用来____和____一次电路运行的电路。',
+                answer: ['控制', '保护'],
+                explanation: '二次回路用于对一次电路进行控制、指示、监测和保   。'
+            },
+            {
+                type: 'fill',
+                question: '高压断路器____亮，表示断路器处在合闸位置；____亮，表示断路器处在分闸位置。',
+                answer: ['红灯', '绿灯'],
+                explanation: '红灯表示合闸（闭合），绿灯表示分闸（断开）。'
+            },
+            {
+                type: 'fill',
+                question: '断路器在一次系统事故情况下的工作状态。一般是____闪光，表示断路器自动合闸；____闪光，表示断路器自动跳闸。',
+                answer: ['红灯', '绿灯'],
+                explanation: '红灯闪光表示自动合闸，绿灯闪光表示自动跳闸。'
+            },
+            {
+                type: 'fill',
+                question: '高压断路器的操作机构的型式有____、____两种。',
+                answer: ['电磁操作机构', '手动操作机构'],
+                explanation: '高压断路器常见操作机构型式包括电磁操作机构和手动操作机构。'
+            },
+            {
+                type: 'fill',
+                question: '电力系统中的架空线路发生短路故障跳闸后，通过采用____装置使断路器在自动跳闸后又自动合闸，恢复供电称为____。',
+                answer: ['自动重合闸装置', '断路器'],
+                explanation: '自动重合闸装置（ARD）使断路器跳闸后自动重合，恢复供电。'
+            },
+
+            // ============ 三、简答题（共9题）============
+            {
+                type: 'essay',
+                question: '什么叫电力系统、电力网？',
+                answer: '电力系统：由各级电压的电力线路将一些发电厂、变电所和电力用户联系起来的一个发电、输电、变电、配电和用电的整体，称为电力系统。\n电力网：电力系统中各级电压的电力线路及其联系的变电所，称为电力网或电网。',
+                explanation: '电力系统是发输变配用的整体，电力网是电力系统中线路和变电所的集合。'
+            },
+            {
+                type: 'essay',
+                question: '试确定供电系统中变压器T1和WL1、WL2的额定电压。',
+                answer: '（1）变压器T1的一次侧额定电压：应与发电机G的额定电压相同，即为6.3kV。变压器T1的二次侧额定电压应比线路WL1末端变压器T2的一次额定电压高10%，即为121kV。因此变压器T1的额定电压应为6.3/121kV。\n（2）线路WL1的额定电压：应与变压器T2的一次额定电压相同，即为110kV。\n（3）线路WL2的额定电压：应为35kV，因为变压器T2二次侧额定电压为38.5kV，正好比35kV高10%。',
+                explanation: '变压器一次侧接发电机时额定电压等于发电机电压，二次侧比对应电网电压高10%；线路额定电压等于所接设备的额定电压。'
+            },
+            {
+                type: 'essay',
+                question: '写出高压断路器的基本功能。',
+                answer: '高压断路器（QF）不仅能通断正常的负荷电流，而且能接通和承受一定时间的短路电流，并能在保护装置作用下自动跳闸，切除短路故障。',
+                explanation: '高压断路器具有通断负荷电流和切断短路电流的能力，是电力系统中最重要的开关设备。'
+            },
+            {
+                type: 'essay',
+                question: '高压隔离开关的作用是什么？为什么不能带电操作？',
+                answer: '高压隔离开关的作用主要是隔离高压电源，并造成明显的断开点，以保证其他电气设备安全检修。因为高压隔离开关没有专门的灭弧装置，所以不允许带负荷操作。',
+                explanation: '隔离开关无灭弧能力，不能切断负荷电流，只能用于隔离电源。'
+            },
+            {
+                type: 'essay',
+                question: '写出互感器的主要功能。',
+                answer: '互感器主要有两个功能：\n（1）隔离：一二次侧只有电磁联系，高压隔离，保证测量、监测设备以及人身安全。\n（2）变换：将高电压、大电流变换成标准的测量信号，电压变为100V，电流变为5A；使测量仪表和继电器标准化。',
+                explanation: '互感器的两大核心功能：隔离（安全）和变换（标准化信号）。'
+            },
+            {
+                type: 'essay',
+                question: '对工厂变配电所主接线有哪些基本要求？变配电所主接线图有哪些绘制方式？各适用于哪些场合？',
+                answer: '基本要求：安全、可靠、灵活、经济。\n主接线图有系统式主接线图和装置式主接线图两种绘制形式。\n系统式主接线图多用于变配电所运行。\n装置式主接线图多用于变配电所施工。',
+                explanation: '主接线四要素：安全、可靠、灵活、经济；两种制图方式各有用途。'
+            },
+            {
+                type: 'essay',
+                question: '只装有一台主变压器的小型变电所，其高压侧一般采用无母线的接线。根据高压侧采用的开关电器不同，有三种比较典型的主接线方案，分别是什么？',
+                answer: '（1）高压侧采用隔离开关-熔断器或户外跌开式熔断器；\n（2）高压侧采用负荷开关-熔断器或负荷型跌开式熔断器；\n（3）高压侧采用隔离开关-断路器。',
+                explanation: '小型变电所三种典型高压侧主接线方案，按开关电器类型区分。'
+            },
+            {
+                type: 'essay',
+                question: '下图为过电流保护装置的框图，简述其工作原理。',
+                answer: '当线路上发生短路时，启动用的电流继电器KA瞬时动作，使时间继电器KT启动，经整定的一定时限（延时）后，接通信号继电器KS和中间继电器KM，KM就接通断路器的跳闸回路，使断路器QF自动跳闸。',
+                explanation: '过电流保护通过电流继电器启动→时间继电器延时→信号继电器和中间继电器→断路器跳闸，完成保护动作。'
+            },
+            {
+                type: 'essay',
+                question: '简述反时限过电流保护的优缺点。',
+                answer: '优点：继电器数量少，而且可同时实现电流速断保护，可采用交流操作，因此简单经济，广泛应用在中小工厂供电系统。\n缺点：动作时限的整定比较麻烦，而且误差较大；当短路电流小时，其动作时间可能相当长，延长了故障持续时间；越靠近电源，动作时间越长。',
+                explanation: '反时限保护简单经济但整定麻烦，动作时间与短路电流成反比。'
+            },
+
+            // ============ 四、计算题（共4题）============
+            {
+                type: 'essay',
+                question: '【计算题1】某车间380V线路上接有小批量生产冷加工机床电动机40台，总容量152kW（Kd1=0.2，cosΦ1=0.5，tanΦ1=1.73，b1=0.14，c1=0.4，x1=5）；卫生用通风机6台共6kW（Kd2=0.8，cosΦ2=0.8，tanΦ2=0.75，b2=0.65，c2=0.25，x2=5）。试分别用需要系数法和二项式法求车间的计算负荷。（同时系数：KΣp=0.9，KΣq=0.9）',
+                answer: '【需要系数法】\n冷加工机床：P30(1)=0.2×152=30.4kW，Q30(1)=30.4×1.73=52.6kvar\n通风机组：P30(2)=0.8×6=4.8kW，Q30(2)=4.8×0.75=3.6kvar\n车间计算负荷：P30=0.9×(30.4+4.8)=31.68kW，Q30=0.9×(52.6+3.6)=50.58kvar\nS30=√(31.68²+50.58²)=59.68kVA，I30=59.68/(√3×0.38)=90.7A\n\n【二项式法】\n冷加工机床：(bPeΣ)1=0.14×152=21.28kW，(cPx)1=0.4×(10+7×2+4.5×5)=13.2kW\n通风机组：(bPeΣ)2=0.65×6=3.9kW，(cPx)2=0.25×3×6=4.5kW（取x2=3台最大）\nP30=0.9×(21.28+3.9+13.2)=34.24kW\nQ30=0.9×(21.28×1.73+3.9×0.75+13.2×1.73)=0.9×(36.81+2.93+22.84)=55.72kvar\nS30=√(34.24²+55.72²)=65.42kVA，I30=65.42/(√3×0.38)=99.4A',
+                explanation: '需要系数法用Kd乘总容量求计算负荷；二项式法用bPeΣ+cPx，考虑最大负荷的影响。注意二项式法中cPx取x台最大容量的设备。'
+            },
+            {
+                type: 'essay',
+                question: '【计算题2】如图所示的供电系统，断路器QF的断路容量为1000MV·A，试利用有名值法，求该供电系统总降压变电所10kV母线上f1点发生三相短路时的短路电流和短路容量，线路WL1长度为5km。',
+                answer: '（1）计算短路电路中各元件的电抗及总电抗\n电力系统电抗：X1=Uc1²/Soc=(10.5kV)²/1000MVA=0.11Ω\n架空线路电抗：X2=0.4×5×(10.5/37)²=0.16Ω\n电力变压器电抗（两台并列）：X3=X4≈Uk%/100×(Uc²/SN)=7.5/100×(10.5²/1000)=0.826Ω/台\n总电抗：XΣ(f1)=0.11+0.16+0.826/2=0.11+0.16+0.413=0.683Ω\n\n（2）三相短路电流和短路容量\n周期分量有效值：If1(3)=Uc/(√3×XΣ)=10.5/(√3×0.683)=8.87kA\n次暂态电流和稳态电流：I"(3)=I∞(3)=8.87kA\n冲击电流：ish(3)=2.55×8.87=22.62kA\n第一个周期短路全电流有效值：Ish(3)=1.51×8.87=13.39kA\n三相短路容量：Sf1(3)=√3×10.5×8.87=161.3MVA',
+                explanation: '有名值法计算短路电流：先求各元件电抗→总电抗→短路电流→短路容量。注意变压器并列时电抗减半。'
+            },
+            {
+                type: 'essay',
+                question: '【计算题3】现有一台T1：S9-800/10型变压器（Uk%=5）与一台T2：S9-2000/10型变压器（Uk%=6）并列运行，两台均为Dyn11联结。问负荷达到2800kVA时，哪一台变压器将要过负荷？过负荷可达多少（百分比）？',
+                answer: '各变压器阻抗标幺值（取Sd=100MVA，Ud=10.5kV）：\nZT1*=Uk1%×Sd/(100×SN1)=5×100×10³/(100×800)=6.25\nZT2*=Uk2%×Sd/(100×SN2)=6×100×10³/(100×2000)=3.0\n\n负荷分配按阻抗标幺值反比分配：\nST1=Stotal×ZT2*/(ZT1*+ZT2*)=2800×3.0/(6.25+3.0)=2800×3.0/9.25=908.1kVA\nST2=Stotal×ZT1*/(ZT1*+ZT2*)=2800×6.25/9.25=1891.9kVA\n\nT1变压器额定容量800kVA，实际分配908.1kVA > 800kVA\nT1将要过负荷\n过负荷百分比=(908.1-800)/800×100%=13.5%',
+                explanation: '并列运行时负荷按阻抗标幺值反比分配。T1阻抗标幺值更大(ZT1*=6.25 > ZT2*=3.0)，承担负荷比例反而更大？注意公式：负荷与阻抗成反比，ZT大→分得的负荷小。但这里计算显示T1分得908kVA>800kVA额定值，确实过负荷13.5%。'
+            },
+            {
+                type: 'essay',
+                question: '【计算题4】有一条BLX-500型铝芯橡皮线明敷的220/380V的TN-S线路，线路计算电流为150A，当地最热月平均最高气温为+30°C。试按发热条件选择此线路的导线截面。',
+                answer: '（1）相线截面选择\n查温度为30°C时明敷的BLX-500型铝芯橡皮线载流量表：\n截面50mm²的允许载流量Ial=163A > 150A，满足发热条件。\n相线截面选为：Aφ=50mm²\n\n（2）中性线N线截面选择\nA0 ≥ 0.5×Aφ = 0.5×50 = 25mm²\n选A0=25mm²\n\n（3）保护线PE线截面选择\n由于Aφ=50mm² > 35mm²，APE ≥ 0.5×Aφ = 25mm²\n选APE=25mm²\n\n所选导线型号可表示为：\nBLX-500-(3×50+1×25+PE25)\n即：3根50mm²相线+1根25mm²中性线+1根25mm²保护线',
+                explanation: '按发热条件选相线（载流量>计算电流），中性线≥0.5倍相线（TN-S系统），PE线≥0.5倍相线（相线>35mm²时）。'
+            }
+        ];
+
+        // 全局变量
+        let currentQuestionIndex = 0;
+        let correctCount = 0;
+        let wrongCount = 0;
+        let answeredQuestions = new Set();
+        let wrongQuestions = new Set();
+        let currentMode = 'answer';
+        let questionOrder = [...Array(questions.length).keys()];
+
+        // DOM元素
+        const answerModeBtn = document.getElementById('answer-mode');
+        const reviewModeBtn = document.getElementById('review-mode');
+        const randomModeBtn = document.getElementById('random-mode');
+        const wrongBookBtn = document.getElementById('wrong-book');
+        const resetDataBtn = document.getElementById('reset-data');
+        const correctCountEl = document.getElementById('correct-count');
+        const wrongCountEl = document.getElementById('wrong-count');
+        const totalCountEl = document.getElementById('total-count');
+        const accuracyEl = document.getElementById('accuracy');
+        const progressBar = document.getElementById('progress-bar');
+        const questionTypeEl = document.getElementById('question-type');
+        const questionNumberEl = document.getElementById('question-number');
+        const questionTextEl = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const explanationContainer = document.getElementById('explanation-container');
+        const explanationTextEl = document.getElementById('explanation-text');
+        const fillBlankContainer = document.getElementById('fill-blank-container');
+        const fillBlankInput = document.getElementById('fill-blank-input');
+        const essayContainer = document.getElementById('essay-container');
+        const essayInput = document.getElementById('essay-input');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const tauntModal = document.getElementById('taunt-modal');
+        const tauntTextEl = document.getElementById('taunt-text');
+        const closeTauntBtn = document.getElementById('close-taunt');
+
+        // 初始化
+        function init() {
+            updateStats();
+            loadQuestion(currentQuestionIndex);
+            
+            answerModeBtn.addEventListener('click', () => switchMode('answer'));
+            reviewModeBtn.addEventListener('click', () => switchMode('review'));
+            randomModeBtn.addEventListener('click', () => switchMode('random'));
+            wrongBookBtn.addEventListener('click', () => switchMode('wrong'));
+            resetDataBtn.addEventListener('click', resetData);
+            prevBtn.addEventListener('click', prevQuestion);
+            nextBtn.addEventListener('click', nextQuestion);
+            closeTauntBtn.addEventListener('click', closeTaunt);
+            
+            fillBlankInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    checkFillAnswer();
+                }
+            });
+            
+            essayInput.addEventListener('keydown', (e) => {
+                if (e.ctrlKey && e.key === 'Enter') {
+                    checkEssayAnswer();
+                }
+            });
+        }
+
+        // 获取嘲讽文案
+        function getTaunt(questionIndex) {
+            const taunts = questionTaunts[questionIndex];
+            if (taunts && taunts.length > 0) {
+                return taunts[Math.floor(Math.random() * taunts.length)];
+            }
+            // 兜底通用嘲讽
+            const fallbacks = [
+                "这都能错？你是真的菜！",
+                "不会吧不会吧，这题都有人做错？",
+                "你这脑子还学什么工厂供电啊，进厂打螺丝吧。"
+            ];
+            return fallbacks[Math.floor(Math.random() * fallbacks.length)];
+        }
+
+        // 切换模式
+        function switchMode(mode) {
+            currentMode = mode;
+            
+            [answerModeBtn, reviewModeBtn, randomModeBtn, wrongBookBtn].forEach(btn => {
+                btn.classList.remove('bg-success', 'hover:bg-success/90');
+                btn.classList.add('bg-gray-700', 'hover:bg-gray-600');
+            });
+            
+            switch(mode) {
+                case 'answer':
+                    answerModeBtn.classList.remove('bg-gray-700', 'hover:bg-gray-600');
+                    answerModeBtn.classList.add('bg-success', 'hover:bg-success/90');
+                    questionOrder = [...Array(questions.length).keys()];
+                    break;
+                case 'review':
+                    reviewModeBtn.classList.remove('bg-gray-700', 'hover:bg-gray-600');
+                    reviewModeBtn.classList.add('bg-success', 'hover:bg-success/90');
+                    questionOrder = [...Array(questions.length).keys()];
+                    break;
+                case 'random':
+                    randomModeBtn.classList.remove('bg-gray-700', 'hover:bg-gray-600');
+                    randomModeBtn.classList.add('bg-success', 'hover:bg-success/90');
+                    questionOrder = [...Array(questions.length).keys()].sort(() => Math.random() - 0.5);
+                    break;
+                case 'wrong':
+                    wrongBookBtn.classList.remove('bg-gray-700', 'hover:bg-gray-600');
+                    wrongBookBtn.classList.add('bg-success', 'hover:bg-success/90');
+                    questionOrder = [...wrongQuestions];
+                    if (questionOrder.length === 0) {
+                        alert('暂无错题！');
+                        switchMode('answer');
+                        return;
+                    }
+                    break;
+            }
+            
+            currentQuestionIndex = 0;
+            loadQuestion(currentQuestionIndex);
+        }
+
+        // 加载题目
+        function loadQuestion(index) {
+            if (index < 0 || index >= questionOrder.length) return;
+            
+            const questionIndex = questionOrder[index];
+            const question = questions[questionIndex];
+            
+            // 答题和背题模式显示序号，随机模式不显示序号
+            if (currentMode === 'random') {
+                questionNumberEl.textContent = '';
+            } else {
+                questionNumberEl.textContent = `第 ${index + 1} / ${questionOrder.length} 题`;
+            }
+            
+            // 随机模式不显示题号前缀
+            if (currentMode === 'random') {
+                questionTextEl.textContent = question.question;
+            } else {
+                questionTextEl.textContent = `${questionIndex + 1}. ${question.question}`;
+            }
+            
+            optionsContainer.classList.add('hidden');
+            fillBlankContainer.classList.add('hidden');
+            essayContainer.classList.add('hidden');
+            explanationContainer.classList.add('hidden');
+            
+            switch(question.type) {
+                case 'single':
+                    questionTypeEl.textContent = '单选题';
+                    questionTypeEl.className = 'bg-green-500/20 text-green-400 px-3 py-1 rounded-full text-sm font-medium';
+                    optionsContainer.classList.remove('hidden');
+                    renderSingleOptions(question, questionIndex);
+                    break;
+                case 'fill':
+                    questionTypeEl.textContent = '填空题';
+                    questionTypeEl.className = 'bg-yellow-500/20 text-yellow-400 px-3 py-1 rounded-full text-sm font-medium';
+                    fillBlankContainer.classList.remove('hidden');
+                    fillBlankInput.value = '';
+                    fillBlankInput.disabled = false;
+                    break;
+                case 'essay':
+                    questionTypeEl.textContent = '简答/计算题';
+                    questionTypeEl.className = 'bg-purple-500/20 text-purple-400 px-3 py-1 rounded-full text-sm font-medium';
+                    essayContainer.classList.remove('hidden');
+                    essayInput.value = '';
+                    essayInput.disabled = false;
+                    const oldAnswerDiv = essayContainer.querySelector('.reference-answer');
+                    if (oldAnswerDiv) {
+                        oldAnswerDiv.remove();
+                    }
+                    break;
+            }
+            
+            prevBtn.disabled = index === 0;
+            nextBtn.disabled = index === questionOrder.length - 1;
+            
+            if (currentMode === 'review') {
+                showAnswer(questionIndex);
+            }
+            
+            if (answeredQuestions.has(questionIndex)) {
+                showAnswer(questionIndex);
+            }
+        }
+
+        // 渲染单选题选项
+        function renderSingleOptions(question, questionIndex) {
+            optionsContainer.innerHTML = '';
+            
+            question.options.forEach((option, i) => {
+                const optionEl = document.createElement('div');
+                optionEl.className = 'flex items-start p-4 border border-gray-600 rounded-lg cursor-pointer option-hover transition-all';
+                optionEl.innerHTML = `
+                    <div class="w-6 h-6 rounded-full border-2 border-gray-400 flex items-center justify-center mr-4 flex-shrink-0 mt-0.5">
+                        <span class="text-sm font-medium">${String.fromCharCode(65 + i)}</span>
+                    </div>
+                    <span class="leading-relaxed">${option}</span>
+                `;
+                
+                if (answeredQuestions.has(questionIndex)) {
+                    optionEl.style.pointerEvents = 'none';
+                } else {
+                    optionEl.addEventListener('click', () => {
+                        checkSingleAnswer(questionIndex, i);
+                    });
+                }
+                
+                optionsContainer.appendChild(optionEl);
+            });
+        }
+
+        // 检查单选题答案
+        function checkSingleAnswer(questionIndex, selectedIndex) {
+            if (answeredQuestions.has(questionIndex)) return;
+            
+            const question = questions[questionIndex];
+            const isCorrect = selectedIndex === question.answer;
+            
+            // 标记用户选择
+            const options = document.querySelectorAll('#options-container > div');
+            options[selectedIndex].dataset.selected = 'true';
+            
+            answeredQuestions.add(questionIndex);
+            if (isCorrect) {
+                correctCount++;
+            } else {
+                wrongCount++;
+                wrongQuestions.add(questionIndex);
+                showTaunt(questionIndex);
+            }
+            
+            updateStats();
+            showAnswer(questionIndex);
+        }
+
+        // 检查填空题答案
+        function checkFillAnswer() {
+            const questionIndex = questionOrder[currentQuestionIndex];
+            if (answeredQuestions.has(questionIndex)) return;
+            
+            const question = questions[questionIndex];
+            const fillAnswer = fillBlankInput.value.trim();
+            
+            if (!fillAnswer) {
+                alert('请输入答案！');
+                return;
+            }
+            
+            // 模糊匹配
+            const isCorrect = question.answer.some(ans => {
+                const normalizedAns = ans.replace(/[（）()]/g, '').trim();
+                return fillAnswer.includes(normalizedAns);
+            });
+            
+            answeredQuestions.add(questionIndex);
+            if (isCorrect) {
+                correctCount++;
+            } else {
+                wrongCount++;
+                wrongQuestions.add(questionIndex);
+                showTaunt(questionIndex);
+            }
+            
+            updateStats();
+            showAnswer(questionIndex);
+        }
+
+        // 检查简答题答案
+        function checkEssayAnswer() {
+            const questionIndex = questionOrder[currentQuestionIndex];
+            if (answeredQuestions.has(questionIndex)) return;
+            
+            const essayAnswer = essayInput.value.trim();
+            
+            if (!essayAnswer) {
+                alert('请输入答案！');
+                return;
+            }
+            
+            answeredQuestions.add(questionIndex);
+            correctCount++;
+            
+            updateStats();
+            showAnswer(questionIndex);
+            alert('简答题已提交，请自行对照参考答案进行评分。');
+        }
+
+        // 显示答案
+        function showAnswer(questionIndex) {
+            const question = questions[questionIndex];
+            
+            explanationContainer.classList.remove('hidden');
+            explanationTextEl.textContent = question.explanation;
+            
+            switch(question.type) {
+                case 'single':
+                    const options = document.querySelectorAll('#options-container > div');
+                    options.forEach((option, i) => {
+                        option.style.pointerEvents = 'none';
+                        if (i === question.answer) {
+                            option.classList.add('border-success', 'bg-success/10');
+                            option.querySelector('div').classList.add('border-success', 'bg-success', 'text-white');
+                        } else if (option.dataset.selected === 'true') {
+                            option.classList.add('border-danger', 'bg-danger/10');
+                            option.querySelector('div').classList.add('border-danger', 'bg-danger', 'text-white');
+                        }
+                    });
+                    break;
+                    
+                case 'fill':
+                    fillBlankInput.disabled = true;
+                    fillBlankInput.placeholder = `正确答案：${question.answer.join('；')}`;
+                    break;
+                    
+                case 'essay':
+                    essayInput.disabled = true;
+                    const answerDiv = document.createElement('div');
+                    answerDiv.className = 'mt-4 p-4 bg-gray-800 rounded-lg reference-answer';
+                    answerDiv.innerHTML = `<h4 class="text-success font-medium mb-2">参考答案：</h4><p class="text-gray-300 whitespace-pre-line">${question.answer}</p>`;
+                    essayContainer.appendChild(answerDiv);
+                    break;
+            }
+        }
+
+        // 显示嘲讽
+        function showTaunt(questionIndex) {
+            const tauntText = getTaunt(questionIndex);
+            tauntTextEl.textContent = tauntText;
+            tauntModal.classList.remove('hidden');
+            tauntModal.querySelector('.taunt-modal').classList.add('taunt-animation');
+            setTimeout(() => {
+                tauntModal.querySelector('.taunt-modal').classList.remove('taunt-animation');
+            }, 500);
+        }
+
+        // 关闭嘲讽
+        function closeTaunt() {
+            tauntModal.classList.add('hidden');
+        }
+
+        // 上一题
+        function prevQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                loadQuestion(currentQuestionIndex);
+            }
+        }
+
+        // 下一题
+        function nextQuestion() {
+            if (currentQuestionIndex < questionOrder.length - 1) {
+                currentQuestionIndex++;
+                loadQuestion(currentQuestionIndex);
+            }
+        }
+
+        // 更新统计数据
+        function updateStats() {
+            correctCountEl.textContent = correctCount;
+            wrongCountEl.textContent = wrongCount;
+            totalCountEl.textContent = answeredQuestions.size;
+            
+            const accuracy = answeredQuestions.size > 0 ? Math.round((correctCount / answeredQuestions.size) * 100) : 0;
+            accuracyEl.textContent = `${accuracy}%`;
+            
+            const progress = questions.length > 0 ? Math.round((answeredQuestions.size / questions.length) * 100) : 0;
+            progressBar.style.width = `${progress}%`;
+        }
+
+        // 重置数据
+        function resetData() {
+            if (confirm('确定要重置所有答题数据吗？此操作不可恢复！')) {
+                correctCount = 0;
+                wrongCount = 0;
+                answeredQuestions.clear();
+                wrongQuestions.clear();
+                currentQuestionIndex = 0;
+                updateStats();
+                switchMode('answer');
+            }
+        }
+
+        // 启动应用
+        init();
+    </script>
+</body>
+</html>
