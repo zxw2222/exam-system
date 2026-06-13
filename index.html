@@ -5,12 +5,14 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>期末复习考试系统</title>
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+*{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#0a0e1a;color:#e2e8f0;min-height:100vh;overflow-x:hidden}
 body::before{content:"";position:fixed;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(99,102,241,0.08) 0%,transparent 60%);pointer-events:none;z-index:0}
 .header{padding:32px 16px 20px;text-align:center;position:relative;z-index:1}
 .header h1{font-size:24px;background:linear-gradient(135deg,#6366f1,#8b5cf6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px}
 .header p{font-size:12px;color:#94a3b8}
+.section{font-size:12px;font-weight:600;color:#8b5cf6;padding:16px 12px 8px;max-width:620px;margin:0 auto;position:relative;z-index:1;display:flex;align-items:center;gap:6px}
+.section::after{content:"";flex:1;height:1px;background:rgba(99,102,241,0.15)}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;padding:0 12px 40px;max-width:620px;margin:0 auto;position:relative;z-index:1}
 .card{background:rgba(15,23,42,0.9);border:1px solid rgba(51,65,85,0.5);border-radius:14px;padding:16px;cursor:pointer;transition:all .2s;text-decoration:none;color:inherit;display:block}
 .card:hover{transform:translateY(-2px);border-color:rgba(99,102,241,0.5);box-shadow:0 8px 30px rgba(99,102,241,0.12)}
@@ -18,15 +20,14 @@ body::before{content:"";position:fixed;inset:0;background:radial-gradient(ellips
 .card .title{font-size:13px;font-weight:600;margin-bottom:4px}
 .card .desc{font-size:10px;color:#94a3b8;line-height:1.4}
 .card.wc{border-color:rgba(245,158,11,0.3);background:linear-gradient(135deg,rgba(245,158,11,0.06),rgba(15,23,42,0.9))}
-.section{font-size:12px;font-weight:600;color:#8b5cf6;padding:16px 12px 8px;max-width:620px;margin:0 auto;position:relative;z-index:1;display:flex;align-items:center;gap:6px}
-.section::after{content:"";flex:1;height:1px;background:rgba(99,102,241,0.15)}
+.card.wc:hover{border-color:rgba(245,158,11,0.6);box-shadow:0 8px 30px rgba(245,158,11,0.12)}
 .footer{text-align:center;padding:20px;font-size:10px;color:#64748b;position:relative;z-index:1}
 </style>
 </head>
 <body>
 <div class="header">
 <h1>EXAM SYSTEM</h1>
-<p>期末复习答题系统 + 2026世界杯预测</p>
+<p>期末复习答题系统</p>
 </div>
 
 <div class="section">📚 期末复习</div>
@@ -37,13 +38,6 @@ body::before{content:"";position:fixed;inset:0;background:radial-gradient(ellips
 <a class="card" href="新能源与发电技术.html"><div class="icon">☀️</div><div class="title">新能源发电</div><div class="desc">选择 · 简答 · 论述</div></a>
 </div>
 
-<div class="section">🏆 2026世界杯</div>
-<div class="grid">
-<a class="card wc" href="worldcup_live.html"><div class="icon">⚽</div><div class="title">AI比分预测</div><div class="desc">DeepSeek预测 · 实时比分 · 赛程</div></a>
-<a class="card wc" href="worldcup2026.html"><div class="icon">📊</div><div class="title">淘汰赛对阵</div><div class="desc">48队赛程 · 夺冠概率</div></a>
-<a class="card wc" href="worldcup_lottery.html"><div class="icon">🎰</div><div class="title">竞彩投注</div><div class="desc">赔率分析 · 投注单</div></a>
-</div>
-
-<div class="footer">数据来源: DeepSeek AI · Football-Data · FIFA · 仅供娱乐参考</div>
+<div class="footer">支持手机 / 电脑访问</div>
 </body>
 </html>
