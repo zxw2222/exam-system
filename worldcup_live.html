@@ -160,7 +160,7 @@ body::before{content:"";position:fixed;inset:0;background:radial-gradient(ellips
 
 <div class="content" id="mainContent"></div>
 
-<button class="btn-fab" id="fabBtn" title="蔡徐坤AI助手 v5.0 正式版">
+<button class="btn-fab" id="fabBtn" title="蔡徐坤AI助手 v4.1 视觉修复版">
 <img src="cxk_new.jpg" alt="AI" id="fabImg">
 </button>
 
@@ -168,7 +168,7 @@ body::before{content:"";position:fixed;inset:0;background:radial-gradient(ellips
 <div class="chat-top">
 <img src="cxk_new.jpg" alt="AI">
 <div>
-<div class="name">蔡徐坤 AI v4.0 v5.0 正式版</div>
+<div class="name">蔡徐坤 AI v4.0 v4.1 视觉修复版</div>
 <div class="status">世界杯预测专家·在线</div>
 </div>
 <button class="close-btn" id="closeChat">×</button>
@@ -700,7 +700,7 @@ async function sendChat() {
                 body: JSON.stringify({
                     model: 'glm-4v-plus',
                     messages: [
-                        {role: 'system', content: '你是一个专业的世界杯数据分析助手。规则：
+                        {role: 'system', content: '你是2026世界杯专业分析师。规则：
 1. 必须先仔细看图片，准确描述图中信息
 2. 给出具体比分预测(如"主队2-1客队")
 3. 给出投注建议(主胜/平/客胜)
@@ -740,7 +740,7 @@ async function sendChat() {
                 body: JSON.stringify({
                     model: 'deepseek-chat',
                     messages: [
-                        {role: 'system', content: '你是2026世界杯专业分析师。回答简洁专业，直接给结论。不要废话，不要自我介绍，不要玩梗。熟知48队12组赛程。回答格式：先给结论，再给理由。适合手机阅读。'},
+                        {role: 'system', content: '你是2026世界杯专业分析师蔡徐坤。说话简洁专业，直接给结论。不要自我介绍，不要废话。熟知48队12组赛程。回答格式：先给结论，再给理由。适合手机阅读。'},
                         {role: 'user', content: msg}
                     ],
                     max_tokens: 500
