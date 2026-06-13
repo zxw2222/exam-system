@@ -11,158 +11,187 @@ tailwind.config={
   theme:{
     extend:{
       colors:{
-        primary:'#10b981',
+        primary:'#0ea5e9',
         success:'#22c55e',
         danger:'#ef4444',
-        warning:'#f59e0b',
         dark:'#0f172a',
-        darker:'#0b1120',
-        emerald:'#10b981'
+        darker:'#020817'
       }
     }
   }
 }
 </script>
 <style>
-.taunt-animation{animation:shake .5s ease-in-out}
-@keyframes shake{
-  0%,100%{transform:translateX(0)}
-  10%,30%,50%,70%,90%{transform:translateX(-5px)}
-  20%,40%,60%,80%{transform:translateX(5px)}
+body{
+  background:#020817;
+  font-family: -apple-system, 'PingFang SC', 'Noto Sans SC', sans-serif;
 }
-.search-item:hover{background-color:rgba(16,185,129,0.1)}
-.font-mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
 .gradient-header{
-  background:linear-gradient(135deg, #064e3b 0%, #065f46 30%, #047857 60%, #059669 100%);
+  background: linear-gradient(135deg, #0c4a6e 0%, #082f49 50%, #051c2c 100%);
 }
-.card-shadow{box-shadow:0 4px 24px rgba(16,185,129,0.15)}
-.mode-btn{transition:all 0.2s; cursor:pointer}
-.mode-btn:hover{transform:translateY(-1px); box-shadow:0 4px 12px rgba(0,0,0,0.3)}
-.correct-anim{animation:correctPulse 0.5s ease}
-@keyframes correctPulse{
-  0%{background-color:rgba(34,197,94,0.3)}
-  100%{background-color:transparent}
+.card-shadow{box-shadow:0 2px 16px rgba(14,165,233,0.08)}
+.bg-card{background:#0f172a}
+.bg-card-hover:hover{background:#1e293b}
+.border-subtle{border-color:rgba(148,163,184,0.12)}
+.mode-btn{transition:all 0.15s ease; cursor:pointer}
+.mode-btn:hover{transform:translateY(-1px)}
+.opt-btn{
+  transition:all 0.15s ease;
+  cursor:pointer;
+  border:1px solid rgba(148,163,184,0.15);
 }
-.wrong-anim{animation:wrongFlash 0.5s ease}
-@keyframes wrongFlash{
-  0%,50%,100%{background-color:transparent}
-  25%,75%{background-color:rgba(239,68,68,0.2)}
+.opt-btn:hover{
+  border-color:rgba(14,165,233,0.4);
+  background:rgba(14,165,233,0.06);
 }
-body{background:#030712}
+.correct-opt{
+  border-color:rgba(34,197,94,0.5)!important;
+  background:rgba(34,197,94,0.1)!important;
+}
+.wrong-opt{
+  border-color:rgba(239,68,68,0.5)!important;
+  background:rgba(239,68,68,0.1)!important;
+}
+.correct-anim{animation:fadeGreen 0.6s ease}
+@keyframes fadeGreen{
+  0%{background:rgba(34,197,94,0.15)}
+  100%{background:transparent}
+}
+.wrong-anim{animation:fadeRed 0.6s ease}
+@keyframes fadeRed{
+  0%{background:rgba(239,68,68,0.15)}
+  100%{background:transparent}
+}
+/* 科技感装饰线 */
+.tech-line{
+  background: linear-gradient(90deg, transparent, rgba(14,165,233,0.4), transparent);
+  height:1px;
+}
+/* 进度条科技感 */
+#prog{
+  background: linear-gradient(90deg, #0ea5e9, #22d3ee);
+  box-shadow: 0 0 8px rgba(14,165,233,0.4);
+}
+/* 滚动条美化 */
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:#0f172a}
+::-webkit-scrollbar-thumb{background:#334155;border-radius:4px}
 </style>
 </head>
-<body class="text-gray-100 min-h-screen font-sans">
+<body class="text-gray-200 min-h-screen">
 
-<div class="container mx-auto px-4 py-8 max-w-4xl">
+<div class="container mx-auto px-4 py-6 max-w-3xl">
 
 <!-- Header -->
-<div class="gradient-header rounded-xl p-6 mb-8 text-center card-shadow relative overflow-hidden">
-  <div class="absolute top-0 left-0 w-full h-full opacity-10">
-    <div class="absolute top-2 left-4 text-6xl">☀️</div>
-    <div class="absolute bottom-2 right-4 text-5xl">💨</div>
-    <div class="absolute top-4 right-12 text-4xl">🔋</div>
-    <div class="absolute bottom-4 left-12 text-4xl">⚡</div>
+<div class="gradient-header rounded-xl p-5 mb-6 text-center relative overflow-hidden card-shadow">
+  <!-- 极简装饰 -->
+  <div class="absolute top-0 left-0 w-full h-px" style="background:linear-gradient(90deg,transparent,#0ea5e9,transparent)"></div>
+  <div class="absolute bottom-0 left-0 w-full h-px" style="background:linear-gradient(90deg,transparent,#0ea5e9,transparent)"></div>
+  <div class="flex items-center justify-center gap-3 mb-1">
+    <i class="fa fa-bolt text-sky-400 text-xl"></i>
+    <h1 class="text-xl sm:text-2xl font-bold text-white tracking-wide">新能源与发电技术</h1>
+    <i class="fa fa-cogs text-sky-400 text-xl"></i>
   </div>
-  <h1 class="text-2xl sm:text-3xl font-bold mb-2 relative z-10"><i class="fa fa-sun-o"></i> 新能源与发电技术 答题系统</h1>
-  <p class="text-white/80 text-sm sm:text-base relative z-10">名词解释 · 简答题 · 论述题｜光伏·风电·储能·并网全覆盖</p>
+  <p class="text-sky-200/70 text-xs sm:text-sm">名词解释 · 简答 · 论述 · 判断 ｜ 共 <span id="total-q">0</span> 题</p>
 </div>
 
 <!-- 模式按钮 -->
-<div class="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-6">
-  <button id="btn-answer" onclick="setMode('answer')" class="mode-btn bg-emerald hover:bg-emerald/90 text-white py-2 rounded-lg"><i class="fa fa-play"></i> 答题模式</button>
-  <button id="btn-review" onclick="setMode('review')" class="mode-btn bg-gray-700 hover:bg-gray-600 text-white py-2 rounded-lg"><i class="fa fa-book"></i> 背题模式</button>
-  <button id="btn-random" onclick="setMode('random')" class="mode-btn bg-gray-700 hover:bg-gray-600 text-white py-2 rounded-lg"><i class="fa fa-random"></i> 随机出题</button>
-  <button id="btn-wrong" onclick="setMode('wrong')" class="mode-btn bg-gray-700 hover:bg-gray-600 text-white py-2 rounded-lg"><i class="fa fa-times"></i> 错题本</button>
-  <button id="btn-cheat" onclick="toggleCheat()" class="mode-btn bg-gray-700 hover:bg-gray-600 text-white py-2 rounded-lg"><i class="fa fa-eye"></i> 作弊模式</button>
+<div class="grid grid-cols-5 gap-2 mb-5">
+  <button id="btn-answer" onclick="setMode('answer')" class="mode-btn bg-sky-600 hover:bg-sky-500 text-white text-xs sm:text-sm py-2 rounded-lg font-medium"><i class="fa fa-play mr-1"></i>答题</button>
+  <button id="btn-review" onclick="setMode('review')" class="mode-btn bg-gray-700 hover:bg-gray-600 text-white text-xs sm:text-sm py-2 rounded-lg"><i class="fa fa-book mr-1"></i>背题</button>
+  <button id="btn-random" onclick="setMode('random')" class="mode-btn bg-gray-700 hover:bg-gray-600 text-white text-xs sm:text-sm py-2 rounded-lg"><i class="fa fa-random mr-1"></i>随机</button>
+  <button id="btn-wrong" onclick="setMode('wrong')" class="mode-btn bg-gray-700 hover:bg-gray-600 text-white text-xs sm:text-sm py-2 rounded-lg"><i class="fa fa-exclamation-circle mr-1"></i>错题</button>
+  <button id="btn-cheat" onclick="toggleCheat()" class="mode-btn bg-gray-700 hover:bg-gray-600 text-white text-xs sm:text-sm py-2 rounded-lg"><i class="fa fa-search mr-1"></i>搜索</button>
 </div>
 
-<!-- 作弊面板 -->
-<div id="cheat-panel" class="hidden mb-6">
-  <input id="search-input" type="text"
-         placeholder="🔍 输入关键词搜索题目（如 光伏、MPPT、贝茨、储能、并网）"
-         oninput="doSearch(this.value)"
-         class="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-emerald transition-all">
-  <div id="search-result" class="mt-2 bg-dark border border-gray-600 rounded-lg max-h-60 overflow-y-auto card-shadow"></div>
+<!-- 搜索面板 -->
+<div id="cheat-panel" class="hidden mb-5">
+  <div class="relative">
+    <input id="search-input" type="text" oninput="doSearch(this.value)"
+           placeholder="搜索题目关键词，如：光伏、MPPT、储能、并网..."
+           class="w-full bg-[#0f172a] border border-[#334155] rounded-lg px-4 py-2.5 text-sm text-gray-200 focus:outline-none focus:border-sky-500/60 transition-all placeholder-gray-600">
+    <i class="fa fa-search absolute right-3 top-3 text-gray-600 text-sm"></i>
+  </div>
+  <div id="search-result" class="mt-2 bg-[#0f172a] border border-[#334155] rounded-lg max-h-52 overflow-y-auto"></div>
 </div>
 
-<!-- 统计 -->
-<div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
-  <div class="bg-dark rounded-lg p-3 text-center card-shadow">
-    <div id="st-correct" class="text-2xl font-bold text-success">0</div>
-    <div class="text-gray-400 text-xs">正确</div>
+<!-- 统计条 -->
+<div class="grid grid-cols-4 gap-3 mb-5">
+  <div class="bg-card rounded-lg p-3 text-center card-shadow border border-subtle">
+    <div id="st-correct" class="text-xl font-bold text-emerald-400">0</div>
+    <div class="text-gray-500 text-xs mt-0.5">正确</div>
   </div>
-  <div class="bg-dark rounded-lg p-3 text-center card-shadow">
-    <div id="st-wrong" class="text-2xl font-bold text-danger">0</div>
-    <div class="text-gray-400 text-xs">错误</div>
+  <div class="bg-card rounded-lg p-3 text-center card-shadow border border-subtle">
+    <div id="st-wrong" class="text-xl font-bold text-red-400">0</div>
+    <div class="text-gray-500 text-xs mt-0.5">错误</div>
   </div>
-  <div class="bg-dark rounded-lg p-3 text-center card-shadow">
-    <div id="st-total" class="text-2xl font-bold text-white">0</div>
-    <div class="text-gray-400 text-xs">已答</div>
+  <div class="bg-card rounded-lg p-3 text-center card-shadow border border-subtle">
+    <div id="st-total" class="text-xl font-bold text-white">0</div>
+    <div class="text-gray-500 text-xs mt-0.5">已答</div>
   </div>
-  <div class="bg-dark rounded-lg p-3 text-center card-shadow">
-    <div id="st-acc" class="text-2xl font-bold text-emerald">0%</div>
-    <div class="text-gray-400 text-xs">正确率</div>
+  <div class="bg-card rounded-lg p-3 text-center card-shadow border border-subtle">
+    <div id="st-acc" class="text-xl font-bold text-sky-400">0%</div>
+    <div class="text-gray-500 text-xs mt-0.5">正确率</div>
   </div>
 </div>
 
 <!-- 进度条 -->
-<div class="w-full bg-gray-700 rounded-full h-2 mb-6">
-  <div id="prog" class="bg-emerald h-2 rounded-full transition-all duration-300" style="width:0%"></div>
+<div class="w-full bg-[#1e293b] rounded-full h-1.5 mb-5">
+  <div id="prog" class="h-1.5 rounded-full transition-all duration-300" style="width:0%"></div>
 </div>
 
 <!-- 题目卡片 -->
-<div id="q-card" class="bg-dark rounded-xl p-4 sm:p-6 card-shadow">
-  <span id="q-type" class="inline-block px-2 py-1 text-xs rounded mb-2 bg-emerald-500/20 text-emerald-400">简答题</span>
-  <div id="q-num" class="text-gray-400 text-sm mb-2"></div>
-  <h2 id="q-text" class="text-lg font-medium mb-6 leading-relaxed whitespace-pre-wrap"></h2>
+<div id="q-card" class="bg-card rounded-xl p-5 sm:p-6 card-shadow border border-subtle">
+  <!-- 题型标签 + 题号 -->
+  <div class="flex items-center justify-between mb-4">
+    <span id="q-type" class="inline-block px-2.5 py-0.5 text-xs font-medium rounded bg-sky-500/10 text-sky-400 border border-sky-500/20">简答题</span>
+    <span id="q-num" class="text-gray-500 text-xs"></span>
+  </div>
+
+  <!-- 题目 -->
+  <h2 id="q-text" class="text-base sm:text-lg font-medium text-gray-100 mb-5 leading-relaxed"></h2>
 
   <!-- 选择题选项 -->
-  <div id="opts" class="space-y-3 mb-6"></div>
+  <div id="opts" class="space-y-2.5 mb-5"></div>
 
-  <!-- 填空/简答输入框 -->
-  <div id="fill-box" class="hidden mb-6">
-    <textarea id="fill-input" rows="4" class="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-emerald resize-none" placeholder="输入你的答案（简答题可写要点）..."></textarea>
-    <button onclick="submitFill()" class="mt-3 bg-emerald hover:bg-emerald/90 text-white px-6 py-2 rounded-lg"><i class="fa fa-check"></i> 提交答案</button>
+  <!-- 填空/简答输入 -->
+  <div id="fill-box" class="hidden mb-5">
+    <textarea id="fill-input" rows="4" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();submitFill()}"
+              class="w-full bg-[#020817] border border-[#334155] rounded-lg px-4 py-3 text-sm text-gray-200 focus:outline-none focus:border-sky-500/60 resize-none placeholder-gray-600"
+              placeholder="输入答案后按 Enter 提交，Shift+Enter 换行..."></textarea>
+    <button onclick="submitFill()" class="mt-3 bg-sky-600 hover:bg-sky-500 text-white text-sm px-5 py-2 rounded-lg font-medium transition-all"><i class="fa fa-paper-plane mr-1"></i>提交</button>
   </div>
 
   <!-- 判断按钮 -->
-  <div id="judge-box" class="hidden mb-6 flex gap-4">
-    <button onclick="submitJudge(true)" class="flex-1 bg-green-600 hover:bg-green-500 text-white py-3 rounded-lg font-bold text-lg"><i class="fa fa-check"></i> 正确</button>
-    <button onclick="submitJudge(false)" class="flex-1 bg-red-600 hover:bg-red-500 text-white py-3 rounded-lg font-bold text-lg"><i class="fa fa-times"></i> 错误</button>
+  <div id="judge-box" class="hidden mb-5 flex gap-3">
+    <button onclick="submitJudge(true)" class="flex-1 bg-emerald-600/80 hover:bg-emerald-500 text-white py-2.5 rounded-lg font-medium transition-all"><i class="fa fa-check mr-1"></i>正确</button>
+    <button onclick="submitJudge(false)" class="flex-1 bg-red-600/80 hover:bg-red-500 text-white py-2.5 rounded-lg font-medium transition-all"><i class="fa fa-times mr-1"></i>错误</button>
   </div>
 
-  <!-- 解析区域 -->
-  <div id="exp-box" class="hidden bg-emerald-900/20 border border-emerald-500/30 rounded-lg p-4 mb-4">
-    <p class="text-emerald-300 text-sm font-bold mb-2"><i class="fa fa-lightbulb-o"></i> 参考答案 / 解析</p>
-    <div id="exp-text" class="text-gray-200 text-sm leading-relaxed whitespace-pre-wrap"></div>
+  <!-- 解析 -->
+  <div id="exp-box" class="hidden bg-[#082f49]/40 border border-sky-500/10 rounded-lg p-4">
+    <p class="text-sky-300 text-xs font-bold mb-2 flex items-center gap-1"><i class="fa fa-lightbulb-o"></i> 参考答案</p>
+    <div id="exp-text" class="text-gray-300 text-sm leading-relaxed whitespace-pre-wrap"></div>
   </div>
 </div>
 
 <!-- 导航 -->
-<div class="flex justify-between mt-6">
-  <button id="prev-btn" onclick="prevQ()" class="bg-gray-700 hover:bg-gray-600 text-white px-5 py-2 rounded-lg disabled:opacity-40"><i class="fa fa-chevron-left"></i> 上一题</button>
-  <button id="next-btn" onclick="nextQ()" class="bg-emerald hover:bg-emerald/90 text-white px-5 py-2 rounded-lg disabled:opacity-40">下一题 <i class="fa fa-chevron-right"></i></button>
+<div class="flex justify-between mt-5 mb-8">
+  <button id="prev-btn" onclick="prevQ()" class="bg-[#1e293b] hover:bg-[#334155] text-gray-300 text-sm px-5 py-2 rounded-lg transition-all disabled:opacity-30 disabled:cursor-not-allowed"><i class="fa fa-chevron-left mr-1"></i>上一题</button>
+  <button id="next-btn" onclick="nextQ()" class="bg-sky-600 hover:bg-sky-500 text-white text-sm px-5 py-2 rounded-lg transition-all disabled:opacity-30 disabled:cursor-not-allowed">下一题<i class="fa fa-chevron-right ml-1"></i></button>
 </div>
 
 </div>
 
-<!-- 嘲讽弹窗 -->
-<div id="taunt-modal" class="fixed inset-0 bg-black/70 hidden z-50 flex items-center justify-center">
-  <div class="bg-dark rounded-xl p-6 max-w-sm w-full mx-4 taunt-animation">
-    <div class="text-center">
-      <div class="text-5xl mb-3">🤡</div>
-      <p id="taunt-msg" class="text-danger text-lg font-bold mb-4"></p>
-      <button onclick="document.getElementById('taunt-modal').classList.add('hidden')" class="bg-emerald px-6 py-2 rounded-lg text-white">我知道了</button>
-    </div>
-  </div>
-</div>
+<!-- 提示弹窗 -->
+<div id="toast" class="fixed top-6 left-1/2 -translate-x-1/2 bg-[#0f172a] border border-[#334155] text-gray-200 text-sm px-5 py-2.5 rounded-lg shadow-lg z-50 hidden card-shadow transition-all duration-300"></div>
 
 <script>
 /* ===============================
    题库：新能源与发电技术
    =============================== */
 const questions = [
-// ==================== 一、名词解释 ====================
+// ==================== 一、名词解释（选择题形式）====================
 {
   type:'single',
   q:'【名词解释】光伏效应（Photovoltaic Effect）',
@@ -173,31 +202,19 @@ const questions = [
     '半导体材料吸收光后电阻率下降的现象'
   ],
   ans:0,
-  exp:'光伏效应是太阳能电池发电的物理基础。核心：PN结 + 内建电场 + 电子-空穴对分离 → 光生电动势'
+  exp:'光伏效应是太阳能电池发电的物理基础。\n核心过程：PN结 + 内建电场 + 电子-空穴对分离 → 光生电动势'
 },
 {
   type:'single',
-  q:'【名词解释】填充因子（Fill Factor, FF）',
+  q:'【名词解释】叶尖速比（Tip Speed Ratio, λ）',
   opts:[
-    'FF = Pmax / (Voc × Isc)，反映电池输出特性接近理想程度的指标，典型值0.7~0.85',
-    '电池板面积与光照面积之比',
-    '实际效率与理论效率的比值',
-    '最大输出功率与额定功率之比'
-  ],
-  ans:0,
-  exp:'FF是评价光伏电池性能的关键参数。FF越接近1，电池性能越好。受串联电阻和并联电阻影响。'
-},
-{
-  type:'single',
-  q:'【名词解释】叶尖速比（Tip Speed Ratio, TSR / λ）',
-  opts:[
-    'λ = ΩR/v，即风轮叶尖线速度与来流风速之比，决定风能利用系数Cp的关键参数',
+    'λ = ΩR/v，即风轮叶尖线速度与来流风速之比，是决定风能利用系数Cp的关键参数',
     '风机切入风速与切出风速之比',
     '叶片尖端厚度与根部厚度之比',
     '发电机转速与电网频率之比'
   ],
   ans:0,
-  exp:'每个风机都有一个最优λ值（通常6~8），此时Cp最大。MPPT控制就是维持最优λ。'
+  exp:'每个风机都有最优λ值（通常6~8），此时Cp最大。MPPT控制本质就是维持最优λ运行。'
 },
 {
   type:'single',
@@ -209,13 +226,13 @@ const questions = [
     '齿轮箱传动效率上限'
   ],
   ans:0,
-  exp:'1919年德国物理学家贝茨证明。剩余能量必须保留以维持气流连续性。现代大型风机Cp可达0.45~0.50。'
+  exp:'1919年德国物理学家贝茨证明。现代大型风机Cp实际可达0.45~0.50。'
 },
 {
   type:'single',
   q:'【名词解释】虚拟同步发电机（VSG）',
   opts:[
-    '通过控制策略使电力电子逆变器模拟同步发电机的转子运动方程、惯量特性、励磁调节和阻尼特性',
+    '通过控制策略使电力电子逆变器模拟同步发电机的转子运动方程、惯量特性和阻尼特性',
     '用虚拟软件代替真实发电机的技术',
     '一种新型同步电机设计',
     '数字孪生技术在发电机上的应用'
@@ -225,55 +242,31 @@ const questions = [
 },
 {
   type:'single',
-  q:'【名词解释】最大功率点跟踪（MPPT）',
-  opts:[
-    '通过调整光伏阵列工作点使其始终工作在P-V曲线峰值点的控制技术',
-    '自动寻找太阳最强照射位置的技术',
-    '追踪电网峰值负荷的方法',
-    '监测电池最大充电电流的技术'
-  ],
-  ans:0,
-  exp:'常用算法：扰动观察法(P&O)、增量电导法(IC)、恒定电压法(CV)。MPPT可使系统效率提升20%~30%。'
-},
-{
-  type:'single',
-  q:'【名词解释】热斑效应（Hot Spot Effect）',
-  opts:[
-    '光伏组件中某电池片被遮挡时由发电变为耗能状态导致局部温度急剧升高的现象',
-    '太阳能电池板整体过热现象',
-    '逆变器过热保护触发现象',
-    '组件表面热点分布不均现象'
-  ],
-  ans:0,
-  exp:'危害：烧毁组件、引发火灾、降低寿命。防护措施：旁路二极管(Bypass Diode)、定期红外巡检、避免遮挡。'
-},
-{
-  type:'single',
   q:'【名词解释】双馈感应发电机（DFIG）',
   opts:[
-    '定子直接接网、转子通过背靠背变流器接入电网的变速恒频风力发电机',
+    '定子直接接网、转子通过背靠背变流器接入电网的变速恒频风力发电机，变流器仅处理20%-30%额定功率',
     '双定子绕组的特殊电机',
     '双转子结构的感应电机',
     '同时连接两个电网的发电机'
   ],
   ans:0,
-  exp:'变流器仅处理转差功率（20-30%），成本低于全功率变换器。可实现亚同步/超同步运行。'
+  exp:'DFIG主要优势：变流器容量小、成本低；可实现亚同步/超同步运行；有功无功解耦控制。'
 },
 {
   type:'single',
   q:'【名词解释】孤岛效应（Islanding Effect）',
   opts:[
-    '电网断电后分布式电源继续向局部负载供电形成自给运行状态的现象',
+    '电网断电后分布式电源继续向局部负载供电形成自给运行状态的现象，存在安全隐患',
     '海岛独立供电现象',
     '电网中孤立节点失电现象',
-    '微电网脱离主网后的状态'
+    '微电网脱离主网后的运行状态'
   ],
   ans:0,
-  exp:'危害：威胁检修人员安全、损坏设备、影响电能质量。检测方法：被动式（电压/频率检测）、主动式（频率偏移等）。'
+  exp:'危害：威胁检修人员安全、损坏设备、影响电能质量。检测方法分被动式（电压/频率检测）和主动式（频率偏移注入等）。'
 },
 {
   type:'single',
-  q:'【名词解释】低电压穿越（LVRT - Low Voltage Ride Through）',
+  q:'【名词解释】低电压穿越（LVRT）',
   opts:[
     '当电网电压骤降时，风力发电机保持不脱网连续运行并向电网提供无功支撑的能力',
     '低压线路持续供电能力',
@@ -281,435 +274,546 @@ const questions = [
     '变压器低压侧穿越故障的能力'
   ],
   ans:0,
-  exp:'各国标准要求不同：中国要求电压跌至20%时至少持续625ms不脱网。需借助Crowbar电路和变流器控制实现。'
+  exp:'中国标准要求：电压跌至20%时风机至少持续625ms不脱网，并提供动态无功支撑。'
+},
+{
+  type:'single',
+  q:'【名词解释】最大功率点跟踪（MPPT）',
+  opts:[
+    '通过调整光伏阵列工作点使其始终工作在P-V曲线峰值点的控制技术，可提升系统效率20%-30%',
+    '自动寻找太阳最强照射位置的技术',
+    '追踪电网峰值负荷的方法',
+    '监测电池最大充电电流的技术'
+  ],
+  ans:0,
+  exp:'常用算法：扰动观察法(P&O)、增量电导法(IC)、恒定电压法(CV)。工程上常用改进型变步长P&O。'
+},
+{
+  type:'single',
+  q:'【名词解释】热斑效应（Hot Spot Effect）',
+  opts:[
+    '光伏组件中某电池片被遮挡时由发电变为耗能状态，导致局部温度急剧升高（可达150°C）的现象',
+    '太阳能电池板整体过热现象',
+    '逆变器过热保护触发现象',
+    '组件表面热点分布不均现象'
+  ],
+  ans:0,
+  exp:'危害：烧毁组件、引发火灾。防护：旁路二极管(Bypass Diode)、定期红外巡检、避免固定遮挡。'
+},
+{
+  type:'single',
+  q:'【名词解释】填充因子（Fill Factor, FF）',
+  opts:[
+    'FF = Pmax / (Voc × Isc)，反映电池输出特性接近理想程度的指标，商用优质电池FF可达0.80-0.85',
+    '电池板面积与光照面积之比',
+    '实际效率与理论效率的比值',
+    '最大输出功率与额定功率之比'
+  ],
+  ans:0,
+  exp:'FF受串联电阻(Rs)和并联电阻(Rsh)影响。Rs越小、Rsh越大，FF越高。'
 },
 
 // ==================== 二、简答题 ====================
 {
   type:'fill',
-  q:'【简答】新能源发电系统中常用的储能技术各有哪些特点？请列举至少5种。',
-  ans:['锂电池','铅酸电池','抽水蓄能','压缩空气储能','飞轮储能','超级电容','氢储能'],
+  q:'【简答】新能源发电系统中常用的储能技术各有哪些特点？请列举至少5种不同类型的储能。',
+  ans:['锂电池','抽水蓄能','压缩空气','飞轮','超级电容','氢储能','铅酸'],
   exp:`【参考答案】
 
-**1. 电化学储能（锂电池/铅酸电池）**
-- 响应快（ms级）、效率高（85-95%）
-- 安装灵活、适合短时调频
-- 缺点：寿命有限、成本较高
+1. 电化学储能（锂电池/铅酸电池）
+   · 响应快（ms级）、效率高（85-95%）、安装灵活
+   · 缺点：寿命有限、成本较高
 
-**2. 抽水蓄能**
-- 容量大（GW级）、寿命长（50年+）、成本低
-- 缺点：受地理条件限制、建设周期长
+2. 抽水蓄能
+   · 容量大（GW级）、寿命长（50年+）、成本低
+   · 缺点：受地理条件限制、建设周期长
 
-**3. 压缩空气储能（CAES）**
-- 容量大、可长时间放电
-- 效率较低（40-70%）、依赖地质条件
+3. 压缩空气储能（CAES）
+   · 容量大、可长时间放电
+   · 缺点：效率较低（40-70%）、依赖地质条件
 
-**4. 飞轮储能**
-- 响应极快（ms级）、循环寿命长（百万次）
-- 能量密度低、自放电快，适合短时高频充放
+4. 飞轮储能
+   · 响应极快（ms级）、循环寿命长（百万次）
+   · 缺点：能量密度低、自放电快
 
-**5. 超级电容**
-- 功率密度极高、响应极快、寿命长
-- 能量密度低，适合短时功率支撑
+5. 超级电容
+   · 功率密度极高、响应极快、寿命长
+   · 缺点：能量密度低，适合短时功率支撑
 
-**6. 氢储能**
-- 能量密度高、可长期存储、跨季节调节
-- 转换效率低（约30-40%）、成本高`
+6. 氢储能
+   · 能量密度高、可长期存储、跨季节调节
+   · 缺点：转换效率低（约30-40%）、成本高`
 },
 {
   type:'fill',
   q:'【简答】微电网从"并网模式"平滑切换到"孤岛模式"的控制过程是什么？',
-  ans:['检测阶段','同步检测','解列操作','模式切换控制','稳定运行'],
+  ans:['检测阶段','解列操作','模式切换','V/f控制','稳定运行'],
   exp:`【参考答案】
 
-① **检测阶段**：MGCC通过PCC监测电网电压/频率异常，判断主网故障或计划断开
+① 检测阶段
+   MGCC通过PCC监测电网电压/频率异常，判断主网故障或计划断开
 
-② **同步检测**：确认需要切换后，检测本地分布式电源与负荷的功率平衡状态
+② 解列操作
+   快速断开PCC处开关，实现与主网电气隔离（要求<100ms）
 
-③ **解列操作**：快速断开PCC处开关，实现与主网电气隔离
+③ 模式切换控制
+   · 储能系统：由PQ控制 → V/f控制（建立电压频率参考）
+   · 分布式电源：调整输出维持稳定
+   · 负荷管理：按优先级甩负荷
 
-④ **模式切换控制**：
-   - 储能系统由PQ控制切换为V/f控制
-   - 分布式电源调整输出以维持电压和频率稳定
-   - 切换负荷管理策略，按优先级甩负荷
-
-⑤ **稳定运行**：微电网进入独立运行状态，储能作为主电源建立电压和频率参考
-
-关键在于**无缝切换**，通常要求切换时间<100ms`
+④ 稳定运行
+   微电网进入独立运行，储能作为主电源`
 },
 {
   type:'fill',
   q:'【简答】新能源发电波动性对电网有哪些影响？（至少列出6条）',
-  ans:['频率稳定性问题','电压稳定性问题','调峰压力增大','备用容量需求增加','电能质量下降','系统惯量降低','线路潮流双向化','保护配置复杂化'],
+  ans:['频率稳定性','电压稳定性','调峰压力','备用容量','电能质量','系统惯量','保护配合'],
   exp:`【参考答案】
 
-1. **频率稳定性问题**：有功不平衡引起频率偏差
-2. **电压稳定性问题**：无功变化导致电压闪变、越限
-3. **调峰压力增大**：反调峰特性加重电网调节负担
-4. **备用容量需求增加**：需预留更多旋转备用
-5. **电能质量下降**：谐波污染、三相不平衡加剧
-6. **线路潮流双向化**：多源网络，保护配置复杂
-7. **系统惯量降低**：电力电子替代同步机，抗扰动减弱
-8. **辅助服务需求增加**：调频、调压、备用等服务量激增`
+1. 频率稳定性问题 — 有功不平衡引起频率偏差
+2. 电压稳定性问题 — 无功变化导致电压闪变、越限
+3. 调峰压力增大 — 反调峰特性（光伏"鸭子曲线"）
+4. 备用容量需求增加 — 为应对不确定性需预留更多旋转备用
+5. 电能质量下降 — 谐波污染、三相不平衡加剧
+6. 系统惯量降低 — 电力电子替代同步机，抗扰动能力减弱
+7. 保护配合复杂 — 潮流方向多变，传统保护可能误动或拒动
+8. 辅助服务需求激增 — 调频、调压、备用等服务量大幅上升`
 },
 {
   type:'fill',
   q:'【简答】说明光伏系统从光能到并网用电的完整流程。',
-  ans:['光电转换','汇集','MPPT控制','逆变','升压','并网送电','消纳使用'],
+  ans:['光电转换','汇集','MPPT','逆变','升压','并网','消纳'],
   exp:`【参考答案】
 
-完整流程链：
-```
-太阳光 → 光伏组件(DC) → DC汇流箱 → DC配电柜 → 逆变器(DC→AC) 
-→ AC配电柜/变压器(升压) → 并网点(PCC) → 电网 → 用户负载
-```
+完整流程图示：
+太阳光 → 光伏组件(DC) → 汇流箱 → 配电柜 → 逆变器(DC→AC)
+       → 升压变压器 → 并网点(PCC) → 电网 → 用户负载
 
-详细步骤：
-1. **光电转换**：PN结吸收光子产生直流电
-2. **汇集**：组串经汇流箱汇集
-3. **MPPT控制**：实时优化工作点获取最大功率
-4. **逆变**：DC→AC转换，同频同相
-5. **升压**：升至并网电压等级（大型电站）
-6. **并网送电**：经计量和保护装置接入电网
-7. **消纳使用**：供负载使用，余电上网`
+关键步骤说明：
+1. 光电转换：PN结吸收光子产生直流电
+2. 汇集：多组串经汇流箱汇集，减少线损
+3. MPPT控制：实时优化工作点，获取最大功率
+4. 逆变：DC→AC，频率相位与电网同步
+5. 升压（大型电站）：升至10kV/35kV并网电压等级
+6. 并网送电：经计量、保护装置接入电网
+7. 消纳使用：本地负载优先，余电上网`
 },
 {
   type:'fill',
-  q:'【简答】风力发电机最大功率捕获的控制逻辑是什么？',
-  ans:['贝茨极限','Cp最优化','最优转速计算','转速跟踪','桨距角控制','查表法','爬山法','叶尖速比法'],
+  q:'【简答】风力发电机最大功率捕获的控制逻辑是什么？说明主要方法和原理。',
+  ans:['Cp最优化','最优转速计算','查表法','爬山法','叶尖速比法','变桨控制'],
   exp:`【参考答案】
 
-核心原理：**Cp(λ,β) 最优化**
+核心原理：使风能利用系数Cp(λ,β)始终保持最大值
 
 控制过程：
-1. **风速检测**：实时测量风速v
-2. **计算最优转速**：根据 P_opt = ½ρA·Cp_max·v³，得 λ_opt，进而 ω_opt = λ_opt·R/v
-3. **转速跟踪**：控制转矩使风机跟踪ω_opt
-4. **桨距角控制**：
-   - 低于额定风速：β=0°（不动作）
-   - 高于额定风速：增大β限制功率
+1. 风速检测：实时测量风速v
+2. 计算最优转速：ω_opt = λ_opt × R / v
+3. 转速跟踪：通过控制发电机转矩使风机跟踪ω_opt
+4. 桨距角控制：
+   · 低于额定风速：β=0°（最大捕风）
+   · 高于额定风速：增大β限制功率
 
-常用方法：
-| 方法 | 原理 | 特点 |
-|------|------|------|
-| 查表法 | 预存最佳曲线 | 简单可靠 |
-| 爬山法(HCS) | 扰动观察找MPP | 无需测风速 |
-| 叶尖速比法(TSR) | 控制λ=λ_opt | 需要风速传感器 |`
+主要方法对比：
+· 查表法：预存最佳转矩-转速曲线，简单可靠
+· 爬山法(HCS)：无需风速传感器，通过扰动观察找MPP
+· 叶尖速比法(TSR)：需测风速，直接控制λ=λ_opt`
 },
 {
   type:'fill',
-  q:'【简答】解释双馈感应发电机（DFIG）的运行原理。',
-  ans:['定子直接接网','转子通过变流器接入','变速恒频','亚同步运行','超同步运行','功率解耦控制','转差功率'],
+  q:'【简答】解释双馈感应发电机（DFIG）的运行原理，说明亚同步和超同步运行的区别。',
+  ans:['定子接网','转子变流器','变速恒频','亚同步','超同步','转差功率'],
   exp:`【参考答案】
 
 基本结构：
-- **定子**：直接接入交流电网（50Hz工频）
-- **转子**：通过背靠背变流器（RSC+GSC）接入电网
+· 定子：直接接入电网（50Hz工频）
+· 转子：通过背靠背变流器接入电网
 
-运行原理：
+运行原理（变速恒频）：
+转子励磁频率 fr = f1 - fm
+（f1为定子频率，fm为机械频率对应的电频率）
 
-1. **变速恒频原理**
-   转子励磁频率 fr = f1 - fm
-   （f1为定子频率，fm为机械旋转频率对应的电频率）
+亚同步运行（n < nsync）：
+· 转子从电网吸收能量，fr > 0
+· 变流器向转子注入励磁电流
 
-2. **亚同步运行**（n < nsync）
-   - 转子从电网吸收能量，fr > 0
-   - 变流器向转子注入励磁电流
+超同步运行（n > nsync）：
+· 转子向电网回馈能量，fr < 0
+· 能量双向流动
 
-3. **超同步运行**（n > nsync）
-   - 转子向电网回馈能量，fr < 0
-   - 转子侧能量反向流动
-
-4. **功率解耦控制**
-   - RSC：控制有功（MPPT）+ 无功（电压支撑）
-   - GSC：维持直流母线电压稳定
-
-5. **优势**：变流器仅处理转差功率（20-30%），成本低`
+优势：变流器仅处理转差功率（|s|×Prated），通常为20%-30%，成本低。`
 },
 {
   type:'fill',
-  q:'【简答】分布式发电系统的安装运维中，影响工程质量的因素及具体要求有哪些？',
-  ans:['资源评估','设备选型','安装施工','电气安全','调试并网','运维管理'],
+  q:'【简答】光伏并网逆变器的主要拓扑结构有哪些？各有何特点及适用场景？',
+  ans:['集中式','组串式','微型','集散式'],
   exp:`【参考答案】
 
-| 阶段 | 影响因素 | 具体要求 |
-|------|---------|---------|
-| **选址设计** | 资源评估不准、阴影遮挡 | 精确资源测量；避开遮挡；合理倾角/方位角 |
-| **设备选型** | 组件/逆变器质量不达标 | 选用认证产品(TUV/CQC)；匹配容配比 |
-| **安装施工** | 支架固定不牢、接线不规范 | 抗风≥12级；电缆规格合规；接地≤4Ω |
-| **电气安全** | 绝缘不良、防雷缺失 | 直流耐压测试；装SPD；设警示标识 |
-| **调试并网** | 保护定值错误、通信故障 | 防孤岛测试；继电保护整定正确 |
-| **运维管理** | 清洗不及时、热斑 | 季度清洁；红外巡检；及时更换故障件 |`
-},
-{
-  type:'fill',
-  q:'【简答】对比水平轴(HAWT)与垂直轴(VAWT)风力机的优缺点。',
-  ans:['HAWT效率高','VAWT无需偏航','HAWT为主流','VAWT维护方便','HAWT启动风速低','VAWT自启动困难'],
-  exp:`【参考答案】
-
-| 对比项 | 水平轴 HAWT | 垂直轴 VAWT |
-|--------|-------------|-------------|
-| 风能利用率 | 高（接近贝茨极限） | 较低（一般<0.4） |
-| 启动风速 | 较低 | 较高（自启动困难） |
-| 偏航需求 | 需要偏航系统对风 | 不需要，任意风向均可 |
-| 结构复杂度 | 较高（偏航+变桨） | 简单，发电机可置于地面 |
-| 噪声振动 | 较大 | 较小 |
-| 维护便利性 | 困难（高空作业） | 方便（地面设备） |
-| 应用占比 | 主流（95%以上） | 小型分散应用 |
-
-结论：大型并网风电几乎全部采用水平轴机组`
-},
-{
-  type:'fill',
-  q:'【简答】光伏并网逆变器的主要拓扑结构有哪些？各有何特点？',
-  ans:['集中式逆变器','组串式逆变器','微型逆变器','集散式逆变器'],
-  exp:`【参考答案】
-
-| 类型 | 结构 | 效率 | 适用场景 |
+| 类型 | 特点 | 效率 | 适用场景 |
 |------|------|------|---------|
-| **集中式** | 多路汇流后统一逆变 | ~98% | 大型地面电站(MW级) |
-| **组串式** | 每1-2路组串配一台小逆变器 | ~97-98% | 分布式屋顶、复杂朝向 |
-| **微型** | 每块组件独立逆变 | ~95-96% | 户用小型、局部遮挡场景 |
-| **集散式** | 组串级MPPT + 集中逆变 | ~98.5% | 兼顾组串优化与大功率效率 |
+| 集中式 | 多路组串汇流后统一逆变 | ~98% | 大型地面电站(MW级) |
+| 组串式 | 每1-2路组串配一台小逆变器 | ~97-98% | 分布式屋顶、复杂朝向 |
+| 微型 | 每块组件独立逆变 | ~95-96% | 户用、局部遮挡场景 |
+| 集散式 | 组串级MPPT+集中逆变 | ~98.5% | 兼顾优化与效率的大型电站 |
 
-选型依据：装机规模、场地条件、投资预算、运维便利性`
+选型要点：装机规模、场地遮挡情况、投资预算、运维便利性。`
 },
 {
   type:'fill',
   q:'【简答】常用的MPPT算法有哪些？各自的优缺点是什么？',
-  ans:['扰动观察法P&O','增量电导法IC','恒定电压法CV','爬山法HCS'],
+  ans:['扰动观察法','增量电导法','恒定电压法','爬山法'],
   exp:`【参考答案】
 
-| 算法 | 原理 | 优点 | 缺点 |
-|------|------|------|------|
-| **扰动观察法(P&O)** | 周期性扰动电压比较功率变化 | 简单易实现 | MPP附近振荡；光照剧变时误判 |
-| **增量电导法(IC)** | 利用dP/dV=0判断MPP位置 | 振荡小，响应快 | 计算量稍大 |
-| **恒定电压法(CV)** | 使V≈0.78×Voc | 最简单 | 精度低，环境变化误差大 |
-| **爬山法(HCS)** | 基于功率直接扰动 | 无需电流传感器 | 同P&O缺点 |
+1. 扰动观察法(P&O)
+   · 原理：周期性扰动电压，比较功率变化方向
+   · 优点：简单易实现
+   · 缺点：MPP附近振荡；光照剧变时可能误判
 
-工程上最常用的是**改进型扰动观察法**（变步长+三点加权比较）`
+2. 增量电导法(IC)
+   · 原理：利用dP/dV=0判断MPP位置
+   · 优点：振荡小，响应快
+   · 缺点：计算量稍大
+
+3. 恒定电压法(CV)
+   · 原理：使V≈0.78×Voc
+   · 优点：最简单，成本低
+   · 缺点：精度低，环境变化误差大
+
+工程上常用：改进型变步长P&O（兼顾精度与速度）`
+},
+{
+  type:'fill',
+  q:'【简答】对比水平轴(HAWT)与垂直轴(VAWT)风力机的优缺点。',
+  ans:['HAWT效率高','VAWT无需偏航','HAWT主流','VAWT维护方便'],
+  exp:`【参考答案】
+
+| 对比项 | 水平轴 HAWT | 垂直轴 VAWT |
+|--------|-------------|-------------|
+| 风能利用率 | 高（接近贝茨极限0.593） | 较低（一般<0.4） |
+| 启动风速 | 较低 | 较高（自启动困难） |
+| 偏航需求 | 需要偏航系统对风 | 不需要，任意风向均可 |
+| 结构复杂度 | 较高（偏航+变桨） | 简单，发电机可置于地面 |
+| 噪声振动 | 较大 | 较小 |
+| 维护便利性 | 困难（高空作业） | 方便（设备置于地面） |
+| 市场占比 | 主流（>95%） | 小型分散应用 |
+
+结论：大型并网风电几乎全部采用水平轴；VAWT适合城市、海岛等特殊场景。`
+},
+{
+  type:'fill',
+  q:'【简答】分布式发电系统安装运维中，影响工程质量的因素及具体要求有哪些？',
+  ans:['资源评估','设备选型','安装施工','电气安全','调试并网','运维管理'],
+  exp:`【参考答案】
+
+各阶段质量控制要点：
+
+① 选址设计阶段
+   · 精确光照/风资源测量
+   · 避开遮挡物，合理选择倾角/方位角
+
+② 设备选型阶段
+   · 选用认证产品（TUV、CQC等）
+   · 容配比合理匹配
+   · 考虑环境适应性（盐雾、沙尘等）
+
+③ 安装施工阶段
+   · 支架抗风等级≥12级
+   · 电缆规格符合载流量要求
+   · 接地电阻≤4Ω
+   · 防水防火处理到位
+
+④ 调试并网阶段
+   · 完成防孤岛测试
+   · 继电保护整定正确
+   · 监控系统正常运行
+
+⑤ 运维管理阶段
+   · 定期清洁检查（每季度至少1次）
+   · 红外巡检发现热斑
+   · 及时更换故障组件
+   · 建立完整运维档案`
 },
 
 // ==================== 三、论述题 ====================
 {
   type:'fill',
-  q:'【论述】新能源并网对电网面临哪些挑战？应对措施有哪些？',
-  ans:['随机性与波动性','弱惯性','调峰调频困难','电能质量','保护配合复杂','虚拟同步机','储能融合','需求侧响应','辅助服务市场'],
+  q:'【论述】新能源并网对电网面临哪些挑战？有哪些应对措施？（请分点论述）',
+  ans:['随机性','弱惯性','调峰困难','电能质量','保护配合','VSG','储能','需求侧响应'],
   exp:`【参考答案】
 
-**一、主要挑战：**
+一、主要挑战：
 
-① **随机性与波动性** — 风光出力不可控，预测难度大
-② **弱惯性/低短路容量** — 电力电子设备无转动惯量，频率响应差
-③ **调峰调频困难** — 反调峰特性加重调节负担
-④ **电能质量问题** — 谐波、电压波动、闪变
-⑤ **保护配合复杂** — 潮流方向多变，传统保护失效
-⑥ **电网稳定性风险** — 大规模脱网引发连锁故障
+① 随机性与波动性
+   风光出力不可控，预测难度大，给调度带来挑战
 
-**二、应对措施：**
+② 弱惯性/低短路容量
+   电力电子设备无转动惯量，系统频率变化更快更剧烈
 
-| 层面 | 措施 |
-|------|------|
-| **源端** | 提高预测精度(AI+数值天气)；配置储能；VSG技术；改进逆变器控制 |
-| **网端** | 加强互联；升级输电；柔性输电(FACTS)；广域测量(WAMS) |
-| **荷端** | 需求侧响应(DR)；可中断负荷；电动汽车V2G |
-| **储端** | 电化学/抽蓄/压缩空气等多类型储能；辅助服务市场 |
-| **机制** | 绿电交易市场；辅助服务补偿；可再生能源配额制 |
+③ 调峰调频困难
+   光伏"鸭子曲线"：白天大发、晚高峰出力骤降，加重调峰负担
 
-**三、发展趋势：**
-源网荷储一体化 → 电力电子化电网 → 构网型控制 → 能源互联网`
+④ 电能质量问题
+   谐波污染、电压波动、闪变、三相不平衡
+
+⑤ 保护配合复杂
+   潮流方向多变，传统过流保护可能失效
+
+⑥ 大规模脱网风险
+   连锁故障可能引发大面积脱网
+
+二、应对措施：
+
+源端：提高预测精度、配置储能、VSG技术、改进逆变器控制
+网端：加强互联、柔性输电(FACTS)、广域测量(WAMS)
+荷端：需求侧响应(DR)、可中断负荷、V2G
+储端：多类型储能配置、辅助服务市场
+机制：绿电交易、可再生能源配额制、辅助服务补偿`
 },
 {
   type:'fill',
-  q:'【论述】新能源发电技术的发展趋势是什么？',
-  ans:['高效化','储能融合','数字化','新材料','氢能耦合','分布式爆发','海上风电规模化','微电网普及'],
+  q:'【论述】论述新能源发电技术的发展趋势。',
+  ans:['高效化','储能融合','数字化','钙钛矿','海上风电','氢能','微电网'],
   exp:`【参考答案】
 
-**一、技术趋势：**
+一、技术趋势：
 
-1. **高效化**：PERC/TOPCon/HJT高效电池普及，晶硅效率突破26%
-2. **储能融合**："风光储"成为标配，源网荷储一体化
-3. **数字化**：AI预测运维、智能逆变器、云端监控
-4. **新材料**：钙钛矿叠层电池(理论效率>43%)、固态电池
-5. **氢能耦合**：可再生能源制绿氢，跨季节长周期储能
+1. 高效化
+   晶硅电池效率突破26%；TOPCon、HJT、IBC等N型电池加速产业化
+   
+2. 储能深度融合
+   "风光储"成为标配；源网荷储一体化发展
 
-**二、应用趋势：**
+3. 数字化智能化
+   AI功率预测、无人机巡检、数字孪生运维、云端监控平台
 
-1. **分布式爆发**：户用光伏、工商业屋顶快速发展
-2. **海上风电规模化**：单机15MW+，走向深远海(漂浮式)
-3. **光热发电重启**：带储热的调峰电源价值凸显
-4. **新能源汽车V2G**：移动储能参与电网互动
-5. **微电网普及**：园区、海岛、偏远地区独立供电
+4. 新材料突破
+   钙钛矿叠层电池理论效率>43%；固态电池储能商业化加速
 
-**三、政策驱动：**
-- "双碳"目标：2030碳达峰、2060碳中和
-- 可再生能源消纳权重考核
-- 绿电交易市场完善
-- 辅助服务市场化改革`
+5. 氢能耦合
+   可再生能源制绿氢，实现跨季节长周期储能
+
+二、应用趋势：
+
+1. 分布式爆发式增长
+   户用光伏、工商业屋顶、BIPV（光伏建筑一体化）
+
+2. 海上风电规模化
+   单机容量15MW+；走向深远海（漂浮式基础）
+
+3. 光热发电（CSP）重启
+   带储热的长时调峰电源价值凸显
+
+4. 新能源汽车与电网互动（V2G）
+   电动车作为移动储能参与电网调节
+
+三、政策驱动：
+   "双碳"目标（2030碳达峰、2060碳中和）是核心驱动力`
 },
 {
   type:'fill',
-  q:'【论述】新能源发电系统的设计选型需要考虑哪些因素？',
+  q:'【论述】新能源发电系统的设计选型需要综合考虑哪些因素？',
   ans:['资源条件','负荷特性','场地条件','电网接入','经济性','可靠性','环境适应性','政策因素'],
   exp:`【参考答案】
 
-| 因素 | 具体内容 |
-|------|---------|
-| **资源条件** | 太阳辐射量(kWh/m²/天)、年平均风速、风向玫瑰图 |
-| **负荷特性** | 用电量大小、负载类型、日/季负荷曲线、重要程度 |
-| **场地条件** | 可用面积、朝向倾角、遮挡情况、地质条件 |
-| **电网接入** | 并网点位置、接入电压等级、电网承载力、距离 |
-| **经济性** | 初始投资CAPEX、度电成本LCOE、回收期、IRR |
-| **可靠性** | 备用电源配置、储能时长、关键负荷保障等级 |
-| **环境适应性** | 温湿度范围、盐雾(沿海)、沙尘、抗台风等级 |
-| **政策因素** | 补贴电价、上网电价、绿证收益、税收优惠 |
+设计选型八大要素：
 
-**设计流程：**
-资源评估 → 负荷分析 → 系统容量配置 → 设备选型 → 电气设计 → 经济性测算 → 方案优化`
+1. 资源条件
+   太阳辐射量（kWh/m²/天）、年平均风速、风向玫瑰图
+   → 决定系统容量和收益
+
+2. 负荷特性
+   用电量大小、负载类型（阻性/感性/容性）、日/季负荷曲线
+   → 决定系统规模和储能配置
+
+3. 场地条件
+   可用面积、朝向倾角、遮挡情况、地质条件
+   → 影响布置方式和基础设计
+
+4. 电网接入
+   并网点位置、接入电压等级、电网承载力
+   → 影响系统成本和并网难度
+
+5. 经济性
+   初始投资(CAPEX)、度电成本(LCOE)、投资回收期、IRR
+   → 决定项目可行性
+
+6. 可靠性要求
+   备用电源配置、储能时长、关键负荷保障等级
+   → 影响系统冗余设计
+
+7. 环境适应性
+   温湿度范围、盐雾（沿海）、沙尘、抗台风等级
+   → 决定设备选型标准
+
+8. 政策因素
+   补贴电价、上网电价、绿证收益、税收优惠
+   → 影响项目收益模型
+
+设计流程：
+资源评估 → 负荷分析 → 容量配置 → 设备选型 → 电气设计 → 经济性测算 → 方案优化`
 },
 {
   type:'fill',
-  q:'【论述】说明太阳能电池的工作原理及主要类型。',
-  opts:[
-    '①光吸收产生电子-空穴对 ②PN结内建电场分离电荷 ③电极收集载流子形成电流\n主要类型：单晶硅(20-26%)、多晶硅(18-22%)、薄膜(10-18%)、钙钛矿(25%+)、异质结HJT(24-26%)',
-    '光子撞击原子核释放电子形成电流；类型分为硅基和非硅基两大类',
-    '光电效应直接将光能转为电能无需半导体；主流为单晶硅和多晶硅两种',
-    '热电转换原理将光热转为电能；包括槽式、塔式、碟式三种类型'
-  ],
-  ans:0,
-  exp:`【工作原理三步骤】
-1. **光吸收**：光子能量>Eg时，价带电子跃迁至导带，产生e-h对
-2. **电荷分离**：PN结内建电场将电子推向N区、空穴推向P区
-3. **电荷收集**：电极收集载流子形成外电路电流
+  q:'【论述】详细说明太阳能电池的工作原理及主要类型，并比较各自特点。',
+  ans:['PN结','光吸收','电荷分离','单晶硅','多晶硅','薄膜','钙钛矿','HJT'],
+  exp:`【参考答案】
 
-【主要类型对比】
+一、工作原理（三步骤）：
+
+1. 光吸收
+   光子能量 > Eg时，价带电子跃迁至导带，产生电子-空穴对
+
+2. 电荷分离
+   PN结内建电场将电子推向N区、空穴推向P区
+
+3. 电荷收集
+   电极收集载流子形成外电路电流（Isc）
+
+二、主要类型对比：
+
 | 类型 | 效率 | 特点 | 适用场景 |
 |------|------|------|---------|
 | 单晶硅 | 20-26% | 效率最高、寿命25年+ | 大型电站、高端户用 |
 | 多晶硅 | 18-22% | 性价比最高 | 分布式主流 |
-| 薄膜 | 10-18% | 弱光性好、可柔性 | BIPV、便携产品 |
+| 薄膜(CdTe/CIGS) | 10-18% | 弱光性好、可柔性 | BIPV、便携产品 |
 | 钙钛矿 | 25%+(实验室) | 成本极低、发展最快 | 未来潜力巨大 |
-| 异质结HJT | 24-26% | 结合晶硅+薄膜优势 | 高端市场 |`
+| 异质结HJT | 24-26% | 结合晶硅与薄膜优势 | 高端市场 |
+
+三、发展趋势：
+N型电池（TOPCon/HJT）替代P型成为主流；钙钛矿叠层是下一代技术方向。`
 },
 {
   type:'fill',
-  q:'【论述】说明风力发电机组的组成结构及各部分功能。',
-  ans:['叶片','轮毂','变桨系统','主轴','齿轮箱','发电机','变流器','偏航系统','塔筒','控制系统'],
+  q:'【论述】详细说明风力发电机组的组成结构及各部分功能。',
+  ans:['叶片','轮毂','变桨','主轴','齿轮箱','发电机','变流器','偏航','塔筒','控制'],
   exp:`【参考答案】
 
-```
-叶片→轮毂→主轴→齿轮箱(可选)→发电机→变流器→塔筒→基础
-              ↑          ↑           ↑
-          变桨系统   偏航系统     控制系统
-```
+风力发电机组组成及功能：
 
-| 组成部分 | 功能 |
-|---------|------|
-| **叶片** | 捕获风能→机械能（3片，40~100m+） |
-| **轮毂** | 连接叶片与主轴，内置变桨机构 |
-| **变桨系统** | 调节桨距角β，控制捕风功率 |
-| **主轴&齿轮箱** | 传递转矩；升速（直驱无齿轮箱） |
-| **发电机** | 机械能→电能（双馈/永磁同步） |
-| **变流器** | 变速恒频并网、功率因数调节 |
-| **偏航系统** | 根据风向标转动对风 |
-| **塔筒** | 支撑机舱至足够高度 |
-| **控制系统** | 监控状态、执行保护逻辑 |`
+1. 叶片（Blade）
+   捕获风能并转换为旋转机械能；通常3片；长度40~100m+
+   翼型设计决定风能利用系数Cp
+
+2. 轮毂（Hub）
+   连接叶片与主轴；内含变桨机构（调节桨距角β）
+
+3. 变桨系统（Pitch System）
+   调节β角：低于额定风速时β=0°（最大捕风）；超额定风速时增大β限制功率
+
+4. 主轴 & 齿轮箱
+   传递转矩；齿轮箱将低速（10-20rpm）升至高速（1500rpm）
+   *直驱机组无齿轮箱，发电机直接与主轴连接
+
+5. 发电机
+   将机械能转换为电能；主流：双馈异步(DFIG)、永磁同步(PMSG)
+
+6. 变流器（Converter）
+   实现变速恒频并网；调节功率因数；实现有功/无功解耦控制
+
+7. 偏航系统（Yaw System）
+   根据风向标信号转动机舱，使风轮始终正对来风方向
+
+8. 塔筒（Tower）
+   支撑机舱至足够高度（越高风速越大、湍流越小）
+
+9. 控制系统
+   监控运行状态；执行保护逻辑；实现MPPT控制策略`
 },
 
 // ==================== 四、判断题 ====================
 {
   type:'judge',
-  q:'贝茨极限约为0.593，即风力机最多只能利用风中59.3%的能量。',
+  q:'贝茨极限约为0.593，即风力机最多只能利用风中59.3%的动能。',
   ans:true,
-  exp:'正确。1919年德国物理学家贝茨从流体力学角度严格证明，理想风轮的最大风能利用系数Cp,max=16/27≈0.593。'
+  exp:'正确。1919年德国物理学家贝茨从流体力学角度严格证明，理想风轮的最大风能利用系数Cp,max=16/27≈0.593。实际风机Cp约0.45~0.50。'
 },
 {
   type:'judge',
-  q:'光伏组件在弱光条件下完全不能发电。',
+  q:'光伏组件在弱光条件下（阴天、清晨）完全不能发电。',
   ans:false,
-  exp:'错误。光伏组件在散射光（阴天、清晨/傍晚）下仍可发电，只是输出功率大幅降低。薄膜电池（如非晶硅、CIGS）的弱光性能优于晶硅电池。'
+  exp:'错误。光伏组件在散射光下仍可发电，只是输出功率降低。薄膜电池（非晶硅、CIGS）的弱光性能优于晶硅电池，更适合阴雨地区。'
 },
 {
   type:'judge',
   q:'双馈风力发电机中，变流器的容量只需要额定功率的20%-30%。',
   ans:true,
-  exp:'正确。因为变流器只处理转差功率（Ps × |s|），而转差率一般在±30%以内。这是DFIG相比全功率变换器的主要成本优势。'
+  exp:'正确。变流器只处理转差功率Ps×|s|，转差率一般在±30%以内，这是DFIG相比全功率变换器的主要成本优势。'
 },
 {
   type:'judge',
-  q:'MPPT的作用是在任何光照温度下使光伏阵列输出最大功率。',
+  q:'MPPT的作用是在任何光照温度条件下使光伏阵列输出最大功率。',
   ans:true,
-  exp:'正确。MPPT通过实时调整工作点电压，始终跟踪P-V曲线的峰值点（MPP）。可使系统发电量提升20%-30%。'
+  exp:'正确。MPPT通过实时调整工作点电压，始终跟踪P-V曲线的峰值点（MPP），可使系统发电量提升20%-30%。'
 },
 {
   type:'judge',
   q:'垂直轴风力机是目前大型并网风电的主流机型。',
   ans:false,
-  exp:'错误。目前全球95%以上的大型并网风机采用水平轴机型。垂直轴主要用于小型分散应用或特殊场景（如城市建筑集成）。'
+  exp:'错误。目前全球95%以上的大型并网风机采用水平轴机型。VAWT主要用于小型分散应用或城市建筑集成等特殊场景。'
 },
 {
   type:'judge',
-  q:'储能系统只能用于削峰填谷这一种功能。',
+  q:'储能系统在电网中只能发挥削峰填谷这一种功能。',
   ans:false,
   exp:'错误。储能具有多重功能：调频调压、备用容量、电能质量改善、黑启动、延缓电网投资、提高可再生能源消纳等。'
 },
 {
   type:'judge',
-  q:'光伏系统的填充因子FF越接近1表示电池性能越好。',
+  q:'光伏系统的填充因子FF越接近1，表示电池性能越好。',
   ans:true,
-  exp:'正确。FF=Pmax/(Voc×Isc)，反映I-V曲线的"方度"。商用优质电池FF可达0.80-0.85，劣质电池可能只有0.6以下。'
+  exp:'正确。FF=Pmax/(Voc×Isc)，反映I-V曲线的"方度"。商用优质电池FF可达0.80-0.85，受串联电阻和并联电阻共同影响。'
 },
 {
   type:'judge',
   q:'槽式、塔式、碟式都是太阳能光热发电（CSP）的技术路线。',
   ans:true,
-  exp:'正确。三种聚光方式：槽式（抛物面槽聚焦到管）、塔式（定日镜聚焦到中央吸热器）、碟式（碟面聚焦到斯特林发动机）。'
+  exp:'正确。三种聚光发电方式：槽式（抛物面槽聚焦到集热管）、塔式（定日镜聚焦到中央吸热塔）、碟式（碟面聚焦到斯特林发动机）。均带储热能力。'
 },
 {
   type:'judge',
-  q:'新能源并网会增大电力系统的总惯量。',
+  q:'新能源大规模并网会增大电力系统的总惯量。',
   ans:false,
-  exp:'错误。恰恰相反！新能源通过电力电子并网（无旋转质量），替代了传统同步机，导致系统**总惯量减小**，频率变化更快更剧烈。这是VSG技术发展的主要原因。'
+  exp:'错误。恰恰相反！新能源通过电力电子并网（无旋转质量），替代了传统同步机，导致系统总惯量减小，频率抗扰动能力减弱。这正是VSG技术发展的核心动因。'
 },
 {
   type:'judge',
-  q:'低电压穿越(LVRT)要求风机在电网电压跌落时不脱网运行。',
+  q:'低电压穿越(LVRT)要求风机在电网电压跌落时保持不脱网运行，并提供无功支撑。',
   ans:true,
-  exp:'正确。LVRT是各国并网标准的强制性要求。如中国GB/T规定：电压跌至20%时风机应至少持续625ms不脱网，并提供无功支撑。'
+  exp:'正确。LVRT是各国并网标准的强制性要求。中国GB/T 19963规定：电压跌至20%时风机应至少持续625ms不脱网，并提供动态无功支撑帮助电网恢复。'
 }
 ];
 
 /* ==================== 全局状态 ==================== */
-let mode = 'answer'; // answer/review/random/wrong
+let mode = 'answer';
 let idx = 0;
 let correct = 0, wrong = 0, total = 0;
 let wrongIds = [];
 let answered = new Set();
 let order = [...Array(questions.length).keys()];
-let currentQ = null;
 
-function init() {
+function $(id){ return document.getElementById(id); }
+
+function init(){
+  $('total-q').textContent = questions.length;
   renderQ();
 }
 
-function setMode(m) {
+function setMode(m){
   mode = m;
   document.querySelectorAll('.mode-btn').forEach(b => {
-    b.classList.remove('bg-emerald');
+    b.classList.remove('bg-sky-600','bg-emerald-600','bg-amber-600');
     b.classList.add('bg-gray-700');
   });
-  const activeBtn = {answer:'btn-answer', review:'btn-review', random:'btn-random', wrong:'btn-wrong'}[m];
-  document.getElementById(activeBtn).classList.remove('bg-gray-700');
-  document.getElementById(activeBtn).classList.add('bg-emerald');
+  const map = {answer:'btn-answer',review:'btn-review',random:'btn-random',wrong:'btn-wrong'};
+  const colors = {answer:'bg-sky-600',review:'bg-emerald-600',random:'bg-amber-600',wrong:'bg-red-600'};
+  $(map[m]).classList.remove('bg-gray-700');
+  $(map[m]).classList.add(colors[m].split(' ')[0], colors[m].split(' ')[1]);
 
-  if (m === 'random') {
+  if(m==='random'){
     order = shuffle([...Array(questions.length).keys()]);
     idx = 0;
-  } else if (m === 'wrong') {
-    if (wrongIds.length === 0) {
-      alert('✨ 暂无错题！继续保持！');
-      return;
-    }
+  } else if(m==='wrong'){
+    if(wrongIds.length===0){ showToast('✅ 暂无错题！继续保持！'); return; }
     order = [...wrongIds];
     idx = 0;
   } else {
@@ -719,177 +823,176 @@ function setMode(m) {
   renderQ();
 }
 
-function toggleCheat() {
-  const panel = document.getElementById('cheat-panel');
-  panel.classList.toggle('hidden');
-  if (!panel.classList.contains('hidden')) {
-    document.getElementById('search-input').focus();
-  }
+function toggleCheat(){
+  $('cheat-panel').classList.toggle('hidden');
+  if(!$('cheat-panel').classList.contains('hidden')) $('search-input').focus();
 }
 
-function doSearch(kw) {
-  const div = document.getElementById('search-result');
-  if (!kw.trim()) { div.innerHTML = ''; return; }
-  const hits = questions.map((q,i) => ({q,i})).filter(x => x.q.q.includes(kw) || x.q.exp.includes(kw));
-  div.innerHTML = hits.map(h =>
-    `<div class="search-item p-2 border-b border-gray-700 cursor-pointer" onclick="goQ(${h.i})">
-      <span class="text-emerald-400 text-xs">#${h.i+1}</span>
-      <span class="text-gray-300 text-sm ml-2">${h.q.q.substring(0,50)}...</span>
-    </div>`
-  ).join('') || '<div class="p-3 text-gray-500 text-sm">未找到匹配题目</div>';
+function doSearch(kw){
+  const div = $('search-result');
+  if(!kw.trim()){ div.innerHTML=''; return; }
+  const hits = questions.map((q,i)=>({q,i})).filter(x=>x.q.q.includes(kw)||x.q.exp.includes(kw));
+  div.innerHTML = hits.length
+    ? hits.map(h=>`<div class="p-2.5 border-b border-[#1e293b] cursor-pointer hover:bg-[#1e293b] transition-colors" onclick="goQ(${h.i})">
+        <span class="text-sky-400 text-xs font-mono">#${h.i+1}</span>
+        <span class="text-gray-300 text-sm ml-2">${h.q.q.substring(0,45)}...</span>
+      </div>`).join('')
+    : '<div class="p-3 text-gray-500 text-sm">未找到匹配题目</div>';
 }
 
-function goQ(i) { idx = order.indexOf(i); if(idx<0){idx=i;order=[i];} renderQ(); }
+function goQ(i){
+  idx = order.indexOf(i);
+  if(idx<0){ idx=i; order=[i]; }
+  renderQ();
+  $('cheat-panel').classList.add('hidden');
+}
 
-function renderQ() {
-  currentQ = questions[order[idx]];
-  const card = document.getElementById('q-card');
+function renderQ(){
+  const q = questions[order[idx]];
+  const card = $('q-card');
   card.classList.remove('correct-anim','wrong-anim');
 
-  // 题型标签
-  const typeMap = {'single':'选择题','fill':'简答题','judge':'判断题','code':'编程题'};
-  const typeColor = {'single':'bg-blue-500/20 text-blue-400','fill':'bg-emerald-500/20 text-emerald-400','judge':'bg-yellow-500/20 text-yellow-400','code':'bg-purple-500/20 text-purple-400'};
-  document.getElementById('q-type').className = `inline-block px-2 py-1 text-xs rounded mb-2 ${typeColor[currentQ.type]}`;
-  document.getElementById('q-type').textContent = typeMap[currentQ.type];
+  const typeMap = {single:'选择题',fill:'简答题',judge:'判断题'};
+  const typeColor = {single:'bg-blue-500/10 text-blue-400 border-blue-500/20',fill:'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',judge:'bg-amber-500/10 text-amber-400 border-amber-500/20'};
+  const el = $('q-type');
+  el.className = `inline-block px-2.5 py-0.5 text-xs font-medium rounded border ${typeColor[q.type]}`;
+  el.textContent = typeMap[q.type];
 
-  document.getElementById('q-num').textContent = `第 ${idx+1} / ${order.length} 题`;
-  document.getElementById('q-text').textContent = currentQ.q;
+  $('q-num').textContent = `第 ${idx+1} / ${order.length} 题`;
+  $('q-text').textContent = q.q;
 
-  // 隐藏所有输入区域
-  document.getElementById('opts').innerHTML = '';
-  document.getElementById('opts').classList.add('hidden');
-  document.getElementById('fill-box').classList.add('hidden');
-  document.getElementById('judge-box').classList.add('hidden');
-  document.getElementById('exp-box').classList.add('hidden');
+  $('opts').innerHTML = '';
+  $('opts').classList.add('hidden');
+  $('fill-box').classList.add('hidden');
+  $('judge-box').classList.add('hidden');
+  $('exp-box').classList.add('hidden');
 
-  if (currentQ.type === 'single') {
-    document.getElementById('opts').classList.remove('hidden');
-    document.getElementById('opts').innerHTML = currentQ.opts.map((o,i) =>
-      `<button onclick="selectOpt(${i})" class="opt-btn w-full text-left p-3 rounded-lg border border-gray-600 hover:border-emerald transition-all text-sm">
-        <span class="inline-block w-6 h-6 rounded-full bg-gray-700 text-center leading-6 mr-2 text-xs">${String.fromCharCode(65+i)}</span>${o}
+  if(q.type==='single'){
+    $('opts').classList.remove('hidden');
+    $('opts').innerHTML = q.opts.map((o,i)=>
+      `<button onclick="selectOpt(${i})" class="opt-btn w-full text-left p-3 rounded-lg bg-[#020817] text-sm">
+        <span class="inline-block w-6 h-6 rounded-full bg-[#1e293b] text-center leading-6 mr-2 text-xs text-gray-400">${String.fromCharCode(65+i)}</span>${o}
       </button>`
     ).join('');
-  } else if (currentQ.type === 'fill' || currentQ.type === 'code') {
-    document.getElementById('fill-box').classList.remove('hidden');
-    document.getElementById('fill-input').value = '';
-    if (mode === 'review') showExp();
-  } else if (currentQ.type === 'judge') {
-    document.getElementById('judge-box').classList.remove('hidden');
-    if (mode === 'review') showExp();
+  } else if(q.type==='fill'){
+    $('fill-box').classList.remove('hidden');
+    $('fill-input').value = '';
+    if(mode==='review') showExp(q);
+  } else if(q.type==='judge'){
+    $('judge-box').classList.remove('hidden');
+    if(mode==='review') showExp(q);
   }
 
   updateNav();
   updateProg();
 }
 
-function selectOpt(i) {
-  if (answered.has(order[idx])) return;
-  total++;
+function selectOpt(i){
+  if(answered.has(order[idx])) return;
   answered.add(order[idx]);
+  total++;
   const btns = document.querySelectorAll('.opt-btn');
-  btns.forEach(b => b.disabled = true);
+  btns.forEach(b=>b.disabled=true);
 
-  if (i === currentQ.ans) {
+  if(i===currentQ.ans){
     correct++;
-    btns[i].classList.add('bg-emerald/30','border-emerald');
-    document.getElementById('q-card').classList.add('correct-anim');
+    btns[i].classList.add('correct-opt');
+    $('q-card').classList.add('correct-anim');
   } else {
     wrong++;
     wrongIds.push(order[idx]);
-    btns[i].classList.add('bg-red-500/30','border-red-500');
-    btns[currentQ.ans].classList.add('bg-emerald/30','border-emerald');
-    document.getElementById('q-card').classList.add('wrong-anim');
-    showTaunt();
+    btns[i].classList.add('wrong-opt');
+    btns[currentQ.ans].classList.add('correct-opt');
+    $('q-card').classList.add('wrong-anim');
   }
-  showExp();
+  showExp(currentQ);
   updateStats();
 }
 
-function submitFill() {
-  if (answered.has(order[idx])) return;
-  total++;
+function submitFill(){
+  if(answered.has(order[idx])) return;
   answered.add(order[idx]);
-  const val = document.getElementById('fill-input').value.trim().toLowerCase();
+  total++;
+  const val = $('fill-input').value.trim().toLowerCase();
+  const q = questions[order[idx]];
 
   let isCorrect = false;
-  if (Array.isArray(currentQ.ans)) {
-    isCorrect = currentQ.ans.some(a => val.includes(a.toLowerCase())) || currentQ.ans.some(a => val.length > 3 && a.toLowerCase().includes(val.toLowerCase()));
+  if(Array.isArray(q.ans)){
+    isCorrect = q.ans.some(a=>val.includes(a.toLowerCase()));
   } else {
-    isCorrect = val === currentQ.ans.toLowerCase() || (val.length > 5 && currentQ.ans.toLowerCase().includes(val.toLowerCase()));
+    isCorrect = val===q.ans.toLowerCase() || q.ans.toLowerCase().includes(val);
   }
 
-  if (isCorrect || mode === 'review') {
-    if (!(mode === 'review')) correct++;
-    document.getElementById('q-card').classList.add('correct-anim');
+  if(isCorrect || mode==='review'){
+    if(!(mode==='review')) correct++;
+    $('q-card').classList.add('correct-anim');
   } else {
     wrong++;
     wrongIds.push(order[idx]);
-    document.getElementById('q-card').classList.add('wrong-anim');
-    showTaunt();
+    $('q-card').classList.add('wrong-anim');
   }
-  showExp();
+  showExp(q);
   updateStats();
 }
 
-function submitJudge(v) {
-  if (answered.has(order[idx])) return;
-  total++;
+function submitJudge(v){
+  if(answered.has(order[idx])) return;
   answered.add(order[idx]);
-
-  if (v === currentQ.ans) {
+  total++;
+  const q = questions[order[idx]];
+  if(v===q.ans){
     correct++;
-    document.getElementById('q-card').classList.add('correct-anim');
+    $('q-card').classList.add('correct-anim');
   } else {
     wrong++;
     wrongIds.push(order[idx]);
-    document.getElementById('q-card').classList.add('wrong-anim');
-    showTaunt();
+    $('q-card').classList.add('wrong-anim');
   }
-  showExp();
+  showExp(q);
   updateStats();
 }
 
-function showExp() {
-  document.getElementById('exp-box').classList.remove('hidden');
-  document.getElementById('exp-text').innerHTML = currentQ.exp;
+function showExp(q){
+  q = q || questions[order[idx]];
+  $('exp-box').classList.remove('hidden');
+  $('exp-text').textContent = q.exp;
 }
 
-function showTaunt() {
-  const msgs = ['再想想！你能行的 💪', '这个知识点要复习哦 📖', '没关系，记下来就好 ✍️', '下次一定对！🎯', '知识盲区已标记 🔔'];
-  document.getElementById('taunt-msg').textContent = msgs[Math.floor(Math.random()*msgs.length)];
-  document.getElementById('taunt-modal').classList.remove('hidden');
+function showToast(msg){
+  const t = $('toast');
+  t.textContent = msg;
+  t.classList.remove('hidden');
+  setTimeout(()=>t.classList.add('hidden'),2000);
 }
 
-function prevQ() { if (idx > 0) { idx--; renderQ(); } }
-function nextQ() { if (idx < order.length - 1) { idx++; renderQ(); } }
+function prevQ(){ if(idx>0){ idx--; renderQ(); } }
+function nextQ(){ if(idx<order.length-1){ idx++; renderQ(); } }
 
-function updateNav() {
-  document.getElementById('prev-btn').disabled = idx <= 0;
-  document.getElementById('next-btn').disabled = idx >= order.length - 1;
+function updateNav(){
+  $('prev-btn').disabled = idx<=0;
+  $('next-btn').disabled = idx>=order.length-1;
 }
 
-function updateProg() {
-  const pct = ((idx + 1) / order.length) * 100;
-  document.getElementById('prog').style.width = pct + '%';
+function updateProg(){
+  $('prog').style.width = ((idx+1)/order.length*100)+'%';
 }
 
-function updateStats() {
-  document.getElementById('st-correct').textContent = correct;
-  document.getElementById('st-wrong').textContent = wrong;
-  document.getElementById('st-total').textContent = total;
-  document.getElementById('st-acc').textContent = total > 0 ? Math.round(correct/total*100) + '%' : '0%';
+function updateStats(){
+  $('st-correct').textContent = correct;
+  $('st-wrong').textContent = wrong;
+  $('st-total').textContent = total;
+  $('st-acc').textContent = total>0 ? Math.round(correct/total*100)+'%' : '0%';
 }
 
-function shuffle(arr) {
-  for (let i = arr.length-1; i>0; i--) {
-    const j = Math.floor(Math.random()*(i+1));
-    [arr[i],arr[j]] = [arr[j],arr[i]];
+function shuffle(arr){
+  for(let i=arr.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]]=[arr[j],arr[i]];
   }
   return arr;
 }
 
 init();
 </script>
-
 </body>
 </html>
