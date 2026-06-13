@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MATLAB 编程实战答题系统</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+<script>
+tailwind.config={
+  theme:{
+    extend:{
+      colors:{
+        primary:'#6366f1',
+        success:'#22c55e',
+        danger:'#ef4444',
+        dark:'#0f172a',
+        darker:'#0b1120'
+      }
+    }
+  }
+}
+</script>
+
+<style>
+.taunt-animation{animation:shake .5s ease-in-out}
+@keyframes shake{
+  0%,100%{transform:translateX(0)}
+  10%,30%,50%,70%,90%{transform:translateX(-5px)}
+  20%,40%,60%,80%{transform:translateX(5px)}
+}
+.search-item:hover{background-color:rgba(99,102,241,0.1)}
+.font-mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+</style>
+</head>
+
+<body class="bg-darker text-gray-100 min-h-screen font-sans">
+
+<div class="container mx-auto px-4 py-8 max-w-4xl">
+
+<!-- Header -->
+<div class="gradient-header rounded-xl p-6 mb-8 text-center card-shadow">
+  <h1 class="text-2xl sm:text-3xl font-bold mb-2"><i class="fa fa-code"></i> MATLAB 编程实战答题系统</h1>
+  <p class="text-white/80 text-sm sm:text-base">单选·填空·判断·编程｜严格按《Matlab练习题（完整版）》文档顺序</p>
+</div>
+
+<!-- 模式按钮 -->
+<div class="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-6">
+  <button id="btn-answer" class="mode-btn bg-success hover:bg-success/90 text-white py-2 rounded-lg"><i class="fa fa-play"></i> 答题模式</button>
+  <button id="btn-review" class="mode-btn bg-gray-700 hover:bg-gray-600 text-white py-2 rounded-lg"><i class="fa fa-book"></i> 背题模式</button>
+  <button id="btn-random" class="mode-btn bg-gray-700 hover:bg-gray-600 text-white py-2 rounded-lg"><i class="fa fa-random"></i> 随机出题</button>
+  <button id="btn-wrong" class="mode-btn bg-gray-700 hover:bg-gray-600 text-white py-2 rounded-lg"><i class="fa fa-times"></i> 错题本</button>
+  <button id="btn-cheat" class="bg-gray-700 hover:bg-gray-600 text-white py-2 rounded-lg"><i class="fa fa-eye"></i> 作弊模式</button>
+</div>
+
+<!-- 作弊面板 -->
+<div id="cheat-panel" class="hidden mb-6">
+  <input id="search-input"
+         type="text"
+         placeholder="🔍 输入题号 / 关键词 / 拼音首字母（如 zeros / cx / 12）"
+         class="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary transition-all">
+  <div id="search-result"
+       class="mt-2 bg-dark border border-gray-600 rounded-lg max-h-60 overflow-y-auto card-shadow">
+  </div>
+</div>
+
+<!-- 统计 -->
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+  <div class="bg-dark rounded-lg p-3 text-center card-shadow">
+    <div id="st-correct" class="text-2xl font-bold text-success">0</div>
+    <div class="text-gray-400 text-xs">正确</div>
+  </div>
+  <div class="bg-dark rounded-lg p-3 text-center card-shadow">
+    <div id="st-wrong" class="text-2xl font-bold text-danger">0</div>
+    <div class="text-gray-400 text-xs">错误</div>
+  </div>
+  <div class="bg-dark rounded-lg p-3 text-center card-shadow">
+    <div id="st-total" class="text-2xl font-bold text-white">0</div>
+    <div class="text-gray-400 text-xs">已答</div>
+  </div>
+  <div class="bg-dark rounded-lg p-3 text-center card-shadow">
+    <div id="st-acc" class="text-2xl font-bold text-primary">0%</div>
+    <div class="text-gray-400 text-xs">正确率</div>
+  </div>
+</div>
+
+<!-- 进度条 -->
+<div class="w-full bg-gray-700 rounded-full h-2 mb-6">
+  <div id="prog" class="bg-primary h-2 rounded-full transition-all" style="width:0%"></div>
+</div>
+
+<!-- 题目卡片 -->
+<div class="bg-dark rounded-xl p-4 sm:p-6 card-shadow">
+  <span id="q-type" class="inline-block px-2 py-1 text-xs rounded mb-2 bg-green-500/20 text-green-400">单选题</span>
+  <div id="q-num" class="text-gray-400 text-sm mb-2"></div>
+  <h2 id="q-text" class="text-lg font-medium mb-6 leading-relaxed whitespace-pre-wrap"></h2>
+
+  <div id="opts" class="space-y-3 mb-6"></div>
+
+  <div id="fill-box" class="hidden mb-6">
+    <input id="fill-input" class="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-primary" placeholder="输入答案后按回车确认">
+  </div>
+
+  <!-- ✅ 编程题区域（已修改） -->
+  <div id="code-box" class="hidden mb-6">
+    <textarea id="code-input" rows="6" class="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-primary resize-none font-mono" placeholder="请输入 MATLAB 代码..."></textarea>
+
+    <div class="flex gap-3 mt-3">
+      <button id="btn-code" class="bg-primary px-4 py-2 rounded-lg">提交代码</button>
+      <button id="btn-show-code-ans" class="bg-success px-4 py-2 rounded-lg">💡 查看答案</button>
+    </div>
+
+    <div id="code-ans-box" class="hidden mt-4 p-3 bg-gray-800 rounded border border-success text-sm text-gray-300 whitespace-pre-wrap font-mono"></div>
+  </div>
+
+  <div id="exp-box" class="hidden bg-blue-900/20 border border-blue-500/30 rounded-lg p-3 mb-4">
+    <p class="text-blue-300 text-sm font-medium mb-1"><i class="fa fa-lightbulb-o"></i> 解析</p>
+    <p id="exp-text" class="text-gray-300 text-sm"></p>
+  </div>
+</div>
+
+<!-- 导航 -->
+<div class="flex justify-between mt-6">
+  <button id="prev-btn" class="bg-gray-700 hover:bg-gray-600 text-white px-5 py-2 rounded-lg disabled:opacity-40"><i class="fa fa-chevron-left"></i> 上一题</button>
+  <button id="next-btn" class="bg-primary hover:bg-primary/90 text-white px-5 py-2 rounded-lg disabled:opacity-40">下一题 <i class="fa fa-chevron-right"></i></button>
+</div>
+
+</div>
+
+<!-- 嘲讽弹窗 -->
+<div id="taunt-modal" class="fixed inset-0 bg-black/70 hidden z-50 flex items-center justify-center">
+  <div class="bg-dark rounded-xl p-6 max-w-sm w-full mx-4 taunt-animation">
+    <div class="text-center">
+      <div class="text-5xl mb-3">🤡</div>
+      <p id="taunt-msg" class="text-danger text-lg font-bold mb-4"></p>
+      <button onclick="document.getElementById('taunt-modal').classList.add('hidden')" class="bg-primary px-6 py-2 rounded-lg text-white">我知道了</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ===============================
+   题库：严格按文档顺序（102题）
+   =============================== */
+const questions = [
+  // ---- 一、单选题（44题）----
+  {type:'single',q:'建立3行4列零矩阵，正确命令是：',opts:['zeros(4,3)','zeros(3,4)','zero(3,4)','zeros(3)'],ans:1,exp:'zeros(行,列)'},
+  {type:'single',q:'A=[1 2 3;4 5 6;7 8 9]，A(2,3)=',opts:['2','4','6','8'],ans:2,exp:'第2行第3列'},
+  {type:'single',q:'提取A第2行全部元素：',opts:['A(2,:)','A(:,2)','A(2)','A[2,:]'],ans:0,exp:'行索引用冒号'},
+  {type:'single',q:'同维矩阵对应元素相乘：',opts:['*','.*','x','^'],ans:1,exp:'.* 元素乘'},
+  {type:'single',q:'合法变量名：',opts:['2var','_myvar','var_1','my-var'],ans:2,exp:'变量命名规则'},
+  {type:'single',q:'清除工作区所有变量：',opts:['clc','clear','close all','delete'],ans:1,exp:'clear 清空变量'},
+  {type:'single',q:'清除命令窗口内容：',opts:['clc','clear','clf','exit'],ans:0,exp:'clc 清屏'},
+  {type:'single',q:'圆周率π的内置变量：',opts:['PI','pi','Pi','p'],ans:1,exp:'MATLAB区分大小写'},
+  {type:'single',q:'合法变量名：',opts:['3D_matrix','_value','my_var1','if'],ans:2,exp:'if 是关键字'},
+  {type:'single',q:'清除工作区变量：',opts:['clc','clear','close','clf'],ans:1,exp:'clear'},
+  {type:'single',q:'4行3列全1矩阵：',opts:['ones(3,4)','ones(4,3)','one(4,3)','eye(4,3)'],ans:1,exp:'ones(行,列)'},
+  {type:'single',q:'2:3:14 行向量：',opts:['2:3:14','2:14:3','3:2:14','[2,3,14]'],ans:0,exp:'起始:步长:终止'},
+  {type:'single',q:'A^2 与 A.^2 区别：',opts:['结果相同','矩阵乘 vs 逐元素平方','维度不同','后者报错'],ans:1,exp:'^ 与 .^'},
+  {type:'single',q:'获取矩阵行列数：',opts:['length(M)','size(M)','numel(M)','ndims(M)'],ans:1,exp:'size 返回 [行,列]'},
+  {type:'single',q:'非数 NaN 表示：',opts:['inf','NaN','eps','pi'],ans:1,exp:'Not a Number'},
+  {type:'single',q:'语句末尾分号作用：',opts:['结束程序','阻止输出','注释','换行'],ans:1,exp:'抑制输出'},
+  {type:'single',q:'多项式向量表示：',opts:['[2 -5 1]','[2 0 -5 1]','[2 0 -5 1 0]','[2,-5,1]'],ans:2,exp:'缺项补0'},
+  {type:'single',q:'求多项式根：',opts:['roots(p)','poly(p)','polyder(p)','residue(p)'],ans:0,exp:'roots'},
+  {type:'single',q:'polyder(p) 功能：',opts:['积分','求导','求根','展开'],ans:1,exp:'多项式求导'},
+  {type:'single',q:'polyint(p,k) 作用：',opts:['求导','不定积分(常数k)','插值','取整'],ans:1,exp:'多项式积分'},
+  {type:'single',q:'p=[1 0 0] 表达式：',opts:['x','x^2','1','100'],ans:1,exp:'降幂排列'},
+  {type:'single',q:'多项式表示：',opts:['[3 2 -5]','[3 0 2 -5]','[3,2,-5]','[ , , -5]'],ans:0,exp:'空格/逗号分隔'},
+  {type:'single',q:'求多项式根：',opts:['poly(p)','roots(p)','polyval(p)','conv(p)'],ans:1,exp:'roots'},
+  {type:'single',q:'计算多项式在 x=2 的值：',opts:['polyval(p,2)','poly(p,2)','roots(p,2)','value(p,2)'],ans:0,exp:'polyval'},
+  {type:'single',q:'二维折线绘图函数：',opts:['plot3','plot','mesh','surf'],ans:1,exp:'plot'},
+  {type:'single',q:'绿色虚线方块标记：',opts:["'g--s'","'green--square'","'s:g'","'--rs'"],ans:0,exp:'颜色线型标记'},
+  {type:'single',q:'添加网格线：',opts:['grid on','box on','hold on','axis on'],ans:0,exp:'grid on'},
+  {type:'single',q:'2×2子图激活第3个：',opts:['subplot(2,2,3)','subplot(3,2,2)','plot(2,2,3)','figure(3)'],ans:0,exp:'subplot'},
+  {type:'single',q:'添加Y轴标签：',opts:['xlabel','ylabel','title','legend'],ans:1,exp:'ylabel'},
+  {type:'single',q:'hold on 作用：',opts:['清空图像','保留原图叠加','新建窗口','保存图像'],ans:1,exp:'图像叠加'},
+  {type:'single',q:'添加图例：',opts:['legend','label','title','grid'],ans:0,exp:'legend'},
+  {type:'single',q:'设置坐标轴范围：',opts:["axis([0 10 -5 5])","range([0 10 -5 5])","limit([0 10 -5 5])","xlim([0 10])"],ans:0,exp:'axis'},
+  {type:'single',q:'2×1子图激活第1个：',opts:['subplot(2,1,1)','subplot(1,2,1)','figure(1)','plot(2,1,1)'],ans:0,exp:'subplot'},
+  {type:'single',q:'添加X轴标签：',opts:["xlabel('...')","label('x')","title('x')","text('x')"],ans:0,exp:'xlabel'},
+  {type:'single',q:'红色虚线星号：',opts:["'r--*'","'red:*'","'r-*'","'--r*'"],ans:0,exp:'r 红 -- 虚线 * 星号'},
+  {type:'single',q:'同图叠加曲线：',opts:['hold on','hold off','figure','clf'],ans:0,exp:'hold on'},
+  {type:'single',q:'跳出整个循环：',opts:['continue','break','return','exit'],ans:1,exp:'break'},
+  {type:'single',q:'跳过本次循环：',opts:['continue','break','skip','next'],ans:0,exp:'continue'},
+  {type:'single',q:'for 循环正确格式：',opts:['for i=1:10 ... end','for i=1:10 ... loop','for i=1:10 do ... end','foreach i=1:10'],ans:0,exp:'for ... end'},
+  {type:'single',q:'终止 while/for 循环：',opts:['stop','exit','break','end'],ans:2,exp:'break'},
+  {type:'single',q:'判断 a 等于 5：',opts:['if a=5','if a==5','if a~=5','if a>5'],ans:1,exp:'== 比较'},
+  {type:'single',q:'“不等于”运算符：',opts:['!=','<>','~=','/='],ans:2,exp:'MATLAB 用 ~='},
+
+  // ---- 二、填空题（41题）----
+  {type:'fill',q:'1到9步长2的行向量：',ans:['1:2:9'],exp:'冒号表达式'},
+  {type:'fill',q:'获取矩阵A大小：',ans:['size(A)'],exp:'size'},
+  {type:'fill',q:'三维折线图函数：',ans:['plot3'],exp:'plot3'},
+  {type:'fill',q:'添加图例：',ans:['legend'],exp:'legend'},
+  {type:'fill',q:'while 结束关键字：',ans:['end'],exp:'end'},
+  {type:'fill',q:'标准正态分布随机数：',ans:['randn'],exp:'randn'},
+  {type:'fill',q:'单行注释符号：',ans:['%'],exp:'%'},
+  {type:'fill',q:'横向拼接矩阵：',ans:['[A,B]','horzcat(A,B)'],exp:'横向拼接'},
+  {type:'fill',q:'多项式向量定义规则：',ans:['降幂排列，缺项补0'],exp:'多项式表示'},
+  {type:'fill',q:'默认结果变量名：',ans:['ans'],exp:'ans'},
+  {type:'fill',q:'创建复数 complex(a,b)：',ans:['complex(a,b)'],exp:'complex'},
+  {type:'fill',q:'logspace 调用格式：',ans:['logspace(a,b,n)'],exp:'对数等分'},
+  {type:'fill',q:'指定维数拼接函数：',ans:['cat'],exp:'cat'},
+  {type:'fill',q:'矩阵元素包裹符号：',ans:['方括号 []'],exp:'[]'},
+  {type:'fill',q:'数值转 ASCII函数：',ans:['char'],exp:'char'},
+  {type:'fill',q:'全零矩阵函数：',ans:['zeros'],exp:'zeros'},
+  {type:'fill',q:'求复数实部函数：',ans:['real'],exp:'real'},
+  {type:'fill',q:'max(A) 结果：',ans:['[7,7,6]'],exp:'按列取最大值'},
+  {type:'fill',q:'显示坐标轴函数：',ans:['axis on'],exp:'axis on'},
+  {type:'fill',q:'清除工作区变量：',ans:['clear'],exp:'clear'},
+  {type:'fill',q:'插值方法：',ans:['nearest','linear','spline'],exp:'插值方法'},
+  {type:'fill',q:'cumsum([1,3,9,-3,7])：',ans:['[1,4,13,10,17]'],exp:'累加和'},
+  {type:'fill',q:'浮点数误差常量：',ans:['eps'],exp:'eps'},
+  {type:'fill',q:'uint16 / int16：',ans:['uint16','int16'],exp:'整数类型'},
+  {type:'fill',q:'全零矩阵函数：',ans:['zeros'],exp:'zeros'},
+  {type:'fill',q:'poly2sym([2 4 -1 9])：',ans:['2x^3+4x^2-x+9'],exp:'符号多项式'},
+  {type:'fill',q:'矩阵转字符串：',ans:['mat2str'],exp:'mat2str'},
+  {type:'fill',q:'三维饼图：',ans:['pie3'],exp:'pie3'},
+  {type:'fill',q:'Simulink sum 模块功能：',ans:['求和'],exp:'Sum模块'},
+  {type:'fill',q:'创建复数：',ans:['complex(a,b)'],exp:'complex'},
+  {type:'fill',q:'二维曲线函数：',ans:['plot(x,y)'],exp:'plot'},
+  {type:'fill',q:'三维网格图：',ans:['mesh'],exp:'mesh'},
+  {type:'fill',q:'动画函数：',ans:['movie'],exp:'movie'},
+  {type:'fill',q:'转 uint8：',ans:['uint8'],exp:'数据类型转换'},
+  {type:'fill',q:'矩阵求逆：',ans:['inv(A)'],exp:'inv'},
+  {type:'fill',q:'e^-t 表达式：',ans:['exp(-t)'],exp:'指数函数'},
+  {type:'fill',q:'3×3 单位矩阵：',ans:['eye(3)'],exp:'eye'},
+  {type:'fill',q:'选择结构函数：',ans:['if'],exp:'if'},
+  {type:'fill',q:'二维饼图：',ans:['pie'],exp:'pie'},
+  {type:'fill',q:'3:10 步长：',ans:['1'],exp:'默认步长1'},
+  {type:'fill',q:'矩阵转字符串：',ans:['mat2str'],exp:'mat2str'},
+
+  // ---- 三、判断题（10题）----
+  {type:'judge',q:'脚本文件不能直接调用，函数文件可以。',ans:false,exp:'脚本可直接运行'},
+  {type:'judge',q:'atan(x) 是反正切函数。',ans:true,exp:'反正切'},
+  {type:'judge',q:'% 开头为注释。',ans:true,exp:'单行注释'},
+  {type:'judge',q:'单精度与双精度不能相互转换。',ans:false,exp:'可转换'},
+  {type:'judge',q:'方括号用于构造矩阵，圆括号用于索引。',ans:true,exp:'矩阵与索引'},
+  {type:'judge',q:'sort(A,2) 表示按行降序排序。',ans:false,exp:'sort(A,2) 按行升序'},
+  {type:'judge',q:'cumsum(A) 按行累加。',ans:false,exp:'默认按列'},
+  {type:'judge',q:'polyder(p1,p2) 是乘积求导。',ans:true,exp:'多项式求导规则'},
+  {type:'judge',q:'bar 用于画饼图。',ans:false,exp:'bar 柱状图'},
+  {type:'judge',q:'rot90(A,-1) 是逆时针旋转。',ans:false,exp:'顺时针旋转'},
+
+  // ---- 四、编程题（7题，严格按文档）----
+  {
+    type: 'code',
+    q: '编写一个M脚本文件，完成从键盘输入一个学生成绩，已知成绩大于等于90分为优秀，大于或等于80分且小于90分为“良好”，大于或等于70分且小于80分为中等，大于或等于60分小于70分为合格，小于60分为不及格。用if结构判断学生成绩是什么等级，并显示等级信息。',
+    ans: `% 成绩等级判断脚本
+score = input('请输入成绩: ');
+
+if score >= 90
+    grade = 'A';
+elseif score >= 80
+    grade = 'B';
+elseif score >= 70
+    grade = 'C';
+elseif score >= 60
+    grade = 'D';
+else
+    grade = 'E';
+end
+
+disp(grade)`,
+    exp: '使用 if-elseif-else 结构进行多条件判断。'
+  },
+
+  {
+    type: 'code',
+    q: '已知矩阵A=[10,-5,6;8,5,2;2,8,4]。用max求每行最大元素，并求矩阵A的最大元素；(1)将矩阵A按照行进行倒序排序；(2)求矩阵A各元素的累加和；(3)将矩阵A第一行元素替换为[1 0 -1]；(4)对矩阵A实现上下翻转、逆时针旋转90度。',
+    ans: `% 矩阵操作
+A = [10 -5 6; 8 5 2; 2 8 4];
+
+% 每行最大值
+row_max = max(A, [], 2);
+
+% 矩阵最大值
+all_max = max(A(:));
+
+% 按行倒序排序
+B = sortrows(A, 2, 'descend');
+
+% 元素累加和
+elem_sum = sum(A(:));
+
+% 替换第一行
+A(1,:) = [1 0 -1];
+
+% 上下翻转
+A_flip = flipud(A);
+
+% 逆时针旋转90度
+A_rot = rot90(A)`,
+    exp: '综合考查 max、sortrows、sum、索引、flipud、rot90 等矩阵操作函数。'
+  },
+
+  {
+    type: 'code',
+    q: '已知多项式 p(x)=2x^3-5x+1，请编写 MATLAB 代码完成以下任务：(1)求出该多项式的一阶导数多项式。',
+    ans: `% 多项式求导
+p = [2 0 -5 1];   % 2x^3 -5x +1
+
+dp = polyder(p);  % 求一阶导数
+
+disp('一阶导数多项式系数：');
+disp(dp);`,
+    exp: '使用 polyder 函数对多项式系数向量求导。'
+  },
+
+  {
+    type: 'code',
+    q: '编写一个 M 函数文件，用 for 循环结构求下列函数的解：Y=1-1/3+1/5-1/7+…+（-1）^n*(1/(2n+1))。新建函数文件 calc_series.m。',
+    ans: `function Y = calc_series(n)
+% CALC_SERIES 计算级数
+Y = 0;
+for k = 0:n
+    term = (-1)^k * (1/(2*k+1));
+    Y = Y + term;
+end
+end
+
+% 调用方式：在命令行输入 calc_series(数值)`,
+    exp: '使用 for 循环逐项累加，体现 MATLAB 函数文件结构。'
+  },
+
+  {
+    type: 'code',
+    q: '在同一图形窗口中，分割四个子窗口，分别绘制四条曲线 y1=2sin(t), y2=cos(3t), y3=sin(2t), y4=cos(2t)，t的范围均为 [0,3π]，要求每幅子图用不同的颜色、线型、数据点的标记；设置坐标轴，添加横纵坐标设置、标题、网格线。',
+    ans: `t = 0:0.01:3*pi;
+
+subplot(2,2,1)
+plot(t, 2*sin(t), 'r-o')
+xlabel('t'); ylabel('y1'); title('y1=2sin(t)'); grid on
+
+subplot(2,2,2)
+plot(t, cos(3*t), 'g--*')
+xlabel('t'); ylabel('y2'); title('y2=cos(3t)'); grid on
+
+subplot(2,2,3)
+plot(t, sin(2*t), 'b-s')
+xlabel('t'); ylabel('y3'); title('y3=sin(2t)'); grid on
+
+subplot(2,2,4)
+plot(t, cos(2*t), 'm-.^')
+xlabel('t'); ylabel('y4'); title('y4=cos(2t)'); grid on`,
+    exp: 'subplot + plot + 图形标注综合应用。'
+  },
+
+  {
+    type: 'code',
+    q: '利用 for 循环语句，求解 1-10 的数字和。',
+    ans: `s = 0;
+for i = 1:10
+    s = s + i;
+end
+disp('1到10的累加和：');
+disp(s);`,
+    exp: '最基础的 for 循环累加示例。'
+  },
+
+  {
+    type: 'code',
+    q: '用 matlab 左除和逆矩阵的方法求下列方程组的解：\n(1) x+3y-3z=-1; 2x-y-z=4; x-2y+z=3\n(2) x1+x2-x3=4; 2x1-x2-x3=5; x1+3x2+x3=2',
+    ans: `% 第一个方程组
+A1 = [1 3 -3; 2 -1 -1; 1 -2 1];
+b1 = [-1; 4; 3];
+
+x1_left = A1 \\ b1;     % 左除法
+x1_inv = inv(A1) * b1; % 逆矩阵法
+
+% 第二个方程组
+A2 = [1 1 -1; 2 -1 -1; 1 3 1];
+b2 = [4; 5; 2];
+
+x2_left = A2 \\ b2;
+x2_inv = inv(A2) * b2;`,
+    exp: '线性方程组的两种数值解法：左除和逆矩阵。'
+  }
+];
+
+/* ===============================
+   每题专属嘲讽库（102题）
+   =============================== */
+const perQuestionTaunts = [
+  // 单选 44
+  ["zeros(3,4)都不会？行数列数都分不清，建议重学矩阵基础。"],
+  ["A(2,3)是行2列3，你是用眼睛看的还是用脑子想的？"],
+  ["A(2,:)提取整行，你写成A(2)是想提取空气吗？"],
+  ["矩阵乘和点乘都分不清？*. 和 .* 差一个点是本质差别！"],
+  ["2var 这种变量名都能写出来，MATLAB 语法课睡过去了？"],
+  ["clear 清空变量，clc 清屏，这俩都能混？工作区都白开了。"],
+  ["连清屏都用错，你这命令行窗口是摆设吗？"],
+  ["pi 是小写，PI 是大写，MATLAB 区分大小写不知道？"],
+  ["if 是关键字，你拿来做变量名是想让程序报错吗？"],
+  ["clear 和 clc 又错了？你这脑子是不是只有 RAM 没有 ROM？"],
+  ["ones(4,3) 是 4 行 3 列，你写成 (3,4) 是想转置吗？"],
+  ["2:3:14 都不会？起始步长终止都分不清，冒号表达式白教了。"],
+  ["A^2 是矩阵乘法，A.^2 是逐元素平方，这都能错？"],
+  ["size 返回行列数，length 返回最长维，这俩不是一个东西！"],
+  ["NaN 是非数，inf 是无穷，eps 是精度，这三个都分不清？"],
+  ["行尾分号是抑制输出，你以为是换行符吗？"],
+  ["多项式缺项要补 0，你这 [2 -5 1] 是缺了几次项？"],
+  ["roots 求多项式根，poly 是生成多项式，方向都反了。"],
+  ["polyder 是求导，polyint 是积分，一个加一个减都记不住？"],
+  ["polyint(p,k) 的 k 是积分常数，不是随便写的！"],
+  ["p=[1 0 0] 是 x^2，你以为是 100 还是 1？"],
+  ["空格和逗号分隔元素效果一样，你纠结这个纯属浪费时间。"],
+  ["roots(p) 求的是方程的根，不是多项式的系数！"],
+  ["polyval 是代值计算，不是求多项式本身。"],
+  ["plot 是二维，plot3 是三维，你这维度感呢？"],
+  ["'g--s' 是绿色虚线方块，你选错是想画抽象画吗？"],
+  ["grid on 加网格，box on 加边框，这俩不一样！"],
+  ["subplot(2,2,3) 是左下角，你数数看是不是第三块？"],
+  ["ylabel 是 Y 轴，xlabel 是 X 轴，左右不分？"],
+  ["hold on 是保留原图，hold off 是释放，别搞反了。"],
+  ["legend 是图例，title 是标题，label 是控件，别混！"],
+  ["axis([xmin xmax ymin ymax])，你把坐标顺序写反试试？"],
+  ["subplot(2,1,1) 是上下两张图的第一张，别数错行。"],
+  ["xlabel 和 ylabel 都分不清，坐标系白学了。"],
+  ["'r--*' 是红色虚线星号，你选错是想当画家吗？"],
+  ["hold on 都不知道，还想在一张图上画多条曲线？"],
+  ["break 是跳出整个循环，continue 是跳过本次，这俩不一样！"],
+  ["continue 是继续下一次循环，不是结束循环！"],
+  ["for i=1:10 ... end，MATLAB 没有 do...loop！"],
+  ["break 终止循环，return 返回函数，别用混！"],
+  ["if a==5 是比较，if a=5 是赋值，等号多一个点都不行！"],
+  ["~= 是不等于，!= 是 C 语言，MATLAB 不认！"],
+
+  // 填空 41
+  ["1:2:9 都不会？冒号表达式白教了。"],
+  ["size(A) 返回行列数，length(A) 返回最长维，别混！"],
+  ["plot3 是三维折线，你填成 plot 是想降维打击吗？"],
+  ["legend 是图例，你填成 label 是想做 GUI？"],
+  ["while 循环要用 end 结束，你以为是在写 Python？"],
+  ["randn 是正态分布，rand 是均匀分布，别张冠李戴。"],
+  ["% 是注释，// 是 C++，MATLAB 不认双斜杠！"],
+  ["横向拼接用 [A,B] 或 horzcat，你写成 vertcat 是想纵向？"],
+  ["多项式按降幂排列，缺项补 0，这是铁律！"],
+  ["默认结果变量名是 ans，你以为是 answer 吗？"],
+  ["complex(a,b) 创建复数，你写成 real(a,b) 是想干嘛？"],
+  ["logspace(a,b,n) 是对数等分，linspace 是线性等分。"],
+  ["cat(3,A,B) 是三维拼接，你填成 2 是想挤在一起？"],
+  ["矩阵必须用方括号 [] 括起来，圆括号是索引！"],
+  ["char 转 ASCII，num2str 转字符串，别搞混。"],
+  ["zeros 是全 0，ones 是全 1，eye 是单位阵，三者不同。"],
+  ["real 取实部，imag 取虚部，conj 取共轭。"],
+  ["max(A) 默认按列取最大值，你以为是整行？"],
+  ["axis on 显示坐标轴，axis off 隐藏，别写反。"],
+  ["clear 清空变量，你填成 clc 是想清屏？"],
+  ["插值方法 nearest/linear/spline，你填 cubic 是想考我？"],
+  ["cumsum 是累加和，不是 cumulative product！"],
+  ["eps 是浮点误差，不是 epsilon 也不是 inf。"],
+  ["uint16 是无符号，int16 是有符号，差一个 u！"],
+  ["zeros 又是全 0，你跟 ones 有仇吗？"],
+  ["poly2sym 是把系数转符号多项式，你填反了？"],
+  ["mat2str 是矩阵转字符串，num2str 是数转字符串。"],
+  ["pie3 是三维饼图，pie 是二维，你多画一维？"],
+  ["Simulink 的 Sum 模块是求和，不是平均！"],
+  ["complex(a,b) 又是复数，你跟这个函数杠上了？"],
+  ["plot(x,y) 是二维曲线，你参数都不写全？"],
+  ["mesh 是网格面，surf 是曲面，二者不同。"],
+  ["movie 播放动画，不是拍电影！"],
+  ["uint8 是 0~255，int8 是 -128~127，别越界。"],
+  ["inv(A) 求逆矩阵，A\\\\b 是左除，二者不同。"],
+  ["exp(-t) 是指数衰减，你写成 e^-t 是想手写？"],
+  ["eye(3) 是 3×3 单位阵，你写成 ones 是瞎了？"],
+  ["if 是选择结构，for 是循环，switch 是多分支。"],
+  ["pie 是二维饼图，你填成 bar 是想画柱状？"],
+  ["3:10 默认步长是 1，你填 2 是想跳着走？"],
+  ["mat2str 又是矩阵转字符串，你跟这个函数有仇？"],
+
+  // 判断 10
+  ["脚本文件可以直接运行，函数文件不能直接运行，你说反了。"],
+  ["atan(x) 确实是反正切，你怀疑这个说明没用过三角函数。"],
+  ["% 确实是单行注释，你连这个都要怀疑？"],
+  ["单精度和双精度是可以互相转换的，你说不能？"],
+  ["方括号构造矩阵，圆括号索引，你这基础还敢说错？"],
+  ["sort(A,2) 是按行升序，不是降序，你记反了。"],
+  ["cumsum(A) 默认按列累加，不是按行，方向错了。"],
+  ["polyder(p1,p2) 确实是乘积求导，你没看书吧？"],
+  ["bar 是柱状图，pie 才是饼图，你这图都分不清？"],
+  ["rot90(A,-1) 是顺时针旋转，不是逆时针，方向感呢？"],
+
+  // 编程 7
+  ["成绩判断 if-elseif 结构，你连这个都写错还想做工程师？"],
+  ["矩阵操作 max/sort/fliplr/rot90，这一堆函数都记不住？"],
+  ["polyder 求导 + polyval 代值，这是标准套路，你不会？"],
+  ["for 循环求级数，连累加都写不出来？"],
+  ["subplot 四子图，plot 函数都写不利索？"],
+  ["for 循环 1~10 累加，这是 MATLAB 的 Hello World！"],
+  ["Ax=b 用 A\\\\b 解，你还要我教你怎么解方程？"]
+];
+
+/* ===============================
+   拼音首字母映射
+   =============================== */
+const pinyinMap = {
+  z: 'zeros', s: 'subplot', p: 'plot', c: '成绩', j: '矩阵',
+  x: '循环', h: '函数', d: '多项式', f: 'for', w: 'while'
+};
+
+/* ===============================
+   核心逻辑
+   =============================== */
+let mode='answer',idx=0,order=[...Array(questions.length).keys()];
+let correct=0,wrong=0,answered=new Set(),wrongSet=new Set();
+
+const qType=$('#q-type'),qNum=$('#q-num'),qText=$('#q-text'),opts=$('#opts');
+const fillBox=$('#fill-box'),fillIn=$('#fill-input');
+const codeBox=$('#code-box'),codeIn=$('#code-input'),btnCode=$('#btn-code'),btnShowCodeAns=$('#btn-show-code-ans'),codeAnsBox=$('#code-ans-box');
+const expBox=$('#exp-box'),expTxt=$('#exp-text');
+const prevB=$('#prev-btn'),nextB=$('#next-btn');
+const stC=$('#st-correct'),stW=$('#st-wrong'),stT=$('#st-total'),stA=$('#st-acc'),prog=$('#prog');
+const tauntM=$('#taunt-modal'),tauntMsg=$('#taunt-msg');
+const cheatPanel=$('#cheat-panel'),searchInput=$('#search-input'),searchResult=$('#search-result');
+
+function $(s){return document.querySelector(s);}
+function setMode(m){
+  mode=m;
+  document.querySelectorAll('.mode-btn').forEach(b=>{b.classList.remove('bg-success');b.classList.add('bg-gray-700')});
+  if(m==='answer'){$('#btn-answer').classList.add('bg-success');$('#btn-answer').classList.remove('bg-gray-700')}
+  if(m==='review'){$('#btn-review').classList.add('bg-success');$('#btn-review').classList.remove('bg-gray-700')}
+  if(m==='random'){$('#btn-random').classList.add('bg-success');$('#btn-random').classList.remove('bg-gray-700')}
+  if(m==='wrong'){$('#btn-wrong').classList.add('bg-success');$('#btn-wrong').classList.remove('bg-gray-700')}
+  order=mode==='wrong'? [...wrongSet] : [...Array(questions.length).keys()];
+  if(mode==='random') order.sort(()=>Math.random()-.5);
+  idx=0; load();
+}
+$('#btn-answer').onclick=()=>setMode('answer');
+$('#btn-review').onclick=()=>setMode('review');
+$('#btn-random').onclick=()=>setMode('random');
+$('#btn-wrong').onclick=()=>setMode('wrong');
+$('#btn-cheat').onclick=()=>{
+  cheatPanel.classList.toggle('hidden');
+  if(!cheatPanel.classList.contains('hidden')) searchInput.focus();
+};
+
+function load(){
+  if(idx<0||idx>=order.length) return;
+  const qi=order[idx],q=questions[qi];
+  qType.textContent= q.type==='single'?'单选题':q.type==='fill'?'填空题':q.type==='judge'?'判断题':'编程题';
+  qType.className=`inline-block px-2 py-1 text-xs rounded mb-2 ${q.type==='single'?'bg-green-500/20 text-green-400':q.type==='fill'?'bg-yellow-500/20 text-yellow-400':q.type==='judge'?'bg-blue-500/20 text-blue-400':'bg-purple-500/20 text-purple-400'}`;
+  qNum.textContent=`第 ${idx+1} / ${order.length} 题`;
+  qText.textContent=q.q;
+  opts.innerHTML=''; opts.classList.add('hidden');
+  fillBox.classList.add('hidden'); codeBox.classList.add('hidden'); expBox.classList.add('hidden');
+
+  if(q.type==='single'||q.type==='judge'){
+    opts.classList.remove('hidden');
+    const ops=q.type==='single'?q.opts:['正确','错误'];
+    ops.forEach((o,i)=>{
+      const d=document.createElement('div');
+      d.className='flex items-center p-3 border border-gray-600 rounded-lg option-hover cursor-pointer transition-all';
+      d.innerHTML=`<div class="w-6 h-6 rounded-full border-2 border-gray-400 flex items-center justify-center mr-4"><span class="text-xs">${String.fromCharCode(65+i)}</span></div><span>${o}</span>`;
+      if(answered.has(qi)) d.style.pointerEvents='none';
+      else d.onclick=()=>check(qi,i,d,q.type==='single'?i===q.ans:(i===0&&q.ans)||(i===1&&!q.ans));
+      opts.appendChild(d);
+    });
+  }
+  if(q.type==='fill'){
+    fillBox.classList.remove('hidden');
+    fillIn.value=''; fillIn.disabled=answered.has(qi);
+    fillIn.onkeydown=e=>{if(e.key==='Enter'&&!answered.has(qi)) checkFill(qi)};
+  }
+  if(q.type==='code'){
+    codeBox.classList.remove('hidden');
+    codeIn.value=''; codeIn.disabled=answered.has(qi);
+    codeAnsBox.classList.add('hidden');
+    codeAnsBox.textContent = q.ans;
+
+    btnCode.onclick=()=>checkCode(qi);
+    btnShowCodeAns.onclick=()=>{
+      codeAnsBox.classList.toggle('hidden');
+      if(mode==='review'||mode==='cheat') codeAnsBox.classList.remove('hidden');
+    };
+
+    if(mode==='review'||mode==='cheat') codeAnsBox.classList.remove('hidden');
+  }
+  prevB.disabled=idx===0; nextB.disabled=idx===order.length-1;
+  if(mode==='review'||answered.has(qi)) showAns(qi);
+}
+
+function check(qi,i,d,correctFlag){
+  if(answered.has(qi)) return;
+  d.dataset.sel='1';
+  answered.add(qi);
+  if(correctFlag){correct++}else{wrong++;wrongSet.add(qi);showTaunt(qi)}
+  update(); showAns(qi);
+}
+function checkFill(qi){
+  const q=questions[qi],v=fillIn.value.trim();
+  if(!v){fillIn.classList.add('ring','ring-red-500');setTimeout(()=>fillIn.classList.remove('ring','ring-red-500'),800);return}
+  answered.add(qi);
+  const ok=q.ans.some(a=>v.toLowerCase().includes(a.toLowerCase()));
+  if(ok){correct++}else{wrong++;wrongSet.add(qi);showTaunt(qi)}
+  fillIn.disabled=true; update(); showAns(qi);
+}
+function checkCode(qi){
+  if(answered.has(qi)) return;
+  answered.add(qi); correct++; update(); showAns(qi);
+  alert('编程题已提交，请自行对照参考答案。');
+}
+function showAns(qi){
+  const q=questions[qi];
+  expBox.classList.remove('hidden'); expTxt.textContent=q.exp;
+  if(q.type==='single'||q.type==='judge'){
+    [...opts.children].forEach((c,i)=>{
+      c.style.pointerEvents='none';
+      const corr= q.type==='single'? i===q.ans : (i===0&&q.ans)||(i===1&&!q.ans);
+      if(corr){c.classList.add('border-success','bg-success/20')}
+      else if(c.dataset.sel==='1'){c.classList.add('border-danger','bg-danger/20')}
+    });
+  }
+  if(q.type==='fill'){
+    fillIn.placeholder='正确答案：'+q.ans.join('；');
+  }
+}
+function showTaunt(qi){
+  const variants=perQuestionTaunts[qi];
+  tauntMsg.textContent=variants[Math.floor(Math.random()*variants.length)];
+  tauntM.classList.remove('hidden');
+}
+function jumpToQuestion(index) {
+  mode = 'review';
+  document.querySelectorAll('.mode-btn').forEach(b=>{
+    b.classList.remove('bg-success');
+    b.classList.add('bg-gray-700');
+  });
+  $('#btn-review').classList.add('bg-success');
+  $('#btn-review').classList.remove('bg-gray-700');
+
+  idx = index;
+  load();
+  cheatPanel.classList.add('hidden');
+  searchInput.value = '';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+prevB.onclick=()=>{idx--;load()};
+nextB.onclick=()=>{idx++;load()};
+function update(){
+  stC.textContent=correct; stW.textContent=wrong; stT.textContent=answered.size;
+  stA.textContent=answered.size?Math.round(correct/answered.size*100)+'%':'0%';
+  prog.style.width=answered.size/questions.length*100+'%';
+}
+
+/* ===============================
+   作弊逻辑（高亮 + 拼音 + 显示答案）
+   =============================== */
+searchInput.addEventListener('input', () => {
+  let kw = searchInput.value.trim().toLowerCase();
+  if (!kw) {
+    searchResult.innerHTML = '';
+    return;
+  }
+  Object.keys(pinyinMap).forEach(k => {
+    if (kw.startsWith(k)) kw = pinyinMap[k];
+  });
+
+  const matches = questions.filter((q, i) =>
+    q.q.toLowerCase().includes(kw) ||
+    (q.opts && q.opts.join('').toLowerCase().includes(kw)) ||
+    String(i + 1).includes(kw)
+  ).slice(0, 15);
+
+  searchResult.innerHTML = matches.length
+    ? matches.map(q => {
+        const i = questions.indexOf(q);
+        let answerText = '';
+        if(q.type==='single') answerText = '【答案：'+q.opts[q.ans]+'】';
+        if(q.type==='fill') answerText = '【答案：'+q.ans.join('；')+'】';
+        if(q.type==='judge') answerText = '【答案：'+(q.ans?'正确':'错误')+'】';
+        if(q.type==='code') answerText = '【编程题】';
+
+        return `
+          <div class="search-item p-3 border-b border-gray-700 hover:bg-gray-700 cursor-pointer"
+               onclick="jumpToQuestion(${i})">
+            <div class="text-sm text-primary">第 ${i + 1} 题</div>
+            <div class="text-gray-300 text-sm">${q.q}</div>
+            <div class="text-success text-xs mt-1">${answerText}</div>
+          </div>
+        `;
+      }).join('')
+    : `<div class="p-3 text-gray-400">未找到相关题目</div>`;
+});
+
+load();
+</script>
+</body>
+</html>
