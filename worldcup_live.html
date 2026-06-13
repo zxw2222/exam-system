@@ -480,8 +480,9 @@ let matches;
 
 switch(currentTab){
 case 'today':
-matches=MATCHES.filter(m=>m.status!=='finished' && new Date('2026-06-'+m.time.split('/')[1].split(' ')[0]).getTime()<=Date.now()+36e5*12);
-if(matches.length===0) matches=MATCHES.filter(m=>m.status==='upcoming').slice(0,4);
+// 显示所有未完赛比赛（兼容微信浏览器）
+matches=MATCHES.filter(m=>m.status!=='finished');
+if(matches.length===0) matches=MATCHES.filter(m=>m.status==='finished');
 el.innerHTML=renderMatches(matches);
 setTimeout(()=>updateAIPredictions(matches), 100);
 break;
