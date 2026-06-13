@@ -1,70 +1,49 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>期末复习考试系统</title>
 <style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body {
-  font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
-  background: linear-gradient(120deg, #0a0e27 0%, #1a1f5c 50%, #0d1035 100%);
-  min-height: 100vh;
-  color: #c8d8ff;
-  overflow-x: hidden;
-}
-#particles { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
-.scanlines { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,20,80,0.03) 2px, rgba(0,20,80,0.03) 4px); z-index: 1; pointer-events: none; }
-.wrap { position: relative; z-index: 2; max-width: 960px; margin: 0 auto; padding: 0 20px; }
-.topbar { display: flex; justify-content: space-between; align-items: center; padding: 20px 0 15px; border-bottom: 1px solid rgba(0,212,255,0.15); margin-bottom: 40px; }
-.topbar-title { font-size: 16px; font-weight: 700; color: #00d4ff; letter-spacing: 3px; text-transform: uppercase; }
-.topbar-sub { font-size: 12px; color: rgba(100,130,200,0.6); letter-spacing: 1px; }
-.topbar-dot { width: 10px; height: 10px; background: #00d4ff; border-radius: 50%; box-shadow: 0 0 10px #00d4ff; animation: blink 2s infinite; }
-@keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
-.hero { text-align: center; padding: 40px 20px 50px; }
-.hero h1 { font-size: 36px; font-weight: 900; background: linear-gradient(90deg, #00d4ff, #7b2ff7, #00d4ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 15px; line-height: 1.3; letter-spacing: 2px; }
-.hero p { font-size: 14px; color: rgba(150,170,220,0.7); letter-spacing: 1px; }
-.grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-bottom: 50px; }
-.card { position: relative; background: linear-gradient(145deg, rgba(15,22,70,0.9), rgba(10,15,50,0.95)); border: 1px solid rgba(0,180,255,0.2); border-radius: 16px; padding: 30px 25px; text-decoration: none; color: #c8d8ff; overflow: hidden; transition: all 0.4s ease; display: block; cursor: pointer; }
-.card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, transparent, #00d4ff, transparent); opacity: 0; transition: opacity 0.4s; }
-.card:hover { border-color: rgba(0,212,255,0.6); transform: translateY(-5px); box-shadow: 0 10px 40px rgba(0,100,200,0.2), 0 0 20px rgba(0,212,255,0.1), inset 0 1px 0 rgba(0,212,255,0.1); background: linear-gradient(145deg, rgba(20,30,90,0.95), rgba(15,20,60,0.98)); }
-.card:hover::before { opacity: 1; }
-.card-icon { font-size: 40px; margin-bottom: 18px; display: block; filter: drop-shadow(0 0 8px rgba(0,212,255,0.5)); }
-.card h2 { font-size: 18px; font-weight: 700; color: #e8f0ff; margin-bottom: 10px; letter-spacing: 1px; }
-.card p { font-size: 13px; color: rgba(150,170,220,0.7); line-height: 1.7; }
-.card .arrow { position: absolute; right: 20px; top: 50%; transform: translateY(-50%); font-size: 22px; color: rgba(0,212,255,0.4); transition: all 0.3s; }
-.card:hover .arrow { color: #00d4ff; right: 15px; }
-.card .count { position: absolute; bottom: 15px; right: 20px; font-size: 11px; color: rgba(100,130,180,0.5); letter-spacing: 1px; }
-.footer { text-align: center; padding: 30px 20px; color: rgba(80,100,150,0.5); font-size: 12px; letter-spacing: 1px; }
-@media (max-width: 640px) { .grid { grid-template-columns: 1fr; gap: 15px; } .hero h1 { font-size: 26px; } .card { padding: 25px 20px; } }
-.card.highlight{border-color:rgba(255,215,0,0.4)}.card.highlight::before{background:linear-gradient(90deg,transparent,#ffd700,transparent)}.card.highlight:hover{border-color:rgba(255,215,0,0.7);box-shadow:0 10px 40px rgba(255,215,0,0.15),0 0 20px rgba(255,215,0,0.1)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#0a0e1a;color:#e2e8f0;min-height:100vh;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(99,102,241,0.08) 0%,transparent 60%);pointer-events:none;z-index:0}
+.header{padding:32px 16px 20px;text-align:center;position:relative;z-index:1}
+.header h1{font-size:24px;background:linear-gradient(135deg,#6366f1,#8b5cf6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px}
+.header p{font-size:12px;color:#94a3b8}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;padding:0 12px 40px;max-width:620px;margin:0 auto;position:relative;z-index:1}
+.card{background:rgba(15,23,42,0.9);border:1px solid rgba(51,65,85,0.5);border-radius:14px;padding:16px;cursor:pointer;transition:all .2s;text-decoration:none;color:inherit;display:block}
+.card:hover{transform:translateY(-2px);border-color:rgba(99,102,241,0.5);box-shadow:0 8px 30px rgba(99,102,241,0.12)}
+.card .icon{font-size:28px;margin-bottom:8px}
+.card .title{font-size:13px;font-weight:600;margin-bottom:4px}
+.card .desc{font-size:10px;color:#94a3b8;line-height:1.4}
+.card.wc{border-color:rgba(245,158,11,0.3);background:linear-gradient(135deg,rgba(245,158,11,0.06),rgba(15,23,42,0.9))}
+.section{font-size:12px;font-weight:600;color:#8b5cf6;padding:16px 12px 8px;max-width:620px;margin:0 auto;position:relative;z-index:1;display:flex;align-items:center;gap:6px}
+.section::after{content:"";flex:1;height:1px;background:rgba(99,102,241,0.15)}
+.footer{text-align:center;padding:20px;font-size:10px;color:#64748b;position:relative;z-index:1}
 </style>
 </head>
 <body>
-<div id="particles"></div>
-<div class="scanlines"></div>
-<div class="wrap">
-  <div class="topbar">
-    <div><div class="topbar-title">EXAM SYSTEM</div><div class="topbar-sub">期末复习答题系统</div></div>
-    <div class="topbar-dot"></div>
-  </div>
-  <div class="hero">
-    <h1>📚 期末复习考试系统</h1>
-    <p>选择下方科目，开始答题复习</p>
-  </div>
-  <div class="grid">
-    <a class="card" href="工厂供电答题系统.html"><span class="card-icon">⚡</span><h2>工厂供电技术</h2><p>名词解释 · 简答题<br>含参考答案与详细解析</p><div class="arrow">→</div><div class="count">供电系统</div></a>
-    <a class="card" href="matlab复习题作弊版.html"><span class="card-icon">📐</span><h2>MATLAB 复习题</h2><p>程序设计 · 理论综合<br>编程题与选择题</p><div class="arrow">→</div><div class="count">MATLAB</div></a>
-    <a class="card" href="数字孪生答题(1).html"><span class="card-icon">🔷</span><h2>数字孪生技术</h2><p>核心概念 · 选择题<br>判断题综合复习</p><div class="arrow">→</div><div class="count">数字孪生</div></a>
-    <a class="card" href="新能源与发电技术.html"><span class="card-icon">☀️</span><h2>新能源与发电技术</h2><p>风光储 · 选择/简答/判断<br>名词解释与论述题</p><div class="arrow">→</div><div class="count">新能源</div></a>
-  </div>
-  <a class="card highlight" href="worldcup2026.html"><span class="card-icon">🏆</span><h2>2026世界杯预测</h2><p>美加墨 · 48队12组<br>小组赛/淘汰赛/AI夺冠概率</p><div class="arrow">→</div><div class="count">WORLD CUP</div></a>
-  <a class="card highlight" href="worldcup_lottery.html"><span class="card-icon">🎰</span><h2>世界杯竞彩预测</h2><p>胜平负 · 让球 · 大小球<br>赔率分析 · AI投注推荐</p><div class="arrow">→</div><div class="count">LOTTERY</div></a>
-  <a class="card highlight" href="worldcup_simple.html"><span class="card-icon">📊</span><h2>世界杯AI比分预测</h2><p>竞彩赔率 · AI比分 · 5分钟自动刷新<br>胜平负/让球/大小球/比分</p><div class="arrow">→</div><div class="count">LIVE</div></a>
-  <div class="footer">点击卡片跳转对应答题系统 · 支持手机 / 电脑访问</div>
+<div class="header">
+<h1>EXAM SYSTEM</h1>
+<p>期末复习答题系统 + 2026世界杯预测</p>
 </div>
-<script>
-(function(){var c=document.createElement("canvas");c.width=window.innerWidth;c.height=window.innerHeight;document.getElementById("particles").appendChild(c);var ctx=c.getContext("2d");var ps=[];for(var i=0;i<60;i++){ps.push({x:Math.random()*c.width,y:Math.random()*c.height,r:Math.random()*1.5+0.5,vx:(Math.random()-0.5)*0.3,vy:(Math.random()-0.5)*0.3,a:Math.random()*0.5+0.1})}function draw(){ctx.clearRect(0,0,c.width,c.height);for(var i=0;i<ps.length;i++){var p=ps[i];ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,2*Math.PI);ctx.fillStyle="rgba(0,180,255,"+p.a+")";ctx.fill();p.x+=p.vx;p.y+=p.vy;if(p.x<0)p.x=c.width;if(p.x>c.width)p.x=0;if(p.y<0)p.y=c.height;if(p.y>c.height)p.y=0}requestAnimationFrame(draw)}draw();window.addEventListener("resize",function(){c.width=window.innerWidth;c.height=window.innerHeight})})();
-</script>
+
+<div class="section">📚 期末复习</div>
+<div class="grid">
+<a class="card" href="工厂供电答题系统.html"><div class="icon">⚡</div><div class="title">工厂供电</div><div class="desc">名词解释 · 简答题</div></a>
+<a class="card" href="matlab复习题作弊版.html"><div class="icon">📐</div><div class="title">MATLAB</div><div class="desc">程序设计 · 综合题</div></a>
+<a class="card" href="数字孪生答题(1).html"><div class="icon">🔷</div><div class="title">数字孪生</div><div class="desc">选择题 · 判断题</div></a>
+<a class="card" href="新能源与发电技术.html"><div class="icon">☀️</div><div class="title">新能源发电</div><div class="desc">选择 · 简答 · 论述</div></a>
+</div>
+
+<div class="section">🏆 2026世界杯</div>
+<div class="grid">
+<a class="card wc" href="worldcup_live.html"><div class="icon">⚽</div><div class="title">AI比分预测</div><div class="desc">DeepSeek预测 · 实时比分 · 赛程</div></a>
+<a class="card wc" href="worldcup2026.html"><div class="icon">📊</div><div class="title">淘汰赛对阵</div><div class="desc">48队赛程 · 夺冠概率</div></a>
+<a class="card wc" href="worldcup_lottery.html"><div class="icon">🎰</div><div class="title">竞彩投注</div><div class="desc">赔率分析 · 投注单</div></a>
+</div>
+
+<div class="footer">数据来源: DeepSeek AI · Football-Data · FIFA · 仅供娱乐参考</div>
 </body>
 </html>
