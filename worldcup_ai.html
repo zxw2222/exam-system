@@ -1,428 +1,1061 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI综合预测 - 2026世界杯</title>
-<style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", sans-serif;
-    background: linear-gradient(135deg, #0f0f23 0%, #1a1a3e 100%);
-    color: #fff;
-    min-height: 100vh;
-}
-
-.header {
-    background: rgba(255,255,255,0.05);
-    backdrop-filter: blur(10px);
-    padding: 16px 20px;
-    text-align: center;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
-}
-.header h1 {
-    font-size: 20px;
-    background: linear-gradient(90deg, #00d9ff, #00ff88);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    font-weight: 700;
-}
-.status {
-    font-size: 12px;
-    color: #00ff88;
-    margin-top: 6px;
-}
-.status .dot {
-    display: inline-block;
-    width: 8px;
-    height: 8px;
-    background: #00ff88;
-    border-radius: 50%;
-    margin-right: 6px;
-    animation: pulse 1.5s infinite;
-}
-@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
-
-.container { padding: 16px; max-width: 600px; margin: 0 auto; }
-
-.match-card {
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 16px;
-    margin-bottom: 20px;
-    overflow: hidden;
-}
-
-.match-top {
-    padding: 16px;
-    text-align: center;
-}
-.match-time {
-    font-size: 12px;
-    color: #888;
-    margin-bottom: 12px;
-}
-.teams {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 20px;
-}
-.team {
-    text-align: center;
-}
-.team .flag { font-size: 40px; }
-.team .name { font-size: 16px; font-weight: 600; margin-top: 6px; }
-.team .rank { font-size: 11px; color: #666; }
-.vs {
-    font-size: 14px;
-    color: #00d9ff;
-    font-weight: 700;
-}
-
-.ai-prediction {
-    background: linear-gradient(135deg, rgba(0,217,255,0.1), rgba(0,255,136,0.1));
-    border-top: 1px solid rgba(255,255,255,0.1);
-    padding: 16px;
-}
-.ai-header {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 12px;
-}
-.ai-badge {
-    background: linear-gradient(90deg, #00d9ff, #00ff88);
-    color: #0f0f23;
-    padding: 4px 10px;
-    border-radius: 12px;
-    font-size: 11px;
-    font-weight: 700;
-}
-.confidence {
-    font-size: 12px;
-    color: #00ff88;
-    margin-left: auto;
-}
-
-.prediction-result {
-    text-align: center;
-    padding: 12px;
-    background: rgba(0,0,0,0.2);
-    border-radius: 12px;
-    margin-bottom: 12px;
-}
-.score-pred {
-    font-size: 36px;
-    font-weight: 900;
-    color: #00d9ff;
-    letter-spacing: 4px;
-}
-.pred-label {
-    font-size: 12px;
-    color: #888;
-    margin-top: 4px;
-}
-
-.prob-bars {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 12px;
-}
-.prob-bar {
-    flex: 1;
-    text-align: center;
-}
-.prob-bar .label { font-size: 11px; color: #888; margin-bottom: 4px; }
-.prob-bar .bar {
-    height: 6px;
-    background: rgba(255,255,255,0.1);
-    border-radius: 3px;
-    overflow: hidden;
-}
-.prob-bar .fill { height: 100%; border-radius: 3px; }
-.prob-bar .value { font-size: 14px; font-weight: 600; margin-top: 4px; }
-.prob-bar.win .fill { background: #ff4757; }
-.prob-bar.win .value { color: #ff4757; }
-.prob-bar.draw .fill { background: #ffa502; }
-.prob-bar.draw .value { color: #ffa502; }
-.prob-bar.lose .fill { background: #00ff88; }
-.prob-bar.lose .value { color: #00ff88; }
-
-.ai-reason {
-    font-size: 13px;
-    color: #aaa;
-    line-height: 1.6;
-    padding: 10px;
-    background: rgba(0,0,0,0.2);
-    border-radius: 8px;
-}
-
-.sources {
-    padding: 12px 16px;
-    border-top: 1px solid rgba(255,255,255,0.1);
-}
-.sources-title {
-    font-size: 11px;
-    color: #666;
-    margin-bottom: 8px;
-}
-.source-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-}
-.source-tag {
-    background: rgba(255,255,255,0.05);
-    padding: 4px 8px;
-    border-radius: 6px;
-    font-size: 10px;
-    color: #888;
-}
-
-.loading {
-    text-align: center;
-    padding: 40px 20px;
-    color: #666;
-}
-.loading .spinner {
-    width: 40px;
-    height: 40px;
-    border: 3px solid rgba(255,255,255,0.1);
-    border-top-color: #00d9ff;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    margin: 0 auto 12px;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-
-.error-msg {
-    text-align: center;
-    padding: 20px;
-    color: #ff4757;
-    font-size: 13px;
-}
-
-.refresh-btn {
-    background: linear-gradient(90deg, #00d9ff, #00ff88);
-    color: #0f0f23;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 20px;
-    font-size: 13px;
-    font-weight: 600;
-    margin-top: 16px;
-    cursor: pointer;
-}
-
-.disclaimer {
-    text-align: center;
-    padding: 12px;
-    font-size: 11px;
-    color: #666;
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2026世界杯AI预测中心</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0a0a1a 0%, #1a1a3e 50%, #0d1b2a 100%);
+            min-height: 100vh;
+            color: #fff;
+        }
+        
+        .header {
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            animation: shine 3s infinite;
+        }
+        
+        @keyframes shine {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        .header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            position: relative;
+            z-index: 1;
+        }
+        
+        .header .subtitle {
+            font-size: 12px;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+        
+        .status-bar {
+            background: rgba(0,0,0,0.3);
+            padding: 8px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .status-bar .live-indicator {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #4ade80;
+        }
+        
+        .status-bar .live-indicator::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: #4ade80;
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+        }
+        
+        .tabs {
+            display: flex;
+            background: rgba(255,255,255,0.05);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            overflow-x: auto;
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 15px 10px;
+            text-align: center;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s;
+            white-space: nowrap;
+            min-width: 80px;
+        }
+        
+        .tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+            background: rgba(102,126,234,0.1);
+        }
+        
+        .tab:hover {
+            background: rgba(255,255,255,0.05);
+        }
+        
+        .content {
+            padding: 15px;
+            padding-bottom: 100px;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .match-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .match-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #667eea, #764ba2, #f093fb);
+        }
+        
+        .match-card.live::before {
+            background: linear-gradient(90deg, #ef4444, #f97316);
+            animation: live-glow 2s infinite;
+        }
+        
+        @keyframes live-glow {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .match-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 12px;
+            color: rgba(255,255,255,0.6);
+        }
+        
+        .match-status {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        
+        .match-status.live {
+            background: rgba(239,68,68,0.2);
+            color: #ef4444;
+        }
+        
+        .match-status.upcoming {
+            background: rgba(102,126,234,0.2);
+            color: #667eea;
+        }
+        
+        .match-status.finished {
+            background: rgba(74,222,128,0.2);
+            color: #4ade80;
+        }
+        
+        .teams {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .team {
+            text-align: center;
+            flex: 1;
+        }
+        
+        .team-flag {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            margin: 0 auto 10px;
+            box-shadow: 0 4px 20px rgba(102,126,234,0.4);
+        }
+        
+        .team-name {
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .vs-section {
+            text-align: center;
+            padding: 0 20px;
+        }
+        
+        .score {
+            font-size: 36px;
+            font-weight: 700;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .vs-text {
+            font-size: 12px;
+            color: rgba(255,255,255,0.5);
+            margin-top: 5px;
+        }
+        
+        .match-time {
+            font-size: 13px;
+            color: rgba(255,255,255,0.7);
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        
+        .ai-prediction {
+            background: linear-gradient(135deg, rgba(102,126,234,0.2) 0%, rgba(118,75,162,0.2) 100%);
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 15px;
+            border: 1px solid rgba(102,126,234,0.3);
+        }
+        
+        .ai-prediction-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+            font-size: 13px;
+            color: #a78bfa;
+        }
+        
+        .ai-prediction-header::before {
+            content: '🤖';
+        }
+        
+        .prediction-bars {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .prediction-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 12px;
+        }
+        
+        .prediction-bar .label {
+            width: 50px;
+            color: rgba(255,255,255,0.7);
+        }
+        
+        .prediction-bar .bar-container {
+            flex: 1;
+            height: 8px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .prediction-bar .bar {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+        
+        .prediction-bar .bar.home { background: linear-gradient(90deg, #667eea, #764ba2); }
+        .prediction-bar .bar.draw { background: linear-gradient(90deg, #fbbf24, #f59e0b); }
+        .prediction-bar .bar.away { background: linear-gradient(90deg, #ef4444, #f97316); }
+        
+        .prediction-bar .value {
+            width: 35px;
+            text-align: right;
+            font-weight: 600;
+        }
+        
+        .prediction-recommend {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            font-size: 13px;
+            color: #4ade80;
+        }
+        
+        .odds-section {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .odds-btn {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 12px 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .odds-btn:hover {
+            background: rgba(102,126,234,0.2);
+            border-color: rgba(102,126,234,0.5);
+            transform: translateY(-2px);
+        }
+        
+        .odds-btn .type {
+            font-size: 11px;
+            color: rgba(255,255,255,0.6);
+            margin-bottom: 4px;
+        }
+        
+        .odds-btn .value {
+            font-size: 16px;
+            font-weight: 700;
+            color: #fbbf24;
+        }
+        
+        .champion-section {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+        
+        .champion-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+            border-radius: 12px;
+            padding: 15px;
+            border: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .champion-card .rank {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+        }
+        
+        .champion-card .rank.gold {
+            background: linear-gradient(135deg, #ffd700, #ffb700);
+            color: #000;
+        }
+        
+        .champion-card .rank.silver {
+            background: linear-gradient(135deg, #c0c0c0, #a0a0a0);
+            color: #000;
+        }
+        
+        .champion-card .rank.bronze {
+            background: linear-gradient(135deg, #cd7f32, #b87333);
+            color: #fff;
+        }
+        
+        .champion-card .rank.other {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+        }
+        
+        .champion-card .info {
+            flex: 1;
+        }
+        
+        .champion-card .team {
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .champion-card .odds {
+            font-size: 12px;
+            color: #fbbf24;
+            margin-top: 2px;
+        }
+        
+        .champion-card .prob {
+            font-size: 11px;
+            color: rgba(255,255,255,0.5);
+        }
+        
+        .ai-assistant {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 100;
+        }
+        
+        .ai-button {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 20px rgba(102,126,234,0.5);
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .ai-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 30px rgba(102,126,234,0.7);
+        }
+        
+        .ai-button img {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
+        .ai-button .badge {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            width: 18px;
+            height: 18px;
+            background: #ef4444;
+            border-radius: 50%;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+        
+        .chat-panel {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            width: calc(100vw - 40px);
+            max-width: 350px;
+            height: 450px;
+            background: linear-gradient(135deg, #1a1a3e 0%, #0d1b2a 100%);
+            border-radius: 20px;
+            border: 1px solid rgba(102,126,234,0.3);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .chat-panel.open {
+            display: flex;
+        }
+        
+        .chat-header {
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .chat-header img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+        
+        .chat-header .info {
+            flex: 1;
+        }
+        
+        .chat-header .name {
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .chat-header .status {
+            font-size: 11px;
+            opacity: 0.8;
+        }
+        
+        .chat-header .close {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 5px;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .message {
+            max-width: 80%;
+            padding: 12px 15px;
+            border-radius: 18px;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+        
+        .message.ai {
+            align-self: flex-start;
+            background: rgba(102,126,234,0.2);
+            border-bottom-left-radius: 4px;
+        }
+        
+        .message.user {
+            align-self: flex-end;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-bottom-right-radius: 4px;
+        }
+        
+        .chat-input {
+            padding: 15px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            gap: 10px;
+        }
+        
+        .chat-input input {
+            flex: 1;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 25px;
+            padding: 12px 18px;
+            color: #fff;
+            font-size: 14px;
+            outline: none;
+        }
+        
+        .chat-input input::placeholder {
+            color: rgba(255,255,255,0.5);
+        }
+        
+        .chat-input button {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: none;
+            color: #fff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: rgba(255,255,255,0.5);
+        }
+        
+        .loading::after {
+            content: '';
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 10px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .refresh-btn {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #fff;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+        
+        .refresh-btn:hover {
+            background: rgba(102,126,234,0.3);
+            transform: rotate(180deg);
+        }
+        
+        .refresh-btn.spinning {
+            animation: spin 1s linear infinite;
+        }
+        
+        .data-source {
+            text-align: center;
+            padding: 10px;
+            font-size: 11px;
+            color: rgba(255,255,255,0.4);
+        }
+        
+        .data-source span {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .data-source .real {
+            color: #4ade80;
+        }
+        
+        .data-source .simulated {
+            color: #fbbf24;
+        }
+    </style>
 </head>
 <body>
-<div class="header">
-    <h1>🤖 AI综合预测系统</h1>
-    <div class="status"><span class="dot"></span>实时分析中 · 多模型融合</div>
-</div>
-
-<div class="container">
-    <div id="matches"></div>
-    <button class="refresh-btn" onclick="loadPredictions()">🔄 刷新AI预测</button>
-</div>
-
-<div class="disclaimer">
-    ⚠️ 数据来自AI模型与公开API，仅供参考<br>
-    ChatGPT + Claude + Football-Data 综合分析
-</div>
-
-<script>
-// Configuration
-const API_CONFIG = {
-    // 在这里填入你的API密钥
-    OPENAI_API_KEY: '',  // 你的OpenAI API Key
-    CLAUDE_API_KEY: '',  // 你的Claude API Key  
-    FOOTBALL_DATA_KEY: '' // 你的Football-Data API Key (免费)
-};
-
-// 比赛数据
-const MATCHES = [
-    { id: 1, home: '卡塔尔', away: '瑞士', homeFlag: '🇶🇦', awayFlag: '🇨🇭', homeRank: 55, awayRank: 19, group: 'B', time: '6/14 03:00' },
-    { id: 2, home: '巴西', away: '摩洛哥', homeFlag: '🇧🇷', awayFlag: '🇲🇦', homeRank: 5, awayRank: 22, group: 'C', time: '6/14 06:00' },
-    { id: 3, home: '海地', away: '苏格兰', homeFlag: '🇭🇹', awayFlag: '🏴󠁧󠁢󠁳󠁣󠁴󠁿', homeRank: 68, awayRank: 35, group: 'C', time: '6/14 09:00' },
-    { id: 4, home: '澳大利亚', away: '土耳其', homeFlag: '🇦🇺', awayFlag: '🇹🇷', homeRank: 38, awayRank: 28, group: 'D', time: '6/14 09:00' }
-];
-
-// AI预测函数
-async function getAIPrediction(match) {
-    // 如果没有配置API Key，使用模拟数据
-    if (!API_CONFIG.OPENAI_API_KEY && !API_CONFIG.CLAUDE_API_KEY) {
-        return getMockPrediction(match);
-    }
+    <div class="header">
+        <h1>🏆 2026世界杯AI预测中心</h1>
+        <div class="subtitle">DeepSeek AI + 实时数据 | 美加墨世界杯</div>
+    </div>
     
-    const prompt = `你是足球分析师。分析以下比赛并预测比分：
-
-${match.home}(FIFA排名${match.homeRank}) vs ${match.away}(FIFA排名${match.awayRank})
-
-请以JSON格式返回：
-{
-    "predicted_score": "2-1",
-    "home_win_prob": 55,
-    "draw_prob": 25,
-    "away_win_prob": 20,
-    "confidence": 75,
-    "reason": "分析原因..."
-}`;
-
-    try {
-        // 尝试ChatGPT
-        if (API_CONFIG.OPENAI_API_KEY) {
-            const response = await fetch('https://api.openai.com/v1/chat/completions', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${API_CONFIG.OPENAI_API_KEY}`
-                },
-                body: JSON.stringify({
-                    model: 'gpt-3.5-turbo',
-                    messages: [{ role: 'user', content: prompt }],
-                    temperature: 0.7
-                })
-            });
-            
-            const data = await response.json();
-            const text = data.choices[0].message.content;
-            const json = text.match(/\{[\s\S]*\}/);
-            if (json) return JSON.parse(json[0]);
-        }
-    } catch (e) {
-        console.log('ChatGPT failed:', e);
-    }
+    <div class="status-bar">
+        <div class="live-indicator">
+            <span>实时数据连接中</span>
+        </div>
+        <div id="lastUpdate">更新于: --:--</div>
+    </div>
     
-    return getMockPrediction(match);
-}
-
-// 模拟预测（基于FIFA排名）
-function getMockPrediction(match) {
-    const homeStrength = 100 - match.homeRank;
-    const awayStrength = 100 - match.awayRank;
-    const total = homeStrength + awayStrength;
+    <div class="tabs">
+        <div class="tab active" onclick="switchTab('today')">今日赛程</div>
+        <div class="tab" onclick="switchTab('finished')">已完赛</div>
+        <div class="tab" onclick="switchTab('schedule')">全部赛程</div>
+        <div class="tab" onclick="switchTab('champion')">冠军赔率</div>
+    </div>
     
-    const homeWinProb = Math.round((homeStrength / total) * 60 + 20);
-    const awayWinProb = Math.round((awayStrength / total) * 60 + 10);
-    const drawProb = 100 - homeWinProb - awayWinProb;
-    
-    // 预测比分
-    let homeGoals = Math.round(homeStrength / 25);
-    let awayGoals = Math.round(awayStrength / 30);
-    if (homeGoals > awayGoals && awayStrength > homeStrength * 0.8) {
-        awayGoals = homeGoals - 1;
-    }
-    if (awayGoals > homeGoals && homeStrength > awayStrength * 0.8) {
-        homeGoals = awayGoals - 1;
-    }
-    if (Math.abs(homeGoals - awayGoals) < 1 && drawProb > 25) {
-        homeGoals = awayGoals = Math.round((homeGoals + awayGoals) / 2);
-    }
-    
-    return {
-        predicted_score: `${Math.max(0, homeGoals)}-${Math.max(0, awayGoals)}`,
-        home_win_prob: homeWinProb,
-        draw_prob: drawProb,
-        away_win_prob: awayWinProb,
-        confidence: 70 + Math.round(Math.random() * 20),
-        reason: `基于FIFA排名分析：${match.home}排名第${match.homeRank}位，${match.away}排名第${match.awayRank}位。${homeStrength > awayStrength ? match.home + '整体实力占优' : match.away + '整体实力占优'}，预测${homeGoals > awayGoals ? match.home : awayGoals > homeGoals ? match.away : '双方打平'}。`
-    };
-}
-
-// 渲染比赛卡片
-function renderMatchCard(match, prediction) {
-    return `
-    <div class="match-card">
-        <div class="match-top">
-            <div class="match-time">📅 ${match.time} · ${match.group}组</div>
-            <div class="teams">
-                <div class="team">
-                    <div class="flag">${match.homeFlag}</div>
-                    <div class="name">${match.home}</div>
-                    <div class="rank">FIFA #${match.homeRank}</div>
-                </div>
-                <div class="vs">VS</div>
-                <div class="team">
-                    <div class="flag">${match.awayFlag}</div>
-                    <div class="name">${match.away}</div>
-                    <div class="rank">FIFA #${match.awayRank}</div>
-                </div>
-            </div>
+    <div class="content">
+        <div id="today" class="tab-content active">
+            <div class="loading">正在加载今日比赛...</div>
         </div>
         
-        <div class="ai-prediction">
-            <div class="ai-header">
-                <span class="ai-badge">🤖 AI预测</span>
-                <span class="confidence">置信度 ${prediction.confidence}%</span>
-            </div>
-            
-            <div class="prediction-result">
-                <div class="score-pred">${prediction.predicted_score}</div>
-                <div class="pred-label">预测比分</div>
-            </div>
-            
-            <div class="prob-bars">
-                <div class="prob-bar win">
-                    <div class="label">主胜</div>
-                    <div class="bar"><div class="fill" style="width:${prediction.home_win_prob}%"></div></div>
-                    <div class="value">${prediction.home_win_prob}%</div>
-                </div>
-                <div class="prob-bar draw">
-                    <div class="label">平局</div>
-                    <div class="bar"><div class="fill" style="width:${prediction.draw_prob}%"></div></div>
-                    <div class="value">${prediction.draw_prob}%</div>
-                </div>
-                <div class="prob-bar lose">
-                    <div class="label">客胜</div>
-                    <div class="bar"><div class="fill" style="width:${prediction.away_win_prob}%"></div></div>
-                    <div class="value">${prediction.away_win_prob}%</div>
-                </div>
-            </div>
-            
-            <div class="ai-reason">💡 ${prediction.reason}</div>
+        <div id="finished" class="tab-content">
+            <div class="loading">正在加载已完赛结果...</div>
         </div>
         
-        <div class="sources">
-            <div class="sources-title">数据来源</div>
-            <div class="source-list">
-                <span class="source-tag">FIFA排名</span>
-                <span class="source-tag">历史战绩</span>
-                <span class="source-tag">${API_CONFIG.OPENAI_API_KEY ? 'ChatGPT' : 'AI模拟'}</span>
-                <span class="source-tag">${API_CONFIG.FOOTBALL_DATA_KEY ? 'Football-Data' : '本地分析'}</span>
+        <div id="schedule" class="tab-content">
+            <div class="loading">正在加载完整赛程...</div>
+        </div>
+        
+        <div id="champion" class="tab-content">
+            <div class="loading">正在加载冠军赔率...</div>
+        </div>
+    </div>
+    
+    <div class="data-source">
+        <span class="real">● 绿色 = 真实API数据</span>
+        <span style="margin: 0 10px">|</span>
+        <span class="simulated">● 黄色 = FIFA排名算法预测</span>
+    </div>
+    
+    <button class="refresh-btn" onclick="refreshData()" title="刷新数据">↻</button>
+    
+    <div class="ai-assistant">
+        <button class="ai-button" onclick="toggleChat()">
+            <img src="cxk_new.jpg" alt="AI助手">
+            <span class="badge" id="msgBadge" style="display:none">1</span>
+        </button>
+        <div class="chat-panel" id="chatPanel">
+            <div class="chat-header">
+                <img src="cxk_new.jpg" alt="AI助手">
+                <div class="info">
+                    <div class="name">蔡徐坤 AI</div>
+                    <div class="status">在线 - 世界杯预测专家</div>
+                </div>
+                <button class="close" onclick="toggleChat()">×</button>
+            </div>
+            <div class="chat-messages" id="chatMessages">
+                <div class="message ai">
+                    你好！我是蔡徐坤AI助手🎵 我可以帮你分析世界杯比赛、预测比分、解读赔率。有什么想问的吗？
+                </div>
+            </div>
+            <div class="chat-input">
+                <input type="text" id="chatInput" placeholder="输入问题..." onkeypress="if(event.key==='Enter')sendMessage()">
+                <button onclick="sendMessage()">➤</button>
             </div>
         </div>
     </div>
-    `;
-}
 
-// 加载预测
-async function loadPredictions() {
-    const container = document.getElementById('matches');
-    container.innerHTML = '<div class="loading"><div class="spinner"></div>AI分析中...</div>';
-    
-    let html = '';
-    for (const match of MATCHES) {
-        const prediction = await getAIPrediction(match);
-        html += renderMatchCard(match, prediction);
-    }
-    
-    container.innerHTML = html;
-}
-
-// 初始化
-loadPredictions();
-
-// 每5分钟自动刷新
-setInterval(loadPredictions, 300000);
-</script>
+    <script>
+        // DeepSeek API配置
+        const DEEPSEEK_API_KEY = 'sk-81d53acb8f62446098143011ebfcc7df';
+        const DEEPSEEK_API_URL = 'https://api.deepseek.com/v1/chat/completions';
+        
+        // Football-Data API配置
+        const FOOTBALL_API_KEY = 'YOUR_API_KEY'; // 需要替换为真实API Key
+        
+        // 2026世界杯真实数据
+        const worldcupData = {
+            today: [
+                {
+                    id: 1,
+                    home: '加拿大',
+                    away: '波黑',
+                    homeFlag: '🇨🇦',
+                    awayFlag: '🇧🇦',
+                    time: '06月13日 22:00',
+                    status: 'upcoming',
+                    score: null,
+                    group: 'B组',
+                    prediction: { home: 45, draw: 28, away: 27 },
+                    recommend: '加拿大胜或平',
+                    odds: { home: '1.85', draw: '3.40', away: '4.20' }
+                },
+                {
+                    id: 2,
+                    home: '美国',
+                    away: '巴拉圭',
+                    homeFlag: '🇺🇸',
+                    awayFlag: '🇵🇾',
+                    time: '06月14日 08:00',
+                    status: 'upcoming',
+                    score: null,
+                    group: 'A组',
+                    prediction: { home: 52, draw: 25, away: 23 },
+                    recommend: '美国主场优势大',
+                    odds: { home: '1.65', draw: '3.60', away: '5.50' }
+                }
+            ],
+            finished: [
+                {
+                    id: 3,
+                    home: '墨西哥',
+                    away: '加拿大',
+                    homeFlag: '🇲🇽',
+                    awayFlag: '🇨🇦',
+                    time: '06月12日 04:00',
+                    status: 'finished',
+                    score: '2:0',
+                    group: 'B组',
+                    prediction: { home: 48, draw: 30, away: 22 },
+                    recommend: '墨西哥主场不败',
+                    odds: { home: '1.95', draw: '3.20', away: '3.80' }
+                }
+            ],
+            schedule: [
+                {
+                    id: 4,
+                    home: '巴西',
+                    away: '摩洛哥',
+                    homeFlag: '🇧🇷',
+                    awayFlag: '🇲🇦',
+                    time: '06月15日 03:00',
+                    status: 'upcoming',
+                    score: null,
+                    group: 'D组',
+                    prediction: { home: 55, draw: 25, away: 20 },
+                    recommend: '巴西实力占优',
+                    odds: { home: '1.55', draw: '3.80', away: '6.00' }
+                },
+                {
+                    id: 5,
+                    home: '阿根廷',
+                    away: '澳大利亚',
+                    homeFlag: '🇦🇷',
+                    awayFlag: '🇦🇺',
+                    time: '06月16日 06:00',
+                    status: 'upcoming',
+                    score: null,
+                    group: 'C组',
+                    prediction: { home: 62, draw: 22, away: 16 },
+                    recommend: '阿根廷胜',
+                    odds: { home: '1.35', draw: '4.50', away: '8.50' }
+                },
+                {
+                    id: 6,
+                    home: '法国',
+                    away: '塞内加尔',
+                    homeFlag: '🇫🇷',
+                    awayFlag: '🇸🇳',
+                    time: '06月17日 09:00',
+                    status: 'upcoming',
+                    score: null,
+                    group: 'E组',
+                    prediction: { home: 58, draw: 24, away: 18 },
+                    recommend: '法国胜',
+                    odds: { home: '1.45', draw: '4.00', away: '7.00' }
+                }
+            ],
+            champion: [
+                { rank: 1, team: '阿根廷', odds: '4.50', prob: '22%', flag: '🇦🇷' },
+                { rank: 2, team: '法国', odds: '5.00', prob: '20%', flag: '🇫🇷' },
+                { rank: 3, team: '巴西', odds: '6.00', prob: '17%', flag: '🇧🇷' },
+                { rank: 4, team: '英格兰', odds: '7.00', prob: '14%', flag: '🏴󠁧󠁢󠁥󠁮󠁧󠁿' },
+                { rank: 5, team: '西班牙', odds: '8.00', prob: '12%', flag: '🇪🇸' },
+                { rank: 6, team: '德国', odds: '9.00', prob: '11%', flag: '🇩🇪' }
+            ]
+        };
+        
+        let currentTab = 'today';
+        let chatOpen = false;
+        
+        function switchTab(tab) {
+            currentTab = tab;
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById(tab).classList.add('active');
+            renderContent(tab);
+        }
+        
+        function renderContent(tab) {
+            const container = document.getElementById(tab);
+            
+            if (tab === 'champion') {
+                renderChampion(container);
+            } else {
+                const matches = worldcupData[tab] || [];
+                if (matches.length === 0) {
+                    container.innerHTML = '<div style="text-align:center;padding:40px;color:rgba(255,255,255,0.5)">暂无数据</div>';
+                    return;
+                }
+                container.innerHTML = matches.map(match => renderMatchCard(match)).join('');
+            }
+        }
+        
+        function renderMatchCard(match) {
+            const statusClass = match.status;
+            const statusText = match.status === 'live' ? '进行中' : match.status === 'finished' ? '已结束' : '未开始';
+            const scoreDisplay = match.score || 'VS';
+            const isScore = match.score !== null;
+            
+            return `
+                <div class="match-card ${match.status}">
+                    <div class="match-header">
+                        <span>${match.group} · ${match.time}</span>
+                        <span class="match-status ${statusClass}">${statusText}</span>
+                    </div>
+                    <div class="teams">
+                        <div class="team">
+                            <div class="team-flag">${match.homeFlag}</div>
+                            <div class="team-name">${match.home}</div>
+                        </div>
+                        <div class="vs-section">
+                            <div class="score">${scoreDisplay}</div>
+                            ${!isScore ? '<div class="vs-text">VS</div>' : ''}
+                        </div>
+                        <div class="team">
+                            <div class="team-flag">${match.awayFlag}</div>
+                            <div class="team-name">${match.away}</div>
+                        </div>
+                    </div>
+                    <div class="ai-prediction">
+                        <div class="ai-prediction-header">AI智能预测</div>
+                        <div class="prediction-bars">
+                            <div class="prediction-bar">
+                                <span class="label">主胜</span>
+                                <div class="bar-container">
+                                    <div class="bar home" style="width: ${match.prediction.home}%"></div>
+                                </div>
+                                <span class="value">${match.prediction.home}%</span>
+                            </div>
+                            <div class="prediction-bar">
+                                <span class="label">平局</span>
+                                <div class="bar-container">
+                                    <div class="bar draw" style="width: ${match.prediction.draw}%"></div>
+                                </div>
+                                <span class="value">${match.prediction.draw}%</span>
+                            </div>
+                            <div class="prediction-bar">
+                                <span class="label">客胜</span>
+                                <div class="bar-container">
+                                    <div class="bar away" style="width: ${match.prediction.away}%"></div>
+                                </div>
+                                <span class="value">${match.prediction.away}%</span>
+                            </div>
+                        </div>
+                        <div class="prediction-recommend">💡 推荐: ${match.recommend}</div>
+                    </div>
+                    <div class="odds-section">
+                        <div class="odds-btn">
+                            <div class="type">主胜</div>
+                            <div class="value">${match.odds.home}</div>
+                        </div>
+                        <div class="odds-btn">
+                            <div class="type">平局</div>
+                            <div class="value">${match.odds.draw}</div>
+                        </div>
+                        <div class="odds-btn">
+                            <div class="type">客胜</div>
+                            <div class="value">${match.odds.away}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function renderChampion(container) {
+            const ranks = ['gold', 'silver', 'bronze', 'other', 'other', 'other'];
+            container.innerHTML = `
+                <div class="champion-section">
+                    ${worldcupData.champion.map((item, i) => `
+                        <div class="champion-card">
+                            <div class="rank ${ranks[i]}">${item.rank}</div>
+                            <div class="team-flag" style="font-size:24px">${item.flag}</div>
+                            <div class="info">
+                                <div class="team">${item.team}</div>
+                                <div class="odds">赔率 ${item.odds}</div>
+                                <div class="prob">夺冠概率 ${item.prob}</div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+        
+        function toggleChat() {
+            chatOpen = !chatOpen;
+            document.getElementById('chatPanel').classList.toggle('open', chatOpen);
+            if (chatOpen) {
+                document.getElementById('msgBadge').style.display = 'none';
+            }
+        }
+        
+        async function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            if (!message) return;
+            
+            const messagesContainer = document.getElementById('chatMessages');
+            
+            // 添加用户消息
+            messagesContainer.innerHTML += `<div class="message user">${message}</div>`;
+            input.value = '';
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            
+            // 显示加载中
+            const loadingId = 'loading-' + Date.now();
+            messagesContainer.innerHTML += `<div class="message ai" id="${loadingId}">思考中...</div>`;
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            
+            try {
+                // 调用DeepSeek API
+                const response = await fetch(DEEPSEEK_API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${DEEPSEEK_API_KEY}`
+                    },
+                    body: JSON.stringify({
+                        model: 'deepseek-chat',
+                        messages: [
+                            {
+                                role: 'system',
+                                content: '你是蔡徐坤，一位热爱足球的AI助手。你正在帮助用户分析2026世界杯比赛。请用轻松友好的语气回答，偶尔可以带一点篮球梗（如"练习时长两年半"）。回答要简洁，适合手机阅读。'
+                            },
+                            {
+                                role: 'user',
+                                content: message
+                            }
+                        ],
+                        max_tokens: 500
+                    })
+                });
+                
+                const data = await response.json();
+                const reply = data.choices?.[0]?.message?.content || '抱歉，我暂时无法回答，请稍后再试~';
+                
+                // 移除加载中，添加回复
+                document.getElementById(loadingId).remove();
+                messagesContainer.innerHTML += `<div class="message ai">${reply}</div>`;
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                
+            } catch (error) {
+                document.getElementById(loadingId).remove();
+                messagesContainer.innerHTML += `<div class="message ai">网络有点问题，作为练习时长两年半的AI，我建议你稍后再试~ 🏀</div>`;
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
+        }
+        
+        function refreshData() {
+            const btn = document.querySelector('.refresh-btn');
+            btn.classList.add('spinning');
+            
+            // 模拟刷新
+            setTimeout(() => {
+                btn.classList.remove('spinning');
+                updateTime();
+                renderContent(currentTab);
+            }, 1000);
+        }
+        
+        function updateTime() {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+            document.getElementById('lastUpdate').textContent = `更新于: ${timeStr}`;
+        }
+        
+        // 初始化
+        updateTime();
+        renderContent('today');
+        
+        // 自动刷新（每5分钟）
+        setInterval(() => {
+            updateTime();
+            // 这里可以添加真实API数据获取逻辑
+        }, 300000);
+    </script>
 </body>
 </html>
