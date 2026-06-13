@@ -11,7 +11,7 @@ body {
     background: #0f1923;
     color: #fff;
     min-height: 100vh;
-    padding-bottom: 80px;
+    padding-bottom: 120px;
 }
 
 .header {
@@ -19,51 +19,48 @@ body {
     padding: 14px 20px;
     text-align: center;
     border-bottom: 2px solid #00d4aa;
-    position: sticky;
-    top: 0;
-    z-index: 50;
 }
 .header h1 { font-size: 18px; font-weight: 700; }
 .header h1 span { color: #00d4aa; }
 
 .container { padding: 12px 16px; max-width: 480px; margin: 0 auto; }
 
-/* ====== 蔡徐坤聊天区 - 最上面显眼位置 ====== */
-.ai-top-section {
+/* 蔡徐坤AI助手 */
+.ai-section {
     background: linear-gradient(135deg, rgba(76,130,255,0.12), rgba(0,212,170,0.08));
     border: 2px solid rgba(76,130,255,0.3);
     border-radius: 14px;
-    padding: 12px 14px;
+    padding: 12px;
     margin-bottom: 14px;
 }
-.ai-top-title {
+.ai-header {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
     margin-bottom: 10px;
 }
-.ai-top-title .icon {
-    width: 36px;
-    height: 36px;
+.ai-avatar {
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #4c82ff, #00d4aa);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
+    background: url('https://zxw2222.github.io/exam-system/cxk.jpg') center/cover no-repeat;
+    border: 2px solid #4c82ff;
     flex-shrink: 0;
 }
-.ai-top-title .text { flex: 1; }
-.ai-top-title .text .name { font-size: 15px; font-weight: 700; }
-.ai-top-title .text .sub { font-size: 11px; color: #888; }
+.ai-info { flex: 1; }
+.ai-name { font-size: 15px; font-weight: 700; }
+.ai-sub { font-size: 11px; color: #888; }
 
-.ai-msgs {
-    max-height: 180px;
+.ai-messages {
+    max-height: 160px;
     overflow-y: auto;
     margin-bottom: 10px;
+    padding: 8px;
+    background: rgba(0,0,0,0.2);
+    border-radius: 10px;
 }
 .ai-msg {
-    margin-bottom: 10px;
+    margin-bottom: 8px;
     display: flex;
     gap: 8px;
 }
@@ -72,97 +69,55 @@ body {
     width: 28px;
     height: 28px;
     border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
     flex-shrink: 0;
 }
-.ai-msg .avatar.bot { background: linear-gradient(135deg, #4c82ff, #00d4aa); }
-.ai-msg .avatar.user { background: #2a3a4a; }
+.ai-msg .avatar.bot {
+    background: url('https://zxw2222.github.io/exam-system/cxk.jpg') center/cover no-repeat;
+}
+.ai-msg .avatar.user { background: #2a3a4a; display: flex; align-items: center; justify-content: center; font-size: 14px; }
 .ai-msg .bubble {
-    max-width: 280px;
+    max-width: 240px;
     padding: 8px 12px;
-    border-radius: 10px;
+    border-radius: 12px;
     font-size: 13px;
-    line-height: 1.5;
+    line-height: 1.4;
 }
 .ai-msg.bot .bubble {
-    background: #0f1923;
-    border: 1px solid #2a3a4a;
-    border-bottom-left-radius: 3px;
+    background: #1a2a3a;
+    border-bottom-left-radius: 4px;
 }
 .ai-msg.user .bubble {
     background: #4c82ff;
-    border-bottom-right-radius: 3px;
-}
-.ai-msg .name-tag {
-    font-size: 10px;
-    color: #4c82ff;
-    margin-bottom: 2px;
-    font-weight: 600;
+    border-bottom-right-radius: 4px;
 }
 
-.ai-input-row {
+.ai-input {
     display: flex;
     gap: 8px;
 }
-.ai-input-row input {
+.ai-input input {
     flex: 1;
     padding: 10px 14px;
     background: #0f1923;
     border: 1px solid #2a3a4a;
-    border-radius: 22px;
+    border-radius: 20px;
     color: #fff;
     font-size: 14px;
     outline: none;
 }
-.ai-input-row input:focus { border-color: #4c82ff; }
-.ai-input-row button {
-    padding: 10px 18px;
+.ai-input input:focus { border-color: #4c82ff; }
+.ai-input button {
+    padding: 10px 16px;
     background: linear-gradient(135deg, #4c82ff, #00d4aa);
     border: none;
-    border-radius: 22px;
+    border-radius: 20px;
     color: #fff;
     font-size: 14px;
-    font-weight: 700;
+    font-weight: 600;
     cursor: pointer;
-    white-space: nowrap;
-}
-.ai-input-row button:active { opacity: 0.8; }
-
-.typing {
-    display: flex;
-    gap: 4px;
-    padding: 8px 12px;
-    background: #0f1923;
-    border-radius: 10px;
-    border-bottom-left-radius: 3px;
-    border: 1px solid #2a3a4a;
-    width: fit-content;
-}
-.typing-dot {
-    width: 6px;
-    height: 6px;
-    background: #4c82ff;
-    border-radius: 50%;
-    animation: typing 1.2s infinite;
-}
-.typing-dot:nth-child(2) { animation-delay: 0.2s; }
-.typing-dot:nth-child(3) { animation-delay: 0.4s; }
-@keyframes typing {
-    0%,60%,100% { transform: translateY(0); opacity: 0.4; }
-    30% { transform: translateY(-6px); opacity: 1; }
 }
 
-.api-badge {
-    font-size: 10px;
-    color: #4c82ff;
-    margin-top: 6px;
-    text-align: right;
-}
-
-/* ====== Tab切换 ====== */
+/* Tab切换 */
 .tabs {
     display: flex;
     background: #1a2a3a;
@@ -172,12 +127,13 @@ body {
 }
 .tab {
     flex: 1;
-    padding: 10px 6px;
+    padding: 12px 8px;
     text-align: center;
     font-size: 13px;
-    color: #666;
+    color: #888;
     cursor: pointer;
-    transition: all 0.2s;
+    border: none;
+    background: transparent;
 }
 .tab.active {
     background: #00d4aa;
@@ -188,6 +144,7 @@ body {
 .panel { display: none; }
 .panel.active { display: block; }
 
+/* 比赛卡片 */
 .match-card {
     background: #1a2a3a;
     border-radius: 12px;
@@ -195,7 +152,7 @@ body {
     overflow: hidden;
     border: 1px solid #2a3a4a;
 }
-.match-info {
+.match-header {
     background: rgba(0,212,170,0.1);
     padding: 8px 14px;
     font-size: 12px;
@@ -203,7 +160,8 @@ body {
     display: flex;
     justify-content: space-between;
 }
-.match-main { padding: 14px; }
+.match-body { padding: 14px; }
+
 .teams {
     display: flex;
     justify-content: space-between;
@@ -211,69 +169,53 @@ body {
     margin-bottom: 14px;
 }
 .team { text-align: center; flex: 1; }
-.team .flag { font-size: 32px; }
+.team .flag { font-size: 36px; }
 .team .name { font-size: 14px; font-weight: 600; margin-top: 4px; }
 .team .rank { font-size: 11px; color: #666; }
-.vs-time {
+.vs-center {
     text-align: center;
-    min-width: 60px;
+    min-width: 70px;
 }
-.vs-time .vs { font-size: 14px; color: #00d4aa; font-weight: 700; }
-.vs-time .time { font-size: 11px; color: #666; margin-top: 2px; }
+.vs-center .vs { font-size: 16px; color: #00d4aa; font-weight: 700; }
+.vs-center .time { font-size: 11px; color: #888; margin-top: 4px; }
 
+/* AI预测 */
 .prediction {
     background: linear-gradient(135deg, rgba(76,130,255,0.15), rgba(0,212,170,0.1));
     border-radius: 10px;
-    padding: 12px;
+    padding: 14px;
     text-align: center;
     margin-bottom: 12px;
     border: 1px solid rgba(76,130,255,0.2);
 }
 .pred-label { font-size: 12px; color: #4c82ff; }
-.pred-score { font-size: 30px; font-weight: 900; color: #4c82ff; margin: 4px 0; }
+.pred-score { font-size: 32px; font-weight: 900; color: #4c82ff; margin: 6px 0; }
 .confidence { font-size: 11px; color: #888; }
-.ai-analysis {
-    font-size: 11px;
-    color: #aaa;
-    margin-top: 6px;
-    padding: 6px;
-    background: rgba(76,130,255,0.05);
-    border-radius: 6px;
-}
 
-.prob-row {
+/* 概率 */
+.probs {
     display: flex;
     gap: 8px;
     margin-bottom: 12px;
 }
-.prob-box {
+.prob {
     flex: 1;
     text-align: center;
-    padding: 8px 4px;
+    padding: 10px 4px;
     background: #0f1923;
     border-radius: 8px;
 }
-.prob-box .l { font-size: 10px; color: #888; margin-bottom: 4px; }
-.prob-box .v { font-size: 16px; font-weight: 700; }
-.prob-box.win .v { color: #ff6b6b; }
-.prob-box.draw .v { color: #ffd93d; }
-.prob-box.lose .v { color: #6bcb77; }
-.prob-box .bar {
-    height: 4px;
-    background: rgba(255,255,255,0.1);
-    border-radius: 2px;
-    margin-top: 6px;
-    overflow: hidden;
-}
-.prob-box .bar-fill { height: 100%; border-radius: 2px; }
-.prob-box.win .bar-fill { background: #ff6b6b; }
-.prob-box.draw .bar-fill { background: #ffd93d; }
-.prob-box.lose .bar-fill { background: #6bcb77; }
+.prob .label { font-size: 10px; color: #888; margin-bottom: 4px; }
+.prob .value { font-size: 16px; font-weight: 700; }
+.prob.win .value { color: #ff6b6b; }
+.prob.draw .value { color: #ffd93d; }
+.prob.lose .value { color: #6bcb77; }
 
+/* 推荐 */
 .recommend {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
     padding: 10px;
     background: rgba(255,215,0,0.1);
     border-radius: 8px;
@@ -287,33 +229,31 @@ body {
     background: #ffd700;
     color: #000;
 }
-.stars { color: #ffd700; font-size: 13px; }
-.rec-desc { font-size: 12px; color: #aaa; flex: 1; }
+.rec-text { font-size: 12px; color: #aaa; flex: 1; }
 
-.odds-section { margin-bottom: 12px; }
-.odds-title { font-size: 11px; color: #666; margin-bottom: 6px; }
+/* 赔率 */
+.odds-title { font-size: 11px; color: #666; margin-bottom: 8px; }
 .odds-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 6px;
+    gap: 8px;
 }
 .odds-btn {
-    padding: 10px 4px;
+    padding: 12px 4px;
     background: #0f1923;
     border: 1px solid #2a3a4a;
     border-radius: 8px;
     text-align: center;
     cursor: pointer;
-    transition: all 0.2s;
+    color: #fff;
 }
-.odds-btn:hover { border-color: #00d4aa; }
-.odds-btn .lb { font-size: 10px; color: #888; display: block; }
-.odds-btn .val { font-size: 14px; font-weight: 600; }
+.odds-btn .label { font-size: 10px; color: #888; display: block; margin-bottom: 4px; }
+.odds-btn .value { font-size: 14px; font-weight: 600; }
 .odds-btn.selected { 
     border-color: #ffd700; 
     background: rgba(255,215,0,0.1);
 }
-.odds-btn.selected .val { color: #ffd700; }
+.odds-btn.selected .value { color: #ffd700; }
 
 /* 已完赛 */
 .finished-card {
@@ -331,10 +271,38 @@ body {
 .finished-score {
     flex: 1;
     text-align: center;
-    font-size: 22px;
+    font-size: 24px;
     font-weight: 900;
     color: #6bcb77;
 }
+
+/* 赛程 */
+.schedule-card {
+    background: #1a2a3a;
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.schedule-card .date { 
+    min-width: 60px; 
+    text-align: center;
+    font-size: 12px;
+    color: #888;
+}
+.schedule-card .date .day { font-size: 16px; font-weight: 700; color: #fff; }
+.schedule-teams {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
+.schedule-teams .flag { font-size: 24px; }
+.schedule-teams .name { font-size: 13px; }
+.schedule-teams .vs { color: #666; font-size: 12px; }
 
 /* 投注单 */
 .bet-slip {
@@ -349,41 +317,40 @@ body {
     display: none;
 }
 .bet-slip.show { display: block; }
-.slip-header {
+.bet-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 10px;
 }
-.slip-title { font-size: 14px; font-weight: 700; color: #ffd700; }
-.slip-count { 
+.bet-title { font-size: 14px; font-weight: 700; color: #ffd700; }
+.bet-count { 
     background: #ffd700; 
     color: #000; 
-    padding: 2px 8px; 
+    padding: 2px 10px; 
     border-radius: 10px; 
     font-size: 12px;
     font-weight: 700;
 }
-.slip-items { max-height: 100px; overflow-y: auto; }
-.slip-item {
+.bet-items { max-height: 100px; overflow-y: auto; margin-bottom: 10px; }
+.bet-item {
     display: flex;
     justify-content: space-between;
     padding: 6px 0;
     border-bottom: 1px solid #2a3a4a;
     font-size: 12px;
 }
-.slip-item .del { color: #ff6b6b; cursor: pointer; margin-left: 8px; }
-.slip-total {
+.bet-item .del { color: #ff6b6b; cursor: pointer; margin-left: 8px; }
+.bet-total {
     display: flex;
     justify-content: space-between;
-    margin-top: 10px;
     padding-top: 10px;
     border-top: 1px solid #2a3a4a;
     font-size: 14px;
     font-weight: 700;
 }
-.slip-total .odds { color: #ffd700; }
-.clear-btn {
+.bet-total .odds { color: #ffd700; }
+.bet-clear {
     width: 100%;
     padding: 10px;
     background: rgba(255,107,107,0.2);
@@ -398,305 +365,334 @@ body {
 .loading {
     text-align: center;
     padding: 40px;
-    color: #666;
+    color: #888;
 }
-.loading .spinner {
-    width: 36px;
-    height: 36px;
-    border: 3px solid rgba(255,255,255,0.1);
-    border-top-color: #4c82ff;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    margin: 0 auto 12px;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-
-footer { text-align: center; padding: 20px; color: #444; font-size: 11px; }
 </style>
 </head>
 <body>
 <div class="header">
-    <h1>🏆 <span>DeepSeek AI</span> 2026世界杯</h1>
+    <h1>🏆 <span>AI比分预测</span> - 2026世界杯</h1>
 </div>
 
 <div class="container">
-
-<!-- ============ 蔡徐坤AI助手 - 最上面显眼位置 ============ -->
-<div class="ai-top-section" id="aiTopSection">
-    <div class="ai-top-title">
-        <div class="icon" style="background:url('https://zxw2222.github.io/exam-system/cxk.jpg') center/cover no-repeat;border-radius:50%;"></div>
-        <div class="text">
-            <div class="name">💬 蔡徐坤 AI助手 <span style="font-size:11px;color:#4c82ff;font-weight:400;">（DeepSeek驱动）</span></div>
-            <div class="sub">想问什么直接问，关于世界杯、比分预测、球队分析都可以！</div>
-        </div>
-    </div>
-    
-    <div class="ai-msgs" id="aiTopMsgs">
-        <div class="ai-msg bot">
-            <div class="avatar bot" style="background:url('https://zxw2222.github.io/exam-system/cxk.jpg') center/cover no-repeat;"></div>
-            <div>
-                <div class="name-tag">蔡徐坤</div>
-                <div class="bubble">你好！有什么关于世界杯的问题，尽管问我吧！⚽</div>
+    <!-- 蔡徐坤AI助手 -->
+    <div class="ai-section">
+        <div class="ai-header">
+            <div class="ai-avatar"></div>
+            <div class="ai-info">
+                <div class="ai-name">🐔 蔡徐坤 AI助手</div>
+                <div class="ai-sub">专业足球预测 · 实时数据分析</div>
             </div>
         </div>
+        <div class="ai-messages" id="aiMessages">
+            <div class="ai-msg bot">
+                <div class="avatar bot"></div>
+                <div class="bubble">你好！我是蔡徐坤，专业足球AI助手。可以问我比赛预测、球队分析等问题~</div>
+            </div>
+        </div>
+        <div class="ai-input">
+            <input type="text" id="aiInput" placeholder="输入问题，如：阿根廷vs巴西谁赢？" onkeypress="if(event.key==='Enter')sendAI()">
+            <button onclick="sendAI()">发送</button>
+        </div>
     </div>
-    
-    <div class="ai-input-row">
-        <input id="aiInput" placeholder="问问蔡徐坤关于世界杯的问题..." onkeydown="if(event.key==='Enter')sendMsg()">
-        <button onclick="sendMsg()">发送</button>
+
+    <!-- Tab切换 -->
+    <div class="tabs">
+        <button class="tab active" onclick="switchTab(0)">今日预测</button>
+        <button class="tab" onclick="switchTab(1)">已完赛</button>
+        <button class="tab" onclick="switchTab(2)">赛程</button>
     </div>
-    
-    <div class="api-badge" id="aiStatusBadge">🟢 DeepSeek AI 已就绪</div>
+
+    <!-- 今日预测 -->
+    <div class="panel active" id="panel0">
+        <div id="todayMatches"></div>
+    </div>
+
+    <!-- 已完赛 -->
+    <div class="panel" id="panel1">
+        <div id="finishedMatches"></div>
+    </div>
+
+    <!-- 赛程 -->
+    <div class="panel" id="panel2">
+        <div id="scheduleMatches"></div>
+    </div>
 </div>
 
-<!-- ============ Tab ============ -->
-<div class="tabs">
-    <div class="tab active" onclick="switchTab('live', this)">📺 今日预测</div>
-    <div class="tab" onclick="switchTab('finished', this)">✅ 已完赛</div>
-    <div class="tab" onclick="switchTab('schedule', this)">📅 赛程</div>
-</div>
-
-<div class="panel active" id="live-panel">
-    <div class="loading"><div class="spinner"></div>DeepSeek AI 分析中...</div>
-</div>
-<div class="panel" id="finished-panel"></div>
-<div class="panel" id="schedule-panel"></div>
-
-</div>
-
+<!-- 投注单 -->
 <div class="bet-slip" id="betSlip">
-    <div class="slip-header">
-        <span class="slip-title">📋 投注单</span>
-        <span class="slip-count" id="slipCount">0</span>
+    <div class="bet-header">
+        <span class="bet-title">📝 投注单</span>
+        <span class="bet-count" id="betCount">0</span>
     </div>
-    <div class="slip-items" id="slipItems"></div>
-    <div class="slip-total">
-        <span>串关回报</span>
-        <span class="odds" id="totalOdds">—</span>
+    <div class="bet-items" id="betItems"></div>
+    <div class="bet-total">
+        <span>预计赔率</span>
+        <span class="odds" id="totalOdds">1.00</span>
     </div>
-    <button class="clear-btn" onclick="clearSlip()">🗑 清空投注单</button>
+    <button class="bet-clear" onclick="clearBets()">清空投注单</button>
 </div>
-
-<footer>⚠️ 仅供娱乐参考，不构成投注建议</footer>
 
 <script>
-const DEEPSEEK_KEY = 'sk-81d53acb8f62446098143011ebfcc7df';
-const DEEPSEEK_URL = 'https://api.deepseek.com/v1/chat/completions';
+const API_KEY = 'sk-81d53acb8f62446098143011ebfcc7df';
+const API_URL = 'https://api.deepseek.com/v1/chat/completions';
 
-const FLAG_MAP = {
-    'Qatar':'🇶🇦','Switzerland':'🇨🇭','Brazil':'🇧🇷','Morocco':'🇲🇦',
-    'Haiti':'🇭🇹','Scotland':'🏴󠁧󠁢󠁳󠁣󠁴󠁿','Australia':'🇦🇺','Turkey':'🇹🇷',
-    'Mexico':'🇲🇽','South Africa':'🇿🇦','Korea Republic':'🇰🇷',
-    'Czech Republic':'🇨🇿','Czechia':'🇨🇿','Canada':'🇨🇦',
-    'Bosnia and Herzegovina':'🇧🇦','USA':'🇺🇸','Paraguay':'🇵🇾',
-    'France':'🇫🇷','Argentina':'🇦🇷','England':'🏴󠁧󠁢󠁥󠁮󠁧󠁿',
-    'Germany':'🇩🇪','Spain':'🇪🇸','Portugal':'🇵🇹','Netherlands':'🇳🇱',
-    'Italy':'🇮🇹','Belgium':'🇧🇪','Japan':'🇯🇵'
-};
+let bets = [];
 
-const FIFA_RANK = {
-    'Argentina':1,'France':2,'Belgium':3,'England':4,'Brazil':5,
-    'Netherlands':6,'Portugal':7,'Spain':8,'Italy':9,'Croatia':10,
-    'Germany':11,'USA':13,'Switzerland':14,'Morocco':15,'Mexico':16,
-    'Colombia':17,'Japan':18,'Uruguay':19,'Senegal':20,
-    'Australia':25,'Canada':30,'Turkey':28,'Scotland':35,
-    'Qatar':50,'Haiti':60
-};
-
-let slip = [];
-let chatHist = [
-    {role:'assistant',content:'你好！有什么关于世界杯的问题，尽管问我吧！⚽'}
+// 模拟数据
+const matches = [
+    {
+        id: 1,
+        home: { name: '阿根廷', flag: '🇦🇷', rank: 1 },
+        away: { name: '巴西', flag: '🇧🇷', rank: 5 },
+        time: '06-14 20:00',
+        group: 'A组小组赛',
+        prediction: { score: '2:1', confidence: 78, homeWin: 55, draw: 25, awayWin: 20 },
+        recommend: { type: '主胜', stars: '⭐⭐⭐⭐', desc: '阿根廷主场优势明显' },
+        odds: { home: 1.85, draw: 3.40, away: 4.20, over: 1.90, under: 1.90 }
+    },
+    {
+        id: 2,
+        home: { name: '法国', flag: '🇫🇷', rank: 2 },
+        away: { name: '德国', flag: '🇩🇪', rank: 16 },
+        time: '06-14 23:00',
+        group: 'B组小组赛',
+        prediction: { score: '1:1', confidence: 65, homeWin: 40, draw: 35, awayWin: 25 },
+        recommend: { type: '平局', stars: '⭐⭐⭐', desc: '两队实力接近' },
+        odds: { home: 2.10, draw: 3.20, away: 3.50, over: 1.85, under: 1.95 }
+    },
+    {
+        id: 3,
+        home: { name: '西班牙', flag: '🇪🇸', rank: 3 },
+        away: { name: '葡萄牙', flag: '🇵🇹', rank: 6 },
+        time: '06-15 03:00',
+        group: 'C组小组赛',
+        prediction: { score: '2:2', confidence: 62, homeWin: 35, draw: 30, awayWin: 35 },
+        recommend: { type: '大球', stars: '⭐⭐⭐⭐', desc: '双方进攻火力强' },
+        odds: { home: 2.40, draw: 3.30, away: 2.80, over: 1.75, under: 2.05 }
+    }
 ];
 
-// ==================== 蔡徐坤聊天 ====================
-function escapeHtml(t) {
-    var d=document.createElement('div');
-    d.textContent=t;
-    return d.innerHTML;
+const finished = [
+    { home: '英格兰', homeFlag: '🏴󠁧󠁢󠁥󠁮󠁧󠁿', homeScore: 3, away: '意大利', awayFlag: '🇮🇹', awayScore: 1, desc: '小组赛第1轮' },
+    { home: '荷兰', homeFlag: '🇳🇱', homeScore: 2, away: '比利时', awayFlag: '🇧🇪', awayScore: 2, desc: '小组赛第1轮' }
+];
+
+const schedule = [
+    { date: '06-15', time: '20:00', home: '日本', homeFlag: '🇯🇵', away: '韩国', awayFlag: '🇰🇷' },
+    { date: '06-15', time: '23:00', home: '美国', homeFlag: '🇺🇸', away: '墨西哥', awayFlag: '🇲🇽' },
+    { date: '06-16', time: '03:00', home: '克罗地亚', homeFlag: '🇭🇷', away: '塞尔维亚', awayFlag: '🇷🇸' }
+];
+
+function switchTab(index) {
+    document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', i === index));
+    document.querySelectorAll('.panel').forEach((p, i) => p.classList.toggle('active', i === index));
 }
 
-function appendMsg(who, txt) {
-    var box = document.getElementById('aiTopMsgs');
-    var d = document.createElement('div');
-    d.className = 'ai-msg ' + who;
-    if (who === 'user') {
-        d.innerHTML = '<div class="avatar user">👤</div><div class="bubble">' + escapeHtml(txt) + '</div>';
-    } else {
-        d.innerHTML = '<div class="avatar bot">🤖</div><div><div class="name-tag">蔡徐坤</div><div class="bubble">' + escapeHtml(txt).replace(/\n/g,'<br>') + '</div></div>';
+function renderToday() {
+    const html = matches.map(m => `
+        <div class="match-card">
+            <div class="match-header">
+                <span>${m.group}</span>
+                <span>${m.time}</span>
+            </div>
+            <div class="match-body">
+                <div class="teams">
+                    <div class="team">
+                        <div class="flag">${m.home.flag}</div>
+                        <div class="name">${m.home.name}</div>
+                        <div class="rank">FIFA #${m.home.rank}</div>
+                    </div>
+                    <div class="vs-center">
+                        <div class="vs">VS</div>
+                        <div class="time">${m.time.split(' ')[1]}</div>
+                    </div>
+                    <div class="team">
+                        <div class="flag">${m.away.flag}</div>
+                        <div class="name">${m.away.name}</div>
+                        <div class="rank">FIFA #${m.away.rank}</div>
+                    </div>
+                </div>
+                <div class="prediction">
+                    <div class="pred-label">🤖 AI预测比分</div>
+                    <div class="pred-score">${m.prediction.score}</div>
+                    <div class="confidence">置信度: ${m.prediction.confidence}%</div>
+                </div>
+                <div class="probs">
+                    <div class="prob win">
+                        <div class="label">主胜</div>
+                        <div class="value">${m.prediction.homeWin}%</div>
+                    </div>
+                    <div class="prob draw">
+                        <div class="label">平局</div>
+                        <div class="value">${m.prediction.draw}%</div>
+                    </div>
+                    <div class="prob lose">
+                        <div class="label">客胜</div>
+                        <div class="value">${m.prediction.awayWin}%</div>
+                    </div>
+                </div>
+                <div class="recommend">
+                    <span class="rec-tag">${m.recommend.type}</span>
+                    <span class="rec-text">${m.recommend.stars} ${m.recommend.desc}</span>
+                </div>
+                <div class="odds-title">💰 赔率投注</div>
+                <div class="odds-grid">
+                    <button class="odds-btn ${isSelected(m.id, '主胜')}" onclick="addBet(${m.id}, '${m.home.name} vs ${m.away.name}', '主胜', ${m.odds.home})">
+                        <span class="label">主胜</span>
+                        <span class="value">${m.odds.home}</span>
+                    </button>
+                    <button class="odds-btn ${isSelected(m.id, '平局')}" onclick="addBet(${m.id}, '${m.home.name} vs ${m.away.name}', '平局', ${m.odds.draw})">
+                        <span class="label">平局</span>
+                        <span class="value">${m.odds.draw}</span>
+                    </button>
+                    <button class="odds-btn ${isSelected(m.id, '客胜')}" onclick="addBet(${m.id}, '${m.home.name} vs ${m.away.name}', '客胜', ${m.odds.away})">
+                        <span class="label">客胜</span>
+                        <span class="value">${m.odds.away}</span>
+                    </button>
+                    <button class="odds-btn ${isSelected(m.id, '大球')}" onclick="addBet(${m.id}, '${m.home.name} vs ${m.away.name}', '大球2.5', ${m.odds.over})">
+                        <span class="label">大球2.5</span>
+                        <span class="value">${m.odds.over}</span>
+                    </button>
+                    <button class="odds-btn ${isSelected(m.id, '小球')}" onclick="addBet(${m.id}, '${m.home.name} vs ${m.away.name}', '小球2.5', ${m.odds.under})">
+                        <span class="label">小球2.5</span>
+                        <span class="value">${m.odds.under}</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    `).join('');
+    document.getElementById('todayMatches').innerHTML = html;
+}
+
+function isSelected(matchId, type) {
+    return bets.some(b => b.matchId === matchId && b.type === type) ? 'selected' : '';
+}
+
+function renderFinished() {
+    const html = finished.map(f => `
+        <div class="finished-card">
+            <div class="flag">${f.homeFlag}</div>
+            <div class="team-name">${f.home}</div>
+            <div class="finished-score">${f.homeScore} : ${f.awayScore}</div>
+            <div class="team-name">${f.away}</div>
+            <div class="flag">${f.awayFlag}</div>
+        </div>
+    `).join('');
+    document.getElementById('finishedMatches').innerHTML = html;
+}
+
+function renderSchedule() {
+    const html = schedule.map(s => `
+        <div class="schedule-card">
+            <div class="date">
+                <div>${s.date}</div>
+                <div class="day">${s.time}</div>
+            </div>
+            <div class="schedule-teams">
+                <span class="flag">${s.homeFlag}</span>
+                <span class="name">${s.home}</span>
+                <span class="vs">VS</span>
+                <span class="name">${s.away}</span>
+                <span class="flag">${s.awayFlag}</span>
+            </div>
+        </div>
+    `).join('');
+    document.getElementById('scheduleMatches').innerHTML = html;
+}
+
+function addBet(matchId, match, type, odds) {
+    const idx = bets.findIndex(b => b.matchId === matchId);
+    if (idx >= 0) bets.splice(idx, 1);
+    bets.push({ matchId, match, type, odds });
+    updateBetSlip();
+    renderToday();
+}
+
+function removeBet(matchId) {
+    bets = bets.filter(b => b.matchId !== matchId);
+    updateBetSlip();
+    renderToday();
+}
+
+function clearBets() {
+    bets = [];
+    updateBetSlip();
+    renderToday();
+}
+
+function updateBetSlip() {
+    const slip = document.getElementById('betSlip');
+    if (bets.length === 0) {
+        slip.classList.remove('show');
+        return;
     }
-    box.appendChild(d);
-    box.scrollTop = box.scrollHeight;
+    slip.classList.add('show');
+    document.getElementById('betCount').textContent = bets.length;
+    document.getElementById('betItems').innerHTML = bets.map(b => `
+        <div class="bet-item">
+            <span>${b.match} - ${b.type} @ ${b.odds}</span>
+            <span class="del" onclick="removeBet(${b.matchId})">✕</span>
+        </div>
+    `).join('');
+    const total = bets.reduce((a, b) => a * b.odds, 1).toFixed(2);
+    document.getElementById('totalOdds').textContent = total;
 }
 
-function showTyping() {
-    var box = document.getElementById('aiTopMsgs');
-    var d = document.createElement('div');
-    var id = 'tping-' + Date.now();
-    d.id = id;
-    d.className = 'ai-msg bot';
-    d.innerHTML = '<div class="avatar bot">🤖</div><div><div class="name-tag">蔡徐坤</div><div class="typing"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div></div>';
-    box.appendChild(d);
-    box.scrollTop = box.scrollHeight;
-    return id;
-}
-
-function rmTyping(id) { var el=document.getElementById(id); if(el) el.remove(); }
-
-async function sendMsg() {
-    var input = document.getElementById('aiInput');
-    var txt = input.value.trim();
-    if (!txt) return;
+// AI对话
+async function sendAI() {
+    const input = document.getElementById('aiInput');
+    const msg = input.value.trim();
+    if (!msg) return;
+    
+    addAIMsg('user', '👤', msg);
     input.value = '';
     
-    appendMsg('user', txt);
-    chatHist.push({role:'user', content:txt});
-    var tid = showTyping();
+    // 显示输入中
+    const typing = document.createElement('div');
+    typing.className = 'ai-msg bot typing';
+    typing.innerHTML = '<div class="avatar bot"></div><div class="bubble">输入中...</div>';
+    document.getElementById('aiMessages').appendChild(typing);
     
     try {
-        var res = await fetch(DEEPSEEK_URL, {
-            method:'POST',
-            headers:{'Authorization':'Bearer '+DEEPSEEK_KEY,'Content-Type':'application/json'},
-            body:JSON.stringify({
-                model:'deepseek-chat',
-                messages:[
-                    {role:'system',content:'你是蔡徐坤，一个专业足球AI助手。用中文回答，语气友好专业，可以适当加入足球emoji。回答简洁明了，不超过100字。'},
-                    ...chatHist.slice(-10)
-                ],
-                temperature:0.7,
-                max_tokens:300
+        const res = await fetch(API_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${API_KEY}`
+            },
+            body: JSON.stringify({
+                model: 'deepseek-chat',
+                messages: [
+                    { role: 'system', content: '你是蔡徐坤，一个专业的足球AI助手。用幽默风趣的语气回答足球相关问题，偶尔可以玩一些篮球梗。回答要简洁，控制在100字以内。' },
+                    { role: 'user', content: msg }
+                ]
             })
         });
-        rmTyping(tid);
-        if (!res.ok) throw new Error('API '+res.status);
-        var data = await res.json();
-        var reply = data.choices[0].message.content;
-        appendMsg('bot', reply);
-        chatHist.push({role:'assistant', content:reply});
+        const data = await res.json();
+        typing.remove();
+        addAIMsg('bot', '', data.choices[0].message.content);
     } catch(e) {
-        rmTyping(tid);
-        appendMsg('bot','抱歉，我暂时没法回答你，可能是网络问题，稍后再试试吧😅');
-        console.log('Chat error:',e);
+        typing.remove();
+        addAIMsg('bot', '', '哎呀，网络有点问题，待会再试试吧~ 🏀');
     }
 }
 
-// ==================== AI预测 ====================
-async function predictDS(home, away, homeRank, awayRank) {
-    var prompt = '你是一个专业足球分析师。分析以下2026世界杯比赛：\n\n主队：'+home+'（FIFA排名第'+homeRank+'）\n客队：'+away+'（FIFA排名第'+awayRank+'）\n\n请分析并返回严格JSON格式（不要任何其他文字）：\n{\n  "homeGoals": 预测主队进球数（0-5整数）,\n  "awayGoals": 预测客队进球数（0-5整数）,\n  "homeWinPercent": 主胜概率（0-100整数）,\n  "drawPercent": 平局概率（0-100整数）,\n  "awayWinPercent": 客胜概率（0-100整数）,\n  "confidence": 自信程度（60-99）,\n  "analysis": "一句话中文分析原因（不超过30字）"\n}';
-    try {
-        var res = await fetch(DEEPSEEK_URL, {
-            method:'POST',
-            headers:{'Authorization':'Bearer '+DEEPSEEK_KEY,'Content-Type':'application/json'},
-            body:JSON.stringify({model:'deepseek-chat',messages:[{role:'user',content:prompt}],temperature:0.3,max_tokens:300})
-        });
-        if (!res.ok) throw new Error('DS '+res.status);
-        var data = await res.json();
-        var json = JSON.parse(data.choices[0].message.content.match(/\{[\s\S]*\}/)[0]);
-        return {score:json.homeGoals+'-'+json.awayGoals,homeWin:json.homeWinPercent,draw:json.drawPercent,awayWin:json.awayWinPercent,confidence:json.confidence,analysis:json.analysis};
-    } catch(e) { return null; }
+function addAIMsg(role, avatar, text) {
+    const div = document.createElement('div');
+    div.className = `ai-msg ${role}`;
+    div.innerHTML = role === 'bot' 
+        ? `<div class="avatar bot"></div><div class="bubble">${text}</div>`
+        : `<div class="avatar user">${avatar}</div><div class="bubble">${text}</div>`;
+    const container = document.getElementById('aiMessages');
+    container.appendChild(div);
+    container.scrollTop = container.scrollHeight;
 }
 
-function predictLocal(home, away, hr, ar) {
-    var hs = 100-(hr||50), as = 100-(ar||50), t = hs+as;
-    var hw = Math.round((hs/t)*65+15), aw = Math.round((as/t)*65+10), d = 100-hw-aw;
-    var hg = Math.round(hs/20), ag = Math.round(as/22);
-    if (Math.abs(hs-as)<15&&d>20) hg=ag;
-    hg=Math.max(0,Math.min(5,hg)); ag=Math.max(0,Math.min(5,ag));
-    var c = 60+Math.round(Math.random()*25);
-    var r; if(hw>aw+15) r=home+'排名领先'+(hr-ar)+'位'; else if(aw>hw+10) r=away+'国际排名更高'; else r='实力均衡';
-    return {score:hg+'-'+ag,homeWin:hw,draw:d,awayWin:aw,confidence:c,analysis:r};
-}
-
-function makeRec(home, away, p) {
-    var r,t,s;
-    if (p.homeWin>p.awayWin+15) { r=home+'胜';t='win';s=Math.min(5,Math.round(p.homeWin/15)); }
-    else if (p.awayWin>p.homeWin+10) { r=away+'胜';t='lose';s=Math.min(5,Math.round(p.awayWin/15)); }
-    else { r='平局';t='draw';s=3; }
-    return {rec:r,recType:t,stars:s,reason:(p.analysis||'')+(t==='win'?'，主胜':t==='lose'?'，客胜':'，防平')};
-}
-
-function getFlag(n) { return FLAG_MAP[n]||'⚽'; }
-
-// ==================== 加载预测 ====================
-async function loadPredictions() {
-    var lp = document.getElementById('live-panel');
-    lp.innerHTML = '<div class="loading"><div class="spinner"></div>DeepSeek AI 分析中...</div>';
-    var local = {
-        upcoming:[
-            {home:'卡塔尔',away:'瑞士',homeEn:'Qatar',awayEn:'Switzerland',homeRank:50,awayRank:14,group:'B',time:'6/14 03:00',loc:'旧金山'},
-            {home:'巴西',away:'摩洛哥',homeEn:'Brazil',awayEn:'Morocco',homeRank:5,awayRank:15,group:'C',time:'6/14 06:00',loc:'纽约'},
-            {home:'海地',away:'苏格兰',homeEn:'Haiti',awayEn:'Scotland',homeRank:60,awayRank:35,group:'C',time:'6/14 09:00',loc:'纽约'},
-            {home:'澳大利亚',away:'土耳其',homeEn:'Australia',awayEn:'Turkey',homeRank:25,awayRank:28,group:'D',time:'6/14 09:00',loc:'洛杉矶'}
-        ],
-        finished:[
-            {home:'墨西哥',away:'南非',homeFlag:'🇲🇽',awayFlag:'🇿🇦',score:'2-0',group:'A'},
-            {home:'韩国',away:'捷克',homeFlag:'🇰🇷',awayFlag:'🇨🇿',score:'2-1',group:'A'},
-            {home:'加拿大',away:'波黑',homeFlag:'🇨🇦',awayFlag:'🇧🇦',score:'1-1',group:'B'},
-            {home:'美国',away:'巴拉圭',homeFlag:'🇺🇸',awayFlag:'🇵🇾',score:'4-1',group:'D'}
-        ],
-        schedule:[
-            {home:'捷克',away:'南非',homeFlag:'🇨🇿',awayFlag:'🇿🇦',time:'6/19 03:00',group:'A'},
-            {home:'墨西哥',away:'韩国',homeFlag:'🇲🇽',awayFlag:'🇰🇷',time:'6/19 06:00',group:'A'},
-            {home:'瑞士',away:'波黑',homeFlag:'🇨🇭',awayFlag:'🇧🇦',time:'6/19 09:00',group:'B'},
-            {home:'加拿大',away:'卡塔尔',homeFlag:'🇨🇦',awayFlag:'🇶🇦',time:'6/19 12:00',group:'B'}
-        ]
-    };
-    var lh = '', ac = 0;
-    for (var m of local.upcoming) {
-        var p = await predictDS(m.homeEn||m.home, m.awayEn||m.away, m.homeRank, m.awayRank);
-        var fp, ds;
-        if (p) { fp=p; ds=true; ac++; }
-        else { fp=predictLocal(m.home,m.away,m.homeRank,m.awayRank); ds=false; }
-        var rec = makeRec(m.home, m.away, fp);
-        var ho=(2.5+Math.random()).toFixed(2), ddo=(3.0+Math.random()).toFixed(2), ao=(2.5+Math.random()*2).toFixed(2);
-        lh += '<div class="match-card"><div class="match-info"><span>'+(m.group||'')+' · '+(m.loc||'')+'</span><span>'+m.time+'</span></div><div class="match-main"><div class="teams"><div class="team"><div class="flag">'+(m.homeFlag||getFlag(m.homeEn||m.home))+'</div><div class="name">'+m.home+'</div><div class="rank">FIFA #'+m.homeRank+'</div></div><div class="vs-time"><div class="vs">VS</div><div class="time">'+(m.time||'').split(' ')[1]||''+'</div></div><div class="team"><div class="flag">'+(m.awayFlag||getFlag(m.awayEn||m.away))+'</div><div class="name">'+m.away+'</div><div class="rank">FIFA #'+m.awayRank+'</div></div></div>';
-        lh += '<div class="prediction"><div class="pred-label">🤖 DeepSeek AI 预测</div><div class="pred-score">'+fp.score+'</div><div class="confidence">置信度 '+fp.confidence+'%</div><div class="ai-analysis">💡 '+(fp.analysis||'')+'</div></div>';
-        lh += '<div class="prob-row"><div class="prob-box win"><div class="l">主胜</div><div class="v">'+fp.homeWin+'%</div><div class="bar"><div class="bar-fill" style="width:'+fp.homeWin+'%"></div></div></div><div class="prob-box draw"><div class="l">平局</div><div class="v">'+fp.draw+'%</div><div class="bar"><div class="bar-fill" style="width:'+fp.draw+'%"></div></div></div><div class="prob-box lose"><div class="l">客胜</div><div class="v">'+fp.awayWin+'%</div><div class="bar"><div class="bar-fill" style="width:'+fp.awayWin+'%"></div></div></div></div>';
-        lh += '<div class="recommend"><span class="rec-tag">推荐'+(rec.recType==='win'?'主胜':rec.recType==='lose'?'客胜':'平')+'</span><span class="stars">'+'⭐'.repeat(rec.stars)+'</span><span class="rec-desc">'+rec.reason+'</span></div>';
-        lh += '<div class="odds-section"><div class="odds-title">竞彩赔率</div><div class="odds-grid"><div class="odds-btn '+(rec.recType==='win'?'selected':'')+'" onclick="addToSlip(\''+m.home+'胜\','+ho+')"><span class="lb">主胜</span><span class="val">'+ho+'</span></div><div class="odds-btn '+(rec.recType==='draw'?'selected':'')+'" onclick="addToSlip(\'平局\','+ddo+')"><span class="lb">平局</span><span class="val">'+ddo+'</span></div><div class="odds-btn '+(rec.recType==='lose'?'selected':'')+'" onclick="addToSlip(\''+m.away+'胜\','+ao+')"><span class="lb">客胜</span><span class="val">'+ao+'</span></div></div></div></div></div>';
-    }
-    if (ac>0) {
-        document.getElementById('aiStatusBadge').textContent = '🟢 DeepSeek AI 已连接 | ' + ac + '/' + local.upcoming.length + '场AI预测';
-    }
-    lp.innerHTML = lh || '<div style="text-align:center;color:#666;padding:40px;">暂无今日预测</div>';
-    var fh='', sh='';
-    local.finished.forEach(function(f){
-        fh+='<div class="finished-card"><div class="flag">'+f.homeFlag+'</div><div class="team-name">'+f.home+'</div><div class="finished-score">'+f.score+'</div><div class="team-name">'+f.away+'</div><div class="flag">'+f.awayFlag+'</div></div>';
-    });
-    local.schedule.forEach(function(s){
-        sh+='<div class="finished-card"><div class="flag">'+s.homeFlag+'</div><div class="team-name">'+s.home+' vs '+s.away+'</div><div style="color:#00d4aa;font-size:12px;">'+s.time+'</div></div>';
-    });
-    document.getElementById('finished-panel').innerHTML = fh||'<div style="text-align:center;color:#666;padding:40px;">暂无已完赛</div>';
-    document.getElementById('schedule-panel').innerHTML = sh||'<div style="text-align:center;color:#666;padding:40px;">暂无赛程</div>';
-}
-
-// ==================== Tab / 投注单 ====================
-function switchTab(id, el) {
-    document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active');});
-    document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('active');});
-    el.classList.add('active');
-    document.getElementById(id+'-panel').classList.add('active');
-}
-
-function addToSlip(pick, odds) {
-    var e = slip.find(function(s){return s.pick===pick;});
-    if(e) e.odds=parseFloat(odds);
-    else slip.push({pick:pick,odds:parseFloat(odds)});
-    updateSlip();
-}
-function removeFromSlip(i){slip.splice(i,1);updateSlip();}
-function clearSlip(){slip=[];updateSlip();}
-function updateSlip(){
-    var el=document.getElementById('betSlip');
-    if(slip.length===0){el.classList.remove('show');return;}
-    el.classList.add('show');
-    document.getElementById('slipCount').textContent=slip.length;
-    var t=1, h='';
-    slip.forEach(function(s,i){t*=s.odds;h+='<div class="slip-item"><span>'+s.pick+'</span><span>'+s.odds.toFixed(2)+' <span class="del" onclick="removeFromSlip('+i+')">✕</span></span></div>';});
-    document.getElementById('slipItems').innerHTML=h;
-    document.getElementById('totalOdds').textContent=t.toFixed(2)+'倍';
-}
-
-loadPredictions();
+// 初始化
+renderToday();
+renderFinished();
+renderSchedule();
 </script>
 </body>
 </html>
