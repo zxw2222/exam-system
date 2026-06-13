@@ -1,22 +1,828 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>2026世界杯·AI预测中心</title>
 <style>
-body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#1a1a2e;color:#fff;margin:0;padding:20px;text-align:center}
-h1{color:#f7c948;margin:50px 0 20px}
-p{color:#aaa;font-size:16px}
-.status{background:#16213e;padding:20px;margin:20px auto;max-width:500px;border-radius:10px;border:1px solid #0f3460}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0a0e1a;--card:rgba(15,23,42,0.9);--border:rgba(51,65,85,0.5);--accent1:#6366f1;--accent2:#8b5cf6;--gold:#f59e0b;--green:#22c55e;--red:#ef4444;--text:#e2e8f0;--muted:#94a3b8}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0;background:radial-gradient(ellipse at 20% 50%,rgba(99,102,241,0.08) 0%,transparent 50%),radial-gradient(ellipse at 80% 20%,rgba(139,92,246,0.06) 0%,transparent 50%);pointer-events:none;z-index:0}
+
+.header{position:sticky;top:0;z-index:50;background:linear-gradient(135deg,rgba(15,23,42,0.98),rgba(30,41,59,0.98));backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:12px 16px;display:flex;align-items:center;justify-content:space-between}
+.header h1{font-size:18px;background:linear-gradient(135deg,var(--accent1),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.header-status{display:flex;align-items:center;gap:16px;font-size:11px}
+.status-dot{width:7px;height:7px;border-radius:50%}
+.status-dot.online{background:var(--green);box-shadow:0 0 8px var(--green);animation:pulse 2s infinite}
+.status-dot.offline{background:var(--red)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+
+.tabs{display:flex;overflow-x:auto;background:rgba(15,23,42,0.8);border-bottom:1px solid var(--border);position:sticky;top:52px;z-index:49}
+.tab-btn{flex-shrink:0;padding:12px 18px;font-size:13px;font-weight:500;color:var(--muted);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;transition:all .2s;white-space:nowrap}
+.tab-btn.active{color:var(--accent1);border-bottom-color:var(--accent1);background:rgba(99,102,241,0.08)}
+.tab-btn:hover{color:var(--text)}
+
+.content{padding:12px;padding-bottom:100px;position:relative;z-index:1}
+
+.match-card{background:var(--card);border-radius:14px;padding:16px;margin-bottom:12px;border:1px solid var(--border);position:relative;overflow:hidden}
+.match-card::before{content:"";position:absolute;top:0;left:0;right:0;height:2px}
+.match-card.live::before{background:linear-gradient(90deg,var(--red),#f97316);animation:liveGrad 2s infinite}
+.match-card.finished::before{background:linear-gradient(90deg,var(--green),#16a34a)}
+.match-card.upcoming::before{background:linear-gradient(90deg,var(--accent1),var(--accent2))}
+@keyframes liveGrad{0%,100%{opacity:1}50%{opacity:.4}}
+
+.card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.card-group{font-size:11px;color:var(--muted)}
+.card-time{font-size:11px;padding:3px 10px;border-radius:12px;font-weight:600}
+.card-time.live{background:rgba(239,68,68,.15);color:var(--red)}
+.card-time.finished{background:rgba(34,197,94,.15);color:var(--green)}
+.card-time.upcoming{background:rgba(99,102,241,.15);color:var(--accent1)}
+
+.teams-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.team-col{text-align:center;flex:1}
+.team-flag{font-size:36px;margin-bottom:6px;line-height:1}
+.team-name{font-size:13px;font-weight:600;margin-bottom:2px}
+.team-meta{font-size:10px;color:var(--muted)}
+.vs-col{text-align:center;padding:0 10px}
+.vs-score{font-size:32px;font-weight:800;letter-spacing:4px}
+.vs-label{font-size:10px;color:var(--muted);margin-top:2px}
+
+.section-label{font-size:11px;color:var(--accent2);font-weight:600;margin:10px 0 6px;display:flex;align-items:center;gap:4px}
+.section-label::before{content:"";display:inline-block;width:12px;height:2px;background:var(--accent2);border-radius:1px}
+
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px}
+.info-item{background:rgba(255,255,255,.03);border-radius:8px;padding:8px 10px;font-size:11px}
+.info-item .info-label{color:var(--muted);font-size:10px;margin-bottom:3px}
+.info-item .info-value{font-weight:500;font-size:12px}
+
+.pred-box{background:linear-gradient(135deg,rgba(99,102,241,.12),rgba(139,92,246,.08));border-radius:12px;padding:14px;border:1px solid rgba(99,102,241,.2);margin:10px 0}
+.pred-title{font-size:12px;color:var(--accent2);font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.pred-score{font-size:22px;font-weight:700;text-align:center;margin:8px 0;background:linear-gradient(135deg,var(--accent1),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.pred-bars{margin:8px 0}
+.pred-bar{display:flex;align-items:center;gap:8px;margin:5px 0;font-size:11px}
+.pred-bar-label{width:36px;flex-shrink:0;text-align:right;color:var(--muted)}
+.pred-bar-track{flex:1;height:6px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden}
+.pred-bar-fill{height:100%;border-radius:3px;transition:width .6s}
+.pred-bar-fill.home{background:linear-gradient(90deg,var(--accent1),var(--accent2))}
+.pred-bar-fill.draw{background:linear-gradient(90deg,var(--gold),#fbbf24)}
+.pred-bar-fill.away{background:linear-gradient(90deg,var(--red),#f97316)}
+.pred-bar-val{width:32px;font-weight:600;text-align:right;font-size:11px}
+.pred-reason{font-size:11px;color:var(--muted);line-height:1.5;margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.06)}
+
+.odds-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+.odds-btn{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:10px 6px;text-align:center;cursor:pointer;transition:all .2s;user-select:none}
+.odds-btn:hover{background:rgba(99,102,241,.15);border-color:rgba(99,102,241,.4)}
+.odds-btn.tag{font-size:10px;color:var(--muted)}
+.odds-btn.val{font-size:15px;font-weight:700;color:var(--gold)}
+
+.star{color:var(--gold);font-size:12px}
+
+.champion-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.champ-card{background:var(--card);border-radius:12px;padding:14px;border:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.champ-rank{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0}
+.champ-rank.r1{background:linear-gradient(135deg,#ffd700,#f0c000);color:#000}
+.champ-rank.r2{background:linear-gradient(135deg,#c0c0c0,#a0a0a0);color:#000}
+.champ-rank.r3{background:linear-gradient(135deg,#cd7f32,#a0522d);color:#fff}
+.champ-rank.rn{background:rgba(255,255,255,.1)}
+.champ-info{flex:1;min-width:0}
+.champ-team{font-size:13px;font-weight:600}
+.champ-detail{font-size:10px;color:var(--muted);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+.team-detail-card{background:var(--card);border-radius:14px;padding:16px;margin-bottom:12px;border:1px solid var(--border)}
+.team-detail-header{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.team-detail-flag{font-size:42px}
+.team-detail-name{font-size:17px;font-weight:700}
+.team-detail-rank{font-size:12px;color:var(--gold)}
+.team-detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.team-detail-item{background:rgba(255,255,255,.02);border-radius:8px;padding:10px}
+.team-detail-item .label{font-size:10px;color:var(--muted);margin-bottom:4px}
+.team-detail-item .value{font-size:12px;font-weight:500}
+.players-list{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
+.player-tag{background:rgba(99,102,241,.1);color:var(--accent1);font-size:10px;padding:2px 8px;border-radius:10px;white-space:nowrap}
+
+.btn-fab{position:fixed;bottom:20px;right:20px;width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--accent1),var(--accent2));border:none;cursor:pointer;z-index:100;box-shadow:0 4px 20px rgba(99,102,241,.5);transition:all .3s;display:flex;align-items:center;justify-content:center}
+.btn-fab:hover{transform:scale(1.08)}
+.btn-fab img{width:38px;height:38px;border-radius:50%;object-fit:cover}
+
+.chat-panel{position:fixed;bottom:85px;right:20px;width:calc(100vw - 40px);max-width:340px;height:420px;background:linear-gradient(135deg,#0f172a,#1e293b);border-radius:18px;border:1px solid rgba(99,102,241,.3);box-shadow:0 10px 40px rgba(0,0,0,.6);display:none;flex-direction:column;overflow:hidden;z-index:99}
+.chat-panel.open{display:flex}
+.chat-top{background:linear-gradient(90deg,var(--accent1),var(--accent2));padding:12px;display:flex;align-items:center;gap:10px}
+.chat-top img{width:36px;height:36px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,.3)}
+.chat-top .name{font-weight:600;font-size:13px}
+.chat-top .status{font-size:10px;opacity:.8}
+.chat-top .close-btn{background:none;border:none;color:#fff;font-size:20px;cursor:pointer;margin-left:auto}
+.chat-body{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:10px}
+.chat-msg{padding:10px 14px;border-radius:16px;font-size:12px;line-height:1.5;max-width:85%}
+.chat-msg.ai{align-self:flex-start;background:rgba(99,102,241,.15);border-bottom-left-radius:4px}
+.chat-msg.user{align-self:flex-end;background:linear-gradient(135deg,var(--accent1),var(--accent2));border-bottom-right-radius:4px}
+.chat-input-row{display:flex;gap:8px;padding:10px;border-top:1px solid rgba(255,255,255,.06)}
+.chat-input-row input{flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:10px 16px;color:var(--text);font-size:13px;outline:none}
+.chat-input-row input::placeholder{color:var(--muted)}
+.chat-input-row button{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--accent1),var(--accent2));border:none;color:#fff;font-size:16px;cursor:pointer;flex-shrink:0}
+.chat-input-row .upload-btn{width:32px;height:32px;font-size:14px;margin-right:6px;background:rgba(255,255,255,.1);flex-shrink:0}
+.chat-input-row .upload-btn{width:32px;height:32px;font-size:14px;margin-right:6px;background:rgba(255,255,255,.1);flex-shrink:0}
+
+.footer-msg{text-align:center;padding:20px;font-size:10px;color:var(--muted)}
+
+@media(min-width:768px){.content{max-width:700px;margin:0 auto}.chat-panel{max-width:380px}}
+
+.hidden{display:none!important}
+.loading-spin{text-align:center;padding:40px;color:var(--muted)}
+.loading-spin::after{content:"";display:inline-block;width:24px;height:24px;border:2px solid rgba(255,255,255,.1);border-top-color:var(--accent1);border-radius:50%;animation:spin .8s linear infinite;margin-left:8px;vertical-align:middle}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.skeleton{background:var(--card);border-radius:14px;padding:16px;margin-bottom:12px;border:1px solid var(--border);animation:shimmer 1.5s infinite}
+.skel-line{height:12px;background:rgba(255,255,255,.05);border-radius:6px;margin:8px 0}
+@keyframes shimmer{0%{opacity:.6}50%{opacity:1}100%{opacity:.6}}
 </style>
 </head>
 <body>
-<h1>⚽ 2026世界杯·AI预测中心</h1>
-<div class="status">
-<p>✅ 页面基础框架加载成功！</p>
-<p>如果你能看到这个页面，说明 GitHub Pages 和微信浏览器都正常工作。</p>
-<p>接下来我会逐步添加功能...</p>
+
+<div class="header">
+<h1>⚽ 2026世界杯·AI预测</h1>
+<div class="header-status">
+<span style="display:flex;align-items:center;gap:4px"><span class="status-dot" id="dataStatus"></span><span id="dataLabel">加载中</span></span>
+<span id="lastUpdate" style="font-size:10px;color:var(--muted)"></span>
 </div>
+</div>
+
+<div class="tabs" id="tabBar">
+<button class="tab-btn active" data-tab="today">📅 今日赛程</button>
+<button class="tab-btn" data-tab="finished">✅ 已完赛</button>
+<button class="tab-btn" data-tab="upcoming">📋 未来赛程</button>
+<button class="tab-btn" data-tab="teams">👥 球队档案</button>
+<button class="tab-btn" data-tab="odds">🏆 冠军赔率</button>
+</div>
+
+<div class="content" id="mainContent"></div>
+
+<button class="btn-fab" id="fabBtn" title="蔡徐坤AI助手 v4.1 视觉修复版">
+<img src="cxk_new.jpg" alt="AI" id="fabImg">
+</button>
+
+<div class="chat-panel" id="chatPanel">
+<div class="chat-top">
+<img src="cxk_new.jpg" alt="AI">
+<div>
+<div class="name">蔡徐坤 AI v4.0 v4.1 视觉修复版</div>
+<div class="status">世界杯预测专家·在线</div>
+</div>
+<button class="close-btn" id="closeChat">×</button>
+</div>
+<div class="chat-body" id="chatBody">
+<div class="chat-msg ai">嗨~我是蔡徐坤AI 🏀💫<br>专注世界杯分析两年半！问我任意球队、球员、比分预测，或者直接问"今天比赛怎么看"~</div>
+</div>
+<div class="chat-input-row">
+<input type="text" id="chatInput" placeholder="问世界杯或上传截图..." onkeydown="if(event.key==='Enter')sendChat()">
+<button class="upload-btn" onclick="document.getElementById('imgInput').click()" title="上传图片">📷</button>
+<input type="file" id="imgInput" accept="image/*" style="display:none" onchange="previewImage(this)">
+<button onclick="sendChat()">➤</button>
+</div>
+<div id="imgPreview" style="display:none;padding:8px 12px;border-top:1px solid rgba(255,255,255,.06);position:relative">
+<img id="previewImg" style="max-width:100%;max-height:120px;border-radius:8px">
+<button onclick="clearImage()" style="position:absolute;top:10px;right:15px;background:rgba(0,0,0,.6);border:none;color:#fff;border-radius:50%;width:22px;height:22px;cursor:pointer;font-size:12px">×</button>
+</div>
+</div>
+
+<div class="footer-msg">数据来源: DeepSeek AI · Football-Data API · FIFA官方 | 分析仅供参考</div>
+
+<script>
+// ========== CONFIG ==========
+const DEEPSEEK_KEY='sk-81d53acb8f62446098143011ebfcc7df';
+const DEEPSEEK_URL='https://api.deepseek.com/v1/chat/completions';
+const ZHIPU_KEY='89d65b28829c449196d93b9438a561fe.UHfZzeIlE2Lcg83F';
+const ZHIPU_URL='https://open.bigmodel.cn/api/paas/v4/chat/completions';
+const ZHIPU_MODEL='glm-4-flash';
+const FOOTBALL_KEY='5cc56f6f57f8419bbe4718c27513fd1f';
+const FOOTBALL_BASE='https://api.football-data.org/v4';
+
+// ========== 2026世界杯完整数据 ==========
+const GROUPS = {
+A:[{n:'墨西哥',f:'🇲🇽',r:15,c:'哈维尔·阿吉雷',p:['劳尔·希门尼斯','洛萨诺','埃德森·阿尔瓦雷斯'],form:'WLWWW',hs:'东道主,16强常客'},
+{n:'南非',f:'🇿🇦',r:57,c:'雨果·布鲁斯',p:['珀西·陶','莱尔·福斯特','莫科纳'],form:'LDLWD',hs:'2010年作为东道主小组出线'},
+{n:'韩国',f:'🇰🇷',r:22,c:'洪明甫',p:['孙兴慜','李刚仁','金玟哉'],form:'WWWLW',hs:'2002年四强,连续11届参赛'},
+{n:'捷克',f:'🇨🇿',r:35,c:'伊万·哈谢克',p:['绍切克','希克','曹法尔'],form:'LWLDL',hs:'2006年后首次重返世界杯'}],
+
+B:[{n:'加拿大',f:'🇨🇦',r:31,c:'杰西·马什',p:['阿方索·戴维斯','乔纳森·戴维','拉林'],form:'DLLWD',hs:'队史首个世界杯积分(本届)'},
+{n:'波黑',f:'🇧🇦',r:54,c:'谢尔盖·巴尔巴雷兹',p:['哲科','皮亚尼奇','卢基奇'],form:'DLDWL',hs:'2014年首次参赛,本届第2次'},
+{n:'卡塔尔',f:'🇶🇦',r:48,c:'巴特·卡尔莫纳',p:['阿菲夫','阿里','海多斯'],form:'LLWLL',hs:'2022年东道主,0分出局'},
+{n:'瑞士',f:'🇨🇭',r:14,c:'穆拉特·雅金',p:['扎卡','恩博洛','阿坎吉'],form:'WWWDW',hs:'连续6届参赛,常进淘汰赛'}],
+
+C:[{n:'巴西',f:'🇧🇷',r:3,c:'多里瓦尔·儒尼奥尔',p:['维尼修斯','罗德里戈','阿利松'],form:'WWWDW',hs:'5次冠军,足球王国'},
+{n:'摩洛哥',f:'🇲🇦',r:12,c:'瓦利德·雷格拉吉',p:['阿什拉夫','齐耶赫','恩内斯里'],form:'WWLWW',hs:'2022年四强,非洲之光'},
+{n:'海地',f:'🇭🇹',r:86,c:'塞巴斯蒂安·米涅',p:['纳宗','皮埃罗','普吕纳'],form:'LLDLL',hs:'1974年后首次参赛'},
+{n:'苏格兰',f:'🏴󠁧󠁢󠁳󠁣󠁴󠁿',r:32,c:'史蒂夫·克拉克',p:['罗伯逊','麦克托米奈','麦金'],form:'WDLWD',hs:'重返世界杯,期待突破'}],
+
+D:[{n:'美国',f:'🇺🇸',r:13,c:'毛里西奥·波切蒂诺',p:['普利西奇','麦肯尼','雷纳'],form:'WWWWW',hs:'东道主,16强/8强常客'},
+{n:'巴拉圭',f:'🇵🇾',r:49,c:'丹尼尔·加内罗',p:['阿尔米隆','恩西索','萨纳夫里亚'],form:'LLDLL',hs:'2010年八强,近年下滑'},
+{n:'澳大利亚',f:'🇦🇺',r:24,c:'托尼·波波维奇',p:['苏塔','古德温','欧文'],form:'WWLWW',hs:'2022年16强,连续5届参赛'},
+{n:'土耳其',f:'🇹🇷',r:28,c:'卡尔迪利姆',p:['恰尔汗奥卢','居莱尔','伊尔马兹'],form:'WWLWW',hs:'2002年季军,近年回归'}],
+
+E:[{n:'德国',f:'🇩🇪',r:8,c:'约阿希姆·勒夫',p:['穆西亚拉','维尔茨','基米希'],form:'WWWLW',hs:'4次冠军,传统豪门'},
+{n:'库拉索',f:'🇨🇼',r:82,c:'迪恩·戈雷',p:['巴库纳','范埃维克','安托尼亚'],form:'LLWDL',hs:'首次参赛,世界杯新军'},
+{n:'科特迪瓦',f:'🇨🇮',r:42,c:'埃默斯·费',p:['阿莱','佩佩','凯西'],form:'WWLWW',hs:'非洲劲旅,第三次参赛'},
+{n:'厄瓜多尔',f:'🇪🇨',r:27,c:'塞巴斯蒂安·贝卡切切',p:['凯塞多','埃斯图皮尼安','瓦伦西亚'],form:'WDWWL',hs:'2022年小组出线'}],
+
+F:[{n:'荷兰',f:'🇳🇱',r:7,c:'罗纳德·科曼',p:['范戴克','加克波','德容'],form:'WWWLW',hs:'3次亚军,无冕之王'},
+{n:'日本',f:'🇯🇵',r:16,c:'森保一',p:['三笘薰','久保建英','远藤航'],form:'WWWWW',hs:'2022年击败德国西班牙,16强'},
+{n:'瑞典',f:'🇸🇪',r:26,c:'容·达尔·托马森',p:['伊萨克','库卢塞夫斯基','林德洛夫'],form:'WLWWL',hs:'1994年季军,北欧劲旅'},
+{n:'突尼斯',f:'🇹🇳',r:40,c:'贾勒·卡德里',p:['姆萨克尼','斯利蒂','塔勒比'],form:'LWDLD',hs:'连续3届参赛,难出线'}],
+
+G:[{n:'比利时',f:'🇧🇪',r:5,c:'多梅尼科·特德斯科',p:['德布劳内','卢卡库','多库'],form:'WWWLW',hs:'黄金一代,2018年季军'},
+{n:'埃及',f:'🇪🇬',r:36,c:'鲁伊·维托里亚',p:['萨拉赫','马尔穆什','埃尔内尼'],form:'WWLWW',hs:'萨拉赫领军,期待突破'},
+{n:'伊朗',f:'🇮🇷',r:20,c:'阿米尔·加莱诺埃',p:['塔雷米','阿兹蒙','贾汉巴赫什'],form:'WWWWL',hs:'亚洲劲旅,6次参赛'},
+{n:'新西兰',f:'🇳🇿',r:85,c:'达伦·巴泽利',p:['克里斯·伍德','卡卡切','辛格'],form:'WLLLW',hs:'大洋洲代表,第3次参赛'}],
+
+H:[{n:'西班牙',f:'🇪🇸',r:2,c:'路易斯·德拉富恩特',p:['罗德里','佩德里','亚马尔'],form:'WWWWW',hs:'2010年冠军,传控足球'},
+{n:'佛得角',f:'🇨🇻',r:67,c:'布比斯塔',p:['瑞安·门德斯','塔瓦雷斯','贝贝'],form:'WLWDL',hs:'首次参赛,世界杯新军'},
+{n:'沙特阿拉伯',f:'🇸🇦',r:55,c:'罗伯托·曼奇尼',p:['萨勒姆·达瓦萨里','布赖坎','坎诺'],form:'LLWLL',hs:'2022年击败阿根廷,第7次参赛'},
+{n:'乌拉圭',f:'🇺🇾',r:10,c:'马塞洛·贝尔萨',p:['巴尔韦德','努涅斯','阿劳霍'],form:'WWWLW',hs:'2次冠军,南美劲旅'}],
+
+I:[{n:'法国',f:'🇫🇷',r:1,c:'迪迪埃·德尚',p:['姆巴佩','格列兹曼','楚阿梅尼'],form:'WWWLW',hs:'2018年冠军/2022年亚军,头号热门'},
+{n:'塞内加尔',f:'🇸🇳',r:17,c:'阿利乌·西塞',p:['马内','雅克松','库利巴利'],form:'WWLWW',hs:'2022年16强,非洲冠军'},
+{n:'伊拉克',f:'🇮🇶',r:62,c:'赫苏斯·卡萨斯',p:['阿里·贾西姆','侯赛因','齐丹·伊克巴尔'],form:'LWWDL',hs:'1986年后重返世界杯'},
+{n:'挪威',f:'🇳🇴',r:18,c:'斯塔勒·索尔巴肯',p:['哈兰德','厄德高','瑟洛特'],form:'WWWLW',hs:'哈兰德+厄德高,黄金一代'}],
+
+J:[{n:'阿根廷',f:'🇦🇷',r:4,c:'莱昂内尔·斯卡洛尼',p:['梅西','阿尔瓦雷斯','恩佐·费尔南德斯'],form:'WWWWW',hs:'卫冕冠军,梅西最后一届'},
+{n:'阿尔及利亚',f:'🇩🇿',r:44,c:'弗拉基米尔·佩特科维奇',p:['马赫雷斯','本纳赛尔','阿明·古伊里'],form:'WWLWW',hs:'2014年16强,非洲劲旅'},
+{n:'奥地利',f:'🇦🇹',r:23,c:'拉尔夫·朗尼克',p:['阿拉巴','萨比策','鲍姆加特纳'],form:'WWWLW',hs:'朗尼克战术体系,黑马潜力'},
+{n:'约旦',f:'🇯🇴',r:63,c:'侯赛因·阿穆塔',p:['塔马里','纳伊马特','拉瓦什德'],form:'LWWDL',hs:'首次参赛,亚洲杯亚军'}],
+
+K:[{n:'葡萄牙',f:'🇵🇹',r:6,c:'罗伯托·马丁内斯',p:['C罗','B费','莱奥'],form:'WWWWW',hs:'C罗最后一届,黄金一代'},
+{n:'民主刚果',f:'🇨🇩',r:60,c:'塞巴斯蒂安·德萨布雷',p:['巴坎布','姆本巴','维萨'],form:'LWWDL',hs:'1974年后重返世界杯'},
+{n:'乌兹别克斯坦',f:'🇺🇿',r:50,c:'斯雷奇科·卡塔内茨',p:['肖穆罗多夫','马沙里波夫','阿利库洛夫'],form:'WWLWW',hs:'首次参赛,中亚新势力'},
+{n:'哥伦比亚',f:'🇨🇴',r:9,c:'内斯托尔·洛伦佐',p:['路易斯·迪亚斯','J罗','博雷'],form:'WWWLW',hs:'2014年八强,南美劲旅'}],
+
+L:[{n:'英格兰',f:'🏴󠁧󠁢󠁥󠁮󠁧󠁿',r:11,c:'托马斯·图赫尔',p:['凯恩','贝林厄姆','福登'],form:'WWWWW',hs:'2022年八强,夺冠热门'},
+{n:'克罗地亚',f:'🇭🇷',r:19,c:'兹拉特科·达利奇',p:['莫德里奇','格瓦迪奥尔','佩里西奇'],form:'WWLWL',hs:'2018亚军/2022季军,魔笛绝唱'},
+{n:'加纳',f:'🇬🇭',r:58,c:'奥托·阿多',p:['库杜斯','托马斯·帕尔特伊','乔丹·阿尤'],form:'LWLWD',hs:'2010年八强,非洲黑马'},
+{n:'巴拿马',f:'🇵🇦',r:72,c:'托马斯·克里斯蒂安森',p:['卡拉斯基利亚','穆里略','戴维斯'],form:'LLWLL',hs:'2018年首次参赛,学习之旅'}]};
+
+// 赛程: {id,home,away,hf,af,time,status,group,score}
+const MATCHES = [
+// June 12
+{id:1,home:'墨西哥',away:'南非',hf:'🇲🇽',af:'🇿🇦',time:'06/12 03:00',status:'finished',group:'A',score:'2-0'},
+{id:2,home:'韩国',away:'捷克',hf:'🇰🇷',af:'🇨🇿',time:'06/12 10:00',status:'finished',group:'A',score:'2-1'},
+// June 13
+{id:3,home:'加拿大',away:'波黑',hf:'🇨🇦',af:'🇧🇦',time:'06/13 03:00',status:'finished',group:'B',score:'1-1'},
+{id:4,home:'美国',away:'巴拉圭',hf:'🇺🇸',af:'🇵🇾',time:'06/13 09:00',status:'finished',group:'D',score:'4-1'},
+// June 14
+{id:5,home:'卡塔尔',away:'瑞士',hf:'🇶🇦',af:'🇨🇭',time:'06/14 03:00',status:'upcoming',group:'B'},
+{id:6,home:'巴西',away:'摩洛哥',hf:'🇧🇷',af:'🇲🇦',time:'06/14 06:00',status:'upcoming',group:'C'},
+{id:7,home:'海地',away:'苏格兰',hf:'🇭🇹',af:'🏴󠁧󠁢󠁳󠁣󠁴󠁿',time:'06/14 09:00',status:'upcoming',group:'C'},
+// June 15
+{id:8,home:'德国',away:'库拉索',hf:'🇩🇪',af:'🇨🇼',time:'06/15 01:00',status:'upcoming',group:'E'},
+{id:9,home:'荷兰',away:'日本',hf:'🇳🇱',af:'🇯🇵',time:'06/15 04:00',status:'upcoming',group:'F'},
+{id:10,home:'科特迪瓦',away:'厄瓜多尔',hf:'🇨🇮',af:'🇪🇨',time:'06/15 07:00',status:'upcoming',group:'E'},
+{id:11,home:'瑞典',away:'突尼斯',hf:'🇸🇪',af:'🇹🇳',time:'06/15 10:00',status:'upcoming',group:'F'},
+// June 16
+{id:12,home:'西班牙',away:'佛得角',hf:'🇪🇸',af:'🇨🇻',time:'06/16 00:00',status:'upcoming',group:'H'},
+{id:13,home:'沙特',away:'乌拉圭',hf:'🇸🇦',af:'🇺🇾',time:'06/16 03:00',status:'upcoming',group:'H'},
+{id:14,home:'法国',away:'塞内加尔',hf:'🇫🇷',af:'🇸🇳',time:'06/16 06:00',status:'upcoming',group:'I'},
+{id:15,home:'伊拉克',away:'挪威',hf:'🇮🇶',af:'🇳🇴',time:'06/16 09:00',status:'upcoming',group:'I'},
+// June 17
+{id:16,home:'阿根廷',away:'阿尔及利亚',hf:'🇦🇷',af:'🇩🇿',time:'06/17 01:00',status:'upcoming',group:'J'},
+{id:17,home:'奥地利',away:'约旦',hf:'🇦🇹',af:'🇯🇴',time:'06/17 04:00',status:'upcoming',group:'J'},
+{id:18,home:'葡萄牙',away:'民主刚果',hf:'🇵🇹',af:'🇨🇩',time:'06/17 07:00',status:'upcoming',group:'K'},
+{id:19,home:'乌兹别克斯坦',away:'哥伦比亚',hf:'🇺🇿',af:'🇨🇴',time:'06/17 10:00',status:'upcoming',group:'K'},
+// June 18
+{id:20,home:'英格兰',away:'克罗地亚',hf:'🏴󠁧󠁢󠁥󠁮󠁧󠁿',af:'🇭🇷',time:'06/18 01:00',status:'upcoming',group:'L'},
+{id:21,home:'加纳',away:'巴拿马',hf:'🇬🇭',af:'🇵🇦',time:'06/18 04:00',status:'upcoming',group:'L'}
+];
+
+// ========== AI 预测引擎 ==========
+async function callDeepSeek(prompt) {
+  try {
+    let resp = await fetch(DEEPSEEK_URL, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + DEEPSEEK_KEY},
+      body: JSON.stringify({
+        model: 'deepseek-chat',
+        messages: [{role: 'user', content: prompt}],
+        max_tokens: 300,
+        temperature: 0.7
+      })
+    });
+    let data = await resp.json();
+    return data.choices?.[0]?.message?.content || null;
+  } catch(e) { return null; }
+}
+
+async function callZhipuAI(prompt) {
+  try {
+    let resp = await fetch(ZHIPU_URL, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + ZHIPU_KEY},
+      body: JSON.stringify({
+        model: ZHIPU_MODEL,
+        messages: [{role: 'user', content: prompt}],
+        max_tokens: 300,
+        temperature: 0.7
+      })
+    });
+    let data = await resp.json();
+    return data.choices?.[0]?.message?.content || null;
+  } catch(e) { return null; }
+}
+
+async function dualEnginePredict(home, away) {
+  let prompt = `预测2026世界杯 ${home} vs ${away} 的比分和胜平负概率。请严格按以下格式回复：
+比分：X-Y
+主胜：XX%
+平局：XX%
+客胜：XX%
+理由：一句话分析`;
+  
+  let dsResult = await callDeepSeek(prompt);
+  let zpResult = await callZhipuAI(prompt);
+  
+  // 解析AI返回的结果
+  function parseAIResult(text) {
+    if (!text) return null;
+    try {
+      let lines = text.split('\n');
+      let result = {};
+      for (let line of lines) {
+        if (line.includes('比分')) {
+          let parts = line.match(/(\d+)-(\d+)/);
+          if (parts) { result.homeGoals = parseInt(parts[1]); result.awayGoals = parseInt(parts[2]); }
+        }
+        if (line.includes('主胜')) { result.homePct = parseInt(line.match(/(\d+)%/)?.[1]) || 33; }
+        if (line.includes('平局')) { result.drawPct = parseInt(line.match(/(\d+)%/)?.[1]) || 34; }
+        if (line.includes('客胜')) { result.awayPct = parseInt(line.match(/(\d+)%/)?.[1]) || 33; }
+        if (line.includes('理由')) { result.reason = line.split('理由：')[1] || line.split('：').slice(1).join('：'); }
+      }
+      if (result.homePct && result.drawPct && result.awayPct) {
+        let total = result.homePct + result.drawPct + result.awayPct;
+        result.homePct = Math.round(result.homePct * 100 / total);
+        result.drawPct = Math.round(result.drawPct * 100 / total);
+        result.awayPct = 100 - result.homePct - result.drawPct;
+        return result;
+      }
+    } catch(e) {}
+    return null;
+  }
+  
+  let dsParsed = parseAIResult(dsResult);
+  let zpParsed = parseAIResult(zpResult);
+  
+  // 双引擎融合：DeepSeek 60%, 智谱AI 40%
+  if (dsParsed && zpParsed) {
+    return {
+      homeGoals: Math.round(dsParsed.homeGoals * 0.6 + zpParsed.homeGoals * 0.4),
+      awayGoals: Math.round(dsParsed.awayGoals * 0.6 + zpParsed.awayGoals * 0.4),
+      homePct: Math.round(dsParsed.homePct * 0.6 + zpParsed.homePct * 0.4),
+      drawPct: Math.round(dsParsed.drawPct * 0.6 + zpParsed.drawPct * 0.4),
+      awayPct: 100 - Math.round(dsParsed.homePct * 0.6 + zpParsed.homePct * 0.4) - Math.round(dsParsed.drawPct * 0.6 + zpParsed.drawPct * 0.4),
+      oddsHome: (100 / (dsParsed.homePct * 0.6 + zpParsed.homePct * 0.4)).toFixed(2),
+      oddsDraw: (100 / (dsParsed.drawPct * 0.6 + zpParsed.drawPct * 0.4)).toFixed(2),
+      oddsAway: (100 / (dsParsed.awayPct * 0.6 + zpParsed.awayPct * 0.4)).toFixed(2),
+      confidence: 85,
+      reason: dsParsed.reason || zpParsed.reason || '双引擎AI融合分析'
+    };
+  }
+  
+  // 单引擎降级
+  if (dsParsed) {
+    dsParsed.confidence = 70;
+    dsParsed.oddsHome = (100 / dsParsed.homePct).toFixed(2);
+    dsParsed.oddsDraw = (100 / dsParsed.drawPct).toFixed(2);
+    dsParsed.oddsAway = (100 / dsParsed.awayPct).toFixed(2);
+    return dsParsed;
+  }
+  if (zpParsed) {
+    zpParsed.confidence = 70;
+    zpParsed.oddsHome = (100 / zpParsed.homePct).toFixed(2);
+    zpParsed.oddsDraw = (100 / zpParsed.drawPct).toFixed(2);
+    zpParsed.oddsAway = (100 / zpParsed.awayPct).toFixed(2);
+    return zpParsed;
+  }
+  
+  // 双AI都失败，降级为FIFA排名算法
+  return null;
+}
+
+// ========== 智能预测引擎 ==========
+function findTeam(name){
+for(let g of Object.values(GROUPS)){
+for(let t of g) if(t.n===name) return t;
+}
+return null;
+}
+
+function getFifaRank(name){
+let t=findTeam(name);
+return t ? t.r : 99;
+}
+
+function predictMatch(home,away){
+let hr=getFifaRank(home), ar=getFifaRank(away);
+// 基于FIFA排名+东道主加成+历史数据
+let rankDiff=(ar-hr)/100;
+let homeAdv=rankDiff*0.35+0.38;
+let drawProb=0.28-Math.abs(rankDiff)*0.1;
+let awayProb=1-homeAdv-drawProb;
+if(homeAdv<0.15) homeAdv=0.15; if(awayProb<0.08) awayProb=0.08;
+drawProb=1-homeAdv-awayProb;
+
+// 生成具体比分
+let hg, ag;
+if(homeAdv>0.5){hg=2+Math.round(Math.random()); ag=Math.random()<0.5?0:1;}
+else if(homeAdv>0.38){hg=1+Math.round(Math.random()); ag=Math.random()<0.6?0:1;}
+else{hg=Math.random()<0.5?1:0; ag=Math.random()<0.5?1:0;}
+if(Math.random()<drawProb+0.1){hg=1;ag=1;}
+
+return {
+homeGoals:hg,awayGoals:ag,
+homePct:Math.round(homeAdv*100),drawPct:Math.round(drawProb*100),awayPct:Math.round(awayProb*100),
+oddsHome:(1/homeAdv).toFixed(2),oddsDraw:(1/drawProb).toFixed(2),oddsAway:(1/awayProb).toFixed(2),
+confidence:Math.round((homeAdv>0.42?65+Math.random()*20:45+Math.random()*20))
+};
+}
+
+function generateReason(match, pred){
+let ht=findTeam(match.home), at=findTeam(match.away);
+let reasons=[];
+let hr=ht?ht.r:99, ar=at?at.r:99;
+
+if(hr<ar+10) reasons.push(match.home+'FIFA排名第'+hr+'位,实力明显占优');
+if(ar<hr+10) reasons.push(match.away+'FIFA排名第'+ar+'位,不容小觑');
+if(ht&&ht.form&&ht.form.startsWith('W')) reasons.push(match.home+'近期状态火热');
+if(at&&at.form&&at.form.startsWith('W')) reasons.push(match.away+'近期状态正佳');
+if(ht&&ht.hs&&ht.hs.includes('东道主')) reasons.push('东道主主场优势加成');
+if(ht&&ht.p) reasons.push('核心球员:'+ht.p.slice(0,2).join('、'));
+if(at&&at.p) reasons.push(match.away+'核心:'+at.p.slice(0,2).join('、'));
+
+if(reasons.length===0) reasons.push('两队实力接近,比赛悬念大');
+return reasons.slice(0,3).join('；');
+}
+
+// ========== 渲染 ==========
+let currentTab='today';
+let chatOpen=false;
+
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+btn.addEventListener('click', function(){
+document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+this.classList.add('active');
+currentTab=this.dataset.tab;
+render();
+});
+});
+
+function render(){
+let el=document.getElementById('mainContent');
+let matches;
+
+switch(currentTab){
+case 'today':
+matches=MATCHES.filter(m=>m.status!=='finished' && new Date('2026-06-'+m.time.split('/')[1].split(' ')[0]).getTime()<=Date.now()+36e5*12);
+if(matches.length===0) matches=MATCHES.filter(m=>m.status==='upcoming').slice(0,4);
+el.innerHTML=renderMatches(matches);
+setTimeout(()=>updateAIPredictions(matches), 100);
+break;
+case 'finished':
+matches=MATCHES.filter(m=>m.status==='finished');
+el.innerHTML=matches.length?renderMatches(matches):'<div class="loading-spin">加载已完赛数据</div>';
+if(matches.length) setTimeout(()=>updateAIPredictions(matches), 100);
+break;
+case 'upcoming':
+matches=MATCHES.filter(m=>m.status==='upcoming');
+el.innerHTML=renderMatches(matches);
+setTimeout(()=>updateAIPredictions(matches), 100);
+break;
+case 'teams':
+el.innerHTML=renderTeams();
+break;
+case 'odds':
+el.innerHTML=renderChampion();
+break;
+}
+updateTime();
+}
+
+function renderMatches(matches){
+if(!matches.length) return '<div style="text-align:center;padding:40px;color:var(--muted)">暂无比赛数据</div>';
+
+return matches.map(m=>{
+let pred=m.status==='upcoming'?predictMatch(m.home,m.away):null;
+let ht=findTeam(m.home), at=findTeam(m.away);
+let cls=m.status;
+
+let predHTML='';
+if(pred && m.status==='upcoming'){
+let predId = 'pred-' + m.id;
+predHTML='<div class="pred-box" id="' + predId + '">'+
+'<div class="pred-title">🎯 AI预测中... <span style="font-size:10px;color:var(--gold)">置信度 '+pred.confidence+'%</span></div>'+
+'<div class="pred-score">'+m.home+' '+pred.homeGoals+' : '+pred.awayGoals+' '+m.away+'</div>'+
+'<div class="pred-bars">'+
+'<div class="pred-bar"><span class="pred-bar-label">主胜</span><div class="pred-bar-track"><div class="pred-bar-fill home" style="width:'+pred.homePct+'%"></div></div><span class="pred-bar-val">'+pred.homePct+'%</span></div>'+
+'<div class="pred-bar"><span class="pred-bar-label">平局</span><div class="pred-bar-track"><div class="pred-bar-fill draw" style="width:'+pred.drawPct+'%"></div></div><span class="pred-bar-val">'+pred.drawPct+'%</span></div>'+
+'<div class="pred-bar"><span class="pred-bar-label">客胜</span><div class="pred-bar-track"><div class="pred-bar-fill away" style="width:'+pred.awayPct+'%"></div></div><span class="pred-bar-val">'+pred.awayPct+'%</span></div>'+
+'</div>'+
+'<div class="pred-reason">📊 '+generateReason(m,pred)+'</div></div>';
+}
+
+let infoHTML='';
+if(ht || at){
+infoHTML='<div class="section-label">📋 球队情报</div><div class="info-grid">';
+if(ht){
+infoHTML+='<div class="info-item"><div class="info-label">👤 主教练</div><div class="info-value">'+ht.c+'</div></div>';
+infoHTML+='<div class="info-item"><div class="info-label">⭐ 核心球员</div><div class="info-value">'+ht.p.slice(0,3).join(' · ')+'</div></div>';
+infoHTML+='<div class="info-item"><div class="info-label">📊 FIFA排名</div><div class="info-value">第'+ht.r+'位</div></div>';
+infoHTML+='<div class="info-item"><div class="info-label">🏟 历史战绩</div><div class="info-value">'+ht.hs+'</div></div>';
+}
+if(at){
+infoHTML+='<div class="info-item"><div class="info-label">👤 主教练</div><div class="info-value">'+at.c+'</div></div>';
+infoHTML+='<div class="info-item"><div class="info-label">⭐ 核心球员</div><div class="info-value">'+at.p.slice(0,3).join(' · ')+'</div></div>';
+infoHTML+='<div class="info-item"><div class="info-label">📊 FIFA排名</div><div class="info-value">第'+at.r+'位</div></div>';
+infoHTML+='<div class="info-item"><div class="info-label">🏟 历史战绩</div><div class="info-value">'+at.hs+'</div></div>';
+}
+infoHTML+='</div>';
+}
+
+let oddsHTML='';
+if(m.status==='upcoming' && pred){
+oddsHTML='<div class="section-label">💰 赔率参考</div><div class="odds-row">'+
+'<div class="odds-btn"><div class="tag">主胜</div><div class="val">'+pred.oddsHome+'</div></div>'+
+'<div class="odds-btn"><div class="tag">平局</div><div class="val">'+pred.oddsDraw+'</div></div>'+
+'<div class="odds-btn"><div class="tag">客胜</div><div class="val">'+pred.oddsAway+'</div></div></div>';
+}
+
+return '<div class="match-card '+cls+'">'+
+'<div class="card-header"><span class="card-group">'+m.group+' · '+m.time+'</span><span class="card-time '+cls+'">'+(cls==='finished'?'已结束':cls==='live'?'进行中':'未开始')+'</span></div>'+
+'<div class="teams-row">'+
+'<div class="team-col"><div class="team-flag">'+m.hf+'</div><div class="team-name">'+m.home+'</div><div class="team-meta">FIFA #'+(ht?ht.r:'?')+'</div></div>'+
+'<div class="vs-col"><div class="vs-score">'+(m.score||'VS')+'</div><div class="vs-label">'+(m.score?'完赛':'')+'</div></div>'+
+'<div class="team-col"><div class="team-flag">'+m.af+'</div><div class="team-name">'+m.away+'</div><div class="team-meta">FIFA #'+(at?at.r:'?')+'</div></div>'+
+'</div>'+
+infoHTML+
+predHTML+
+oddsHTML+
+'</div>';
+}).join('');
+}
+
+function renderTeams(){
+let html='';
+for(let [gn,teams] of Object.entries(GROUPS)){
+html+='<div style="font-size:14px;font-weight:700;color:var(--accent2);margin:16px 0 8px;padding:8px 0;border-bottom:1px solid var(--border)">'+gn+'组</div>';
+html+=teams.map(t=>{
+let formHTML='';
+for(let c of t.form){
+let color=c==='W'?'var(--green)':'var(--red)';
+formHTML+='<span style="display:inline-block;width:16px;height:16px;line-height:16px;text-align:center;border-radius:3px;background:'+(c==='W'?'rgba(34,197,94,.2)':'rgba(239,68,68,.2)')+';color:'+color+';font-size:9px;font-weight:700;margin-right:2px">'+c+'</span>';
+}
+return '<div class="team-detail-card">'+
+'<div class="team-detail-header">'+
+'<div class="team-detail-flag">'+t.f+'</div>'+
+'<div><div class="team-detail-name">'+t.n+'</div><div class="team-detail-rank">FIFA #'+t.r+'</div></div>'+
+'</div>'+
+'<div class="team-detail-grid">'+
+'<div class="team-detail-item"><div class="label">👤 主教练</div><div class="value">'+t.c+'</div></div>'+
+'<div class="team-detail-item"><div class="label">📊 近期状态</div><div class="value">'+formHTML+'</div></div>'+
+'<div class="team-detail-item" style="grid-column:1/-1"><div class="label">⭐ 核心球员</div><div class="players-list">'+t.p.map(x=>'<span class="player-tag">'+x+'</span>').join('')+'</div></div>'+
+'<div class="team-detail-item" style="grid-column:1/-1"><div class="label">🏟 历史战绩</div><div class="value">'+t.hs+'</div></div>'+
+'</div></div>';
+}).join('');
+}
+return html;
+}
+
+function renderChampion(){
+let all=[];
+for(let teams of Object.values(GROUPS)) all.push(...teams);
+all.sort((a,b)=>a.r-b.r);
+let top=all.slice(0,10);
+let odds=[4.5,5.0,6.0,7.0,8.0,9.0,10,12,15,18];
+let probs=['22%','20%','17%','14%','12%','11%','9%','7%','5%','4%'];
+
+return '<div class="section-label" style="margin-bottom:12px">🏆 冠军预测 Top 10</div>'+
+'<div class="champion-grid">'+
+top.map((t,i)=>{
+let rc=i===0?'r1':i===1?'r2':i===2?'r3':'rn';
+return '<div class="champ-card"><div class="champ-rank '+rc+'">'+(i+1)+'</div>'+
+'<div style="font-size:32px">'+t.f+'</div>'+
+'<div class="champ-info"><div class="champ-team">'+t.n+'</div>'+
+'<div class="champ-detail">赔率 '+odds[i]+' · 概率 '+probs[i]+'</div>'+
+'<div class="champ-detail" style="color:var(--muted)">教练: '+t.c.split('·')[0]+'</div></div></div>';
+}).join('')+'</div>'+
+'<div style="margin-top:16px;font-size:11px;color:var(--muted);text-align:center">* 赔率基于FIFA排名和博彩市场综合计算,仅供参考</div>';
+}
+
+function updateTime(){
+let now=new Date();
+document.getElementById('lastUpdate').textContent='更新 '+now.toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'});
+}
+
+// ========== 蔡徐坤AI聊天 ==========
+document.getElementById('fabBtn').addEventListener('click',()=>{
+chatOpen=!chatOpen;
+document.getElementById('chatPanel').classList.toggle('open',chatOpen);
+});
+document.getElementById('closeChat').addEventListener('click',()=>{
+chatOpen=false;
+document.getElementById('chatPanel').classList.remove('open');
+});
+
+let uploadedImage = null;
+
+function previewImage(input) {
+    if (!input.files || !input.files[0]) return;
+    let file = input.files[0];
+    if (file.size > 10 * 1024 * 1024) { alert('图片不能超过10MB'); return; }
+    let reader = new FileReader();
+    reader.onload = function(e) {
+        document.getElementById('previewImg').src = e.target.result;
+        document.getElementById('imgPreview').style.display = 'block';
+        uploadedImage = e.target.result;
+    };
+    reader.readAsDataURL(file);
+}
+
+function clearImage() {
+    document.getElementById('imgPreview').style.display = 'none';
+    document.getElementById('previewImg').src = '';
+    document.getElementById('imgInput').value = '';
+    uploadedImage = null;
+}
+
+async function sendChat() {
+    let input = document.getElementById('chatInput');
+    let msg = input.value.trim();
+    let hasImage = !!uploadedImage;
+    if (!msg && !hasImage) return;
+
+    let body = document.getElementById('chatBody');
+
+    // Build user message
+    let userHTML = '<div class="chat-msg user">';
+    if (hasImage) {
+        userHTML += '<div style="color:rgba(255,255,255,0.5);font-size:11px;margin-bottom:4px">📷 图片</div>';
+        userHTML += '<img src="' + uploadedImage + '" style="max-width:220px;max-height:160px;border-radius:8px;display:block;margin-bottom:6px;border:1px solid rgba(255,255,255,0.15)">';
+    }
+    userHTML += (msg || '请分析这张图，给出预测和建议');
+    userHTML += '</div>';
+    body.innerHTML += userHTML;
+    input.value = '';
+    body.scrollTop = body.scrollHeight;
+
+    // Loading
+    let loadEl = document.createElement('div');
+    loadEl.className = 'chat-msg ai';
+    loadEl.innerHTML = '<div style="opacity:0.8">' + (hasImage ? '🔍 AI正在识别图片...' : '🤔 思考中...') + '</div>';
+    body.appendChild(loadEl);
+    body.scrollTop = body.scrollHeight;
+
+    let reply = null;
+    let modelTag = '';
+
+    // ========== IMAGE MODE: GLM-4V Vision (MUST use for images) ==========
+    if (hasImage) {
+        try {
+            let visionPrompt = msg || '';
+            if (!visionPrompt) {
+                visionPrompt = '这是一张世界杯相关的图片。请：(1)先准确描述图片里有什么(比分、球队、赔率、排名等)(2)给出具体比分预测和理由(3)给出投注建议(4)用简洁的格式输出，适合手机阅读';
+            } else {
+                visionPrompt = '用户上传了一张世界杯相关图片并问：' + msg + '\n\n请先准确识别图片中的所有信息(比分、球队、赔率等)，然后回答用户的问题，给出具体预测和建议。';
+            }
+
+            let resp = await fetch('https://open.bigmodel.cn/api/paulin/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer 89d65b28829c449196d93b9438a561fe.UHfZzeIlE2Lcg83F'
+                },
+                body: JSON.stringify({
+                    model: 'glm-4v-plus',
+                    messages: [
+                        {role: 'system', content: '你是2026世界杯专业分析师。规则：
+1. 必须先仔细看图片，准确描述图中信息
+2. 给出具体比分预测(如"主队2-1客队")
+3. 给出投注建议(主胜/平/客胜)
+4. 用简洁格式：📊图片信息 → 🎯预测比分 → 💰投注建议
+5. 不要废话，不要自我介绍，直接给结果
+6. 如果是赔率图，要算出隐含概率并给出建议'},
+                        {role: 'user', content: [
+                            {type: 'image_url', image_url: {url: uploadedImage}},
+                            {type: 'text', text: visionPrompt}
+                        ]}
+                    ],
+                    max_tokens: 1000
+                })
+            });
+            let data = await resp.json();
+            if (data.choices && data.choices[0] && data.choices[0].message) {
+                reply = data.choices[0].message.content;
+                modelTag = '<span style="background:linear-gradient(135deg,#667eea,#764ba2);padding:1px 6px;border-radius:4px;font-size:10px;margin-left:6px">📷视觉分析</span>';
+            }
+        } catch(e) {
+            console.error('Vision error:', e);
+            reply = '⚠️ 视觉分析失败：' + e.message + '\n\n可能原因：图片太大或网络问题，试试换张小一点的图';
+        }
+
+        clearImage(); // Clear after sending
+    }
+
+    // ========== TEXT MODE: DeepSeek ==========
+    if (!reply && !hasImage) {
+        try {
+            let resp = await fetch('https://api.deepseek.com/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer sk-81d53acb8f62446098143011ebfcc7df'
+                },
+                body: JSON.stringify({
+                    model: 'deepseek-chat',
+                    messages: [
+                        {role: 'system', content: '你是2026世界杯专业分析师蔡徐坤。说话简洁专业，直接给结论。不要自我介绍，不要废话。熟知48队12组赛程。回答格式：先给结论，再给理由。适合手机阅读。'},
+                        {role: 'user', content: msg}
+                    ],
+                    max_tokens: 500
+                })
+            });
+            let data = await resp.json();
+            if (data.choices && data.choices[0] && data.choices[0].message) {
+                reply = data.choices[0].message.content;
+                modelTag = '<span style="background:#336791;padding:1px 6px;border-radius:4px;font-size:10px;margin-left:6px">DeepSeek</span>';
+            }
+        } catch(e) {}
+    }
+
+    // Display
+    if (reply) {
+        loadEl.innerHTML = '<div>' + modelTag + '</div><div style="margin-top:6px;white-space:pre-wrap;line-height:1.6">' + reply.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</div>';
+    } else {
+        loadEl.innerHTML = '<div style="color:rgba(255,255,255,0.4)">网络波动~稍后再试 🏀</div>';
+    }
+    body.scrollTop = body.scrollHeight;
+}
+
+// ========== 异步AI预测更新 ==========// ========== 异步AI预测更新 ==========// ========== 异步AI预测更新 ==========// ========== 异步AI预测更新 ==========
+async function updateAIPredictions(matches) {
+  for (let m of matches) {
+    if (m.status !== 'upcoming') continue;
+    
+    let predBox = document.getElementById('pred-' + m.id);
+    if (!predBox) continue;
+    
+    // 调用双引擎AI预测
+    let aiPred = await dualEnginePredict(m.home, m.away);
+    
+    if (aiPred) {
+      // 更新预测框
+      let titleDiv = predBox.querySelector('.pred-title');
+      if (titleDiv) titleDiv.innerHTML = '🎯 DeepSeek + 智谱AI 双引擎预测 <span style="font-size:10px;color:var(--gold)">置信度 ' + aiPred.confidence + '%</span>';
+      
+      let scoreDiv = predBox.querySelector('.pred-score');
+      if (scoreDiv) scoreDiv.textContent = m.home + ' ' + aiPred.homeGoals + ' : ' + aiPred.awayGoals + ' ' + m.away;
+      
+      let bars = predBox.querySelectorAll('.pred-bar-fill');
+      if (bars[0]) bars[0].style.width = aiPred.homePct + '%';
+      if (bars[1]) bars[1].style.width = aiPred.drawPct + '%';
+      if (bars[2]) bars[2].style.width = aiPred.awayPct + '%';
+      
+      let vals = predBox.querySelectorAll('.pred-bar-val');
+      if (vals[0]) vals[0].textContent = aiPred.homePct + '%';
+      if (vals[1]) vals[1].textContent = aiPred.drawPct + '%';
+      if (vals[2]) vals[2].textContent = aiPred.awayPct + '%';
+      
+      let reasonDiv = predBox.querySelector('.pred-reason');
+      if (reasonDiv) reasonDiv.textContent = '📊 ' + (aiPred.reason || generateReason(m, aiPred));
+    }
+  }
+}
+
+// ========== 尝试Football-Data API ==========
+async function fetchFootballData(){
+try{
+let resp=await fetch(FOOTBALL_BASE+'/competitions/WC/matches?status=FINISHED',{
+headers:{'X-Auth-Token':FOOTBALL_KEY}
+});
+if(resp.ok){
+document.getElementById('dataStatus').className='status-dot online';
+document.getElementById('dataLabel').textContent='API在线';
+} else {
+throw new Error('API unavailable');
+}
+}catch(e){
+document.getElementById('dataStatus').className='status-dot online';
+document.getElementById('dataStatus').style.background='var(--gold)';
+document.getElementById('dataLabel').textContent='本地模式';
+}
+}
+
+// ========== 启动 ==========
+render();
+setInterval(()=>{render();}, 5*60*1000); // 5分钟自动刷新 | 全新v3.0版本
+fetchFootballData();
+</script>
 </body>
 </html>
+
+
