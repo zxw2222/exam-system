@@ -268,183 +268,153 @@ const MATCHES = [
 {id:2,home:'韩国',away:'捷克',hf:'🇰🇷',af:'🇨🇿',time:'06/12 10:00',status:'finished',group:'A',score:'2-1'},
 {id:3,home:'加拿大',away:'波黑',hf:'🇨🇦',af:'🇧🇦',time:'06/13 03:00',status:'finished',group:'B',score:'1-1'},
 {id:4,home:'美国',away:'巴拉圭',hf:'🇺🇸',af:'🇵🇾',time:'06/13 09:00',status:'finished',group:'D',score:'4-1'},
-{id:5,home:'Mexico',away:'South Africa',hf:'🇲🇽',af:'🇿🇦',time:'06/14 03:00',status:'upcoming',group:'A'},
-{id:6,home:'Canada',away:'Bosnia',hf:'🇨🇦',af:'🇧🇦',time:'06/14 06:00',status:'upcoming',group:'B'},
-{id:7,home:'Brazil',away:'Morocco',hf:'🇧🇷',af:'🇲🇦',time:'06/14 09:00',status:'upcoming',group:'C'},
-{id:8,home:'USA',away:'Paraguay',hf:'🇺🇸',af:'🇵🇾',time:'06/14 03:00',status:'upcoming',group:'D'},
-{id:9,home:'Germany',away:'Curacao',hf:'🇩🇪',af:'🇨🇼',time:'06/14 06:00',status:'upcoming',group:'E'},
-{id:10,home:'Netherlands',away:'Japan',hf:'🇳🇱',af:'🇯🇵',time:'06/14 09:00',status:'upcoming',group:'F'},
-{id:11,home:'Belgium',away:'Egypt',hf:'🇧🇪',af:'🇪🇬',time:'06/14 03:00',status:'upcoming',group:'G'},
-{id:12,home:'Spain',away:'Cape Verde',hf:'🇪🇸',af:'🇨🇻',time:'06/14 06:00',status:'upcoming',group:'H'},
-{id:13,home:'France',away:'Senegal',hf:'🇫🇷',af:'🇸🇳',time:'06/14 09:00',status:'upcoming',group:'I'},
-{id:14,home:'Argentina',away:'Algeria',hf:'🇦🇷',af:'🇩🇿',time:'06/14 03:00',status:'upcoming',group:'J'},
-{id:15,home:'Portugal',away:'DR Congo',hf:'🇵🇹',af:'🇨🇩',time:'06/14 06:00',status:'upcoming',group:'K'},
-{id:16,home:'England',away:'Croatia',hf:'🏴󠁧󠁢󠁥󠁮󠁧󠁿',af:'🇭🇷',time:'06/14 09:00',status:'upcoming',group:'L'},
-{id:17,home:'Mexico',away:'South Korea',hf:'🇲🇽',af:'🇰🇷',time:'06/14 03:00',status:'upcoming',group:'A'},
-{id:18,home:'Canada',away:'Qatar',hf:'🇨🇦',af:'🇶🇦',time:'06/14 06:00',status:'upcoming',group:'B'},
-{id:19,home:'Brazil',away:'Haiti',hf:'🇧🇷',af:'🇭🇹',time:'06/14 09:00',status:'upcoming',group:'C'},
-{id:20,home:'USA',away:'Australia',hf:'🇺🇸',af:'🇦🇺',time:'06/14 03:00',status:'upcoming',group:'D'},
-{id:21,home:'Germany',away:'Ivory Coast',hf:'🇩🇪',af:'🇨🇮',time:'06/14 06:00',status:'upcoming',group:'E'},
-{id:22,home:'Netherlands',away:'Sweden',hf:'🇳🇱',af:'🇸🇪',time:'06/14 09:00',status:'upcoming',group:'F'},
-{id:23,home:'Belgium',away:'Iran',hf:'🇧🇪',af:'🇮🇷',time:'06/14 03:00',status:'upcoming',group:'G'},
-{id:24,home:'Spain',away:'Saudi Arabia',hf:'🇪🇸',af:'🇸🇦',time:'06/14 06:00',status:'upcoming',group:'H'},
-{id:25,home:'France',away:'Iraq',hf:'🇫🇷',af:'🇮🇶',time:'06/14 09:00',status:'upcoming',group:'I'},
-{id:26,home:'Argentina',away:'Austria',hf:'🇦🇷',af:'🇦🇹',time:'06/14 03:00',status:'upcoming',group:'J'},
-{id:27,home:'Portugal',away:'Uzbekistan',hf:'🇵🇹',af:'🇺🇿',time:'06/14 06:00',status:'upcoming',group:'K'},
-{id:28,home:'England',away:'Ghana',hf:'🏴󠁧󠁢󠁥󠁮󠁧󠁿',af:'🇬🇭',time:'06/14 09:00',status:'upcoming',group:'L'},
-{id:29,home:'Mexico',away:'Czechia',hf:'🇲🇽',af:'🇨🇿',time:'06/15 03:00',status:'upcoming',group:'A'},
-{id:30,home:'Canada',away:'Switzerland',hf:'🇨🇦',af:'🇨🇭',time:'06/15 06:00',status:'upcoming',group:'B'},
-{id:31,home:'Brazil',away:'Scotland',hf:'🇧🇷',af:'🏴󠁧󠁢󠁳󠁣󠁴󠁿',time:'06/15 09:00',status:'upcoming',group:'C'},
-{id:32,home:'USA',away:'Turkey',hf:'🇺🇸',af:'🇹🇷',time:'06/15 03:00',status:'upcoming',group:'D'},
-{id:33,home:'Germany',away:'Ecuador',hf:'🇩🇪',af:'🇪🇨',time:'06/15 06:00',status:'upcoming',group:'E'},
-{id:34,home:'Netherlands',away:'Tunisia',hf:'🇳🇱',af:'🇹🇳',time:'06/15 09:00',status:'upcoming',group:'F'},
-{id:35,home:'Belgium',away:'New Zealand',hf:'🇧🇪',af:'🇳🇿',time:'06/15 03:00',status:'upcoming',group:'G'},
-{id:36,home:'Spain',away:'Uruguay',hf:'🇪🇸',af:'🇺🇾',time:'06/15 06:00',status:'upcoming',group:'H'},
-{id:37,home:'France',away:'Norway',hf:'🇫🇷',af:'🇳🇴',time:'06/15 09:00',status:'upcoming',group:'I'},
-{id:38,home:'Argentina',away:'Jordan',hf:'🇦🇷',af:'🇯🇴',time:'06/15 03:00',status:'upcoming',group:'J'},
-{id:39,home:'Portugal',away:'Colombia',hf:'🇵🇹',af:'🇨🇴',time:'06/15 06:00',status:'upcoming',group:'K'},
-{id:40,home:'England',away:'Panama',hf:'🏴󠁧󠁢󠁥󠁮󠁧󠁿',af:'🇵🇦',time:'06/15 09:00',status:'upcoming',group:'L'},
-{id:41,home:'South Africa',away:'South Korea',hf:'🇿🇦',af:'🇰🇷',time:'06/15 03:00',status:'upcoming',group:'A'},
-{id:42,home:'Bosnia',away:'Qatar',hf:'🇧🇦',af:'🇶🇦',time:'06/15 06:00',status:'upcoming',group:'B'},
-{id:43,home:'Morocco',away:'Haiti',hf:'🇲🇦',af:'🇭🇹',time:'06/15 09:00',status:'upcoming',group:'C'},
-{id:44,home:'Paraguay',away:'Australia',hf:'🇵🇾',af:'🇦🇺',time:'06/15 03:00',status:'upcoming',group:'D'},
-{id:45,home:'Curacao',away:'Ivory Coast',hf:'🇨🇼',af:'🇨🇮',time:'06/15 06:00',status:'upcoming',group:'E'},
-{id:46,home:'Japan',away:'Sweden',hf:'🇯🇵',af:'🇸🇪',time:'06/15 09:00',status:'upcoming',group:'F'},
-{id:47,home:'Egypt',away:'Iran',hf:'🇪🇬',af:'🇮🇷',time:'06/15 03:00',status:'upcoming',group:'G'},
-{id:48,home:'Cape Verde',away:'Saudi Arabia',hf:'🇨🇻',af:'🇸🇦',time:'06/15 06:00',status:'upcoming',group:'H'},
-{id:49,home:'Senegal',away:'Iraq',hf:'🇸🇳',af:'🇮🇶',time:'06/15 09:00',status:'upcoming',group:'I'},
-{id:50,home:'Algeria',away:'Austria',hf:'🇩🇿',af:'🇦🇹',time:'06/15 03:00',status:'upcoming',group:'J'},
-{id:51,home:'DR Congo',away:'Uzbekistan',hf:'🇨🇩',af:'🇺🇿',time:'06/15 06:00',status:'upcoming',group:'K'},
-{id:52,home:'Croatia',away:'Ghana',hf:'🇭🇷',af:'🇬🇭',time:'06/15 09:00',status:'upcoming',group:'L'},
-{id:53,home:'South Africa',away:'Czechia',hf:'🇿🇦',af:'🇨🇿',time:'06/16 03:00',status:'upcoming',group:'A'},
-{id:54,home:'Bosnia',away:'Switzerland',hf:'🇧🇦',af:'🇨🇭',time:'06/16 06:00',status:'upcoming',group:'B'},
-{id:55,home:'Morocco',away:'Scotland',hf:'🇲🇦',af:'🏴󠁧󠁢󠁳󠁣󠁴󠁿',time:'06/16 09:00',status:'upcoming',group:'C'},
-{id:56,home:'Paraguay',away:'Turkey',hf:'🇵🇾',af:'🇹🇷',time:'06/16 03:00',status:'upcoming',group:'D'},
-{id:57,home:'Curacao',away:'Ecuador',hf:'🇨🇼',af:'🇪🇨',time:'06/16 06:00',status:'upcoming',group:'E'},
-{id:58,home:'Japan',away:'Tunisia',hf:'🇯🇵',af:'🇹🇳',time:'06/16 09:00',status:'upcoming',group:'F'},
-{id:59,home:'Egypt',away:'New Zealand',hf:'🇪🇬',af:'🇳🇿',time:'06/16 03:00',status:'upcoming',group:'G'},
-{id:60,home:'Cape Verde',away:'Uruguay',hf:'🇨🇻',af:'🇺🇾',time:'06/16 06:00',status:'upcoming',group:'H'},
-{id:61,home:'Senegal',away:'Norway',hf:'🇸🇳',af:'🇳🇴',time:'06/16 09:00',status:'upcoming',group:'I'},
-{id:62,home:'Algeria',away:'Jordan',hf:'🇩🇿',af:'🇯🇴',time:'06/16 03:00',status:'upcoming',group:'J'},
-{id:63,home:'DR Congo',away:'Colombia',hf:'🇨🇩',af:'🇨🇴',time:'06/16 06:00',status:'upcoming',group:'K'},
-{id:64,home:'Croatia',away:'Panama',hf:'🇭🇷',af:'🇵🇦',time:'06/16 09:00',status:'upcoming',group:'L'},
-{id:65,home:'South Korea',away:'Czechia',hf:'🇰🇷',af:'🇨🇿',time:'06/16 03:00',status:'upcoming',group:'A'},
-{id:66,home:'Qatar',away:'Switzerland',hf:'🇶🇦',af:'🇨🇭',time:'06/16 06:00',status:'upcoming',group:'B'},
-{id:67,home:'Haiti',away:'Scotland',hf:'🇭🇹',af:'🏴󠁧󠁢󠁳󠁣󠁴󠁿',time:'06/16 09:00',status:'upcoming',group:'C'},
-{id:68,home:'Australia',away:'Turkey',hf:'🇦🇺',af:'🇹🇷',time:'06/16 03:00',status:'upcoming',group:'D'},
-{id:69,home:'Ivory Coast',away:'Ecuador',hf:'🇨🇮',af:'🇪🇨',time:'06/16 06:00',status:'upcoming',group:'E'},
-{id:70,home:'Sweden',away:'Tunisia',hf:'🇸🇪',af:'🇹🇳',time:'06/16 09:00',status:'upcoming',group:'F'},
-{id:71,home:'Iran',away:'New Zealand',hf:'🇮🇷',af:'🇳🇿',time:'06/16 03:00',status:'upcoming',group:'G'},
-{id:72,home:'Saudi Arabia',away:'Uruguay',hf:'🇸🇦',af:'🇺🇾',time:'06/16 06:00',status:'upcoming',group:'H'},
-{id:73,home:'Iraq',away:'Norway',hf:'🇮🇶',af:'🇳🇴',time:'06/16 09:00',status:'upcoming',group:'I'},
-{id:74,home:'Austria',away:'Jordan',hf:'🇦🇹',af:'🇯🇴',time:'06/16 03:00',status:'upcoming',group:'J'},
-{id:75,home:'Uzbekistan',away:'Colombia',hf:'🇺🇿',af:'🇨🇴',time:'06/16 06:00',status:'upcoming',group:'K'},
-{id:76,home:'Ghana',away:'Panama',hf:'🇬🇭',af:'🇵🇦',time:'06/16 09:00',status:'upcoming',group:'L'},
-{id:77,home:'TBD77',away:'TBD78',hf:'⚽',af:'⚽',time:'07/01 09:00',status:'upcoming',group:'32'},
-{id:79,home:'TBD79',away:'TBD80',hf:'⚽',af:'⚽',time:'07/01 12:00',status:'upcoming',group:'32'},
-{id:81,home:'TBD81',away:'TBD82',hf:'⚽',af:'⚽',time:'07/01 15:00',status:'upcoming',group:'32'},
-{id:83,home:'TBD83',away:'TBD84',hf:'⚽',af:'⚽',time:'07/01 18:00',status:'upcoming',group:'32'},
-{id:85,home:'TBD85',away:'TBD86',hf:'⚽',af:'⚽',time:'07/04 09:00',status:'upcoming',group:'QF'},
-{id:87,home:'TBD87',away:'TBD88',hf:'⚽',af:'⚽',time:'07/04 12:00',status:'upcoming',group:'QF'},
-{id:89,home:'TBD89',away:'TBD90',hf:'⚽',af:'⚽',time:'07/04 15:00',status:'upcoming',group:'QF'},
-{id:91,home:'TBD91',away:'TBD92',hf:'⚽',af:'⚽',time:'07/04 18:00',status:'upcoming',group:'QF'},
-{id:93,home:'TBD93',away:'TBD94',hf:'⚽',af:'⚽',time:'07/08 09:00',status:'upcoming',group:'SF'},
-{id:95,home:'TBD95',away:'TBD96',hf:'⚽',af:'⚽',time:'07/08 12:00',status:'upcoming',group:'SF'},
-{id:97,home:'TBD97',away:'TBD98',hf:'⚽',af:'⚽',time:'07/08 15:00',status:'upcoming',group:'SF'},
-{id:99,home:'TBD99',away:'TBD100',hf:'⚽',af:'⚽',time:'07/08 18:00',status:'upcoming',group:'SF'},
-{id:101,home:'TBD101',away:'TBD102',hf:'⚽',af:'⚽',time:'07/12 09:00',status:'upcoming',group:'F'},
-{id:103,home:'TBD103',away:'TBD104',hf:'⚽',af:'⚽',time:'07/12 12:00',status:'upcoming',group:'F'},
-{id:105,home:'TBD105',away:'TBD106',hf:'⚽',af:'⚽',time:'07/12 15:00',status:'upcoming',group:'F'},
-{id:107,home:'TBD107',away:'TBD108',hf:'⚽',af:'⚽',time:'07/12 18:00',status:'upcoming',group:'F'}
-];}
-                    ],
-                    max_tokens: 1000
-                })
-            });
-            let data = await resp.json();
-            if (data.choices && data.choices[0] && data.choices[0].message) {
-                reply = data.choices[0].message.content;
-                modelTag = '<span style="background:linear-gradient(135deg,#667eea,#764ba2);padding:1px 6px;border-radius:4px;font-size:10px;margin-left:6px">📷视觉分析</span>';
-            }
-        } catch(e) {
-            console.error('Vision error:', e);
-            reply = '⚠️ 视觉分析失败：' + e.message + '\n\n可能原因：图片太大或网络问题，试试换张小一点的图';
-        }
-
-        clearImage(); // Clear after sending
-    }
-
-    // ========== TEXT MODE: DeepSeek ==========
-    if (!reply && !hasImage) {
-        try {
-            let resp = await fetch('https://api.deepseek.com/v1/chat/completions', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer sk-81d53acb8f62446098143011ebfcc7df'
-                },
-                body: JSON.stringify({
-                    model: 'deepseek-chat',
-                    messages: [
-                        {role: 'system', content: '你是2026世界杯专业分析师蔡徐坤。说话简洁专业，直接给结论。不要自我介绍，不要废话。熟知48队12组赛程。回答格式：先给结论，再给理由。适合手机阅读。'},
-                        {role: 'user', content: msg}
-                    ],
-                    max_tokens: 500
-                })
-            });
-            let data = await resp.json();
-            if (data.choices && data.choices[0] && data.choices[0].message) {
-                reply = data.choices[0].message.content;
-                modelTag = '<span style="background:#336791;padding:1px 6px;border-radius:4px;font-size:10px;margin-left:6px">DeepSeek</span>';
-            }
-        } catch(e) {}
-    }
-
-    // Display
-    if (reply) {
-        loadEl.innerHTML = '<div>' + modelTag + '</div><div style="margin-top:6px;white-space:pre-wrap;line-height:1.6">' + reply.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</div>';
-    } else {
-        loadEl.innerHTML = '<div style="color:rgba(255,255,255,0.4)">网络波动~稍后再试 🏀</div>';
-    }
-    body.scrollTop = body.scrollHeight;
-}
-
-// ========== 异步AI预测更新 ==========// ========== 异步AI预测更新 ==========// ========== 异步AI预测更新 ==========// ========== 异步AI预测更新 ==========
-async function updateAIPredictions(matches) {
-  for (let m of matches) {
-    if (m.status !== 'upcoming') continue;
-    
-    let predBox = document.getElementById('pred-' + m.id);
-    if (!predBox) continue;
-    
-    // 调用双引擎AI预测
-    let aiPred = await dualEnginePredict(m.home, m.away);
-    
-    if (aiPred) {
-      // 更新预测框
-      let titleDiv = predBox.querySelector('.pred-title');
-      if (titleDiv) titleDiv.innerHTML = '🎯 DeepSeek + 智谱AI 双引擎预测 <span style="font-size:10px;color:var(--gold)">置信度 ' + aiPred.confidence + '%</span>';
-      
-      let scoreDiv = predBox.querySelector('.pred-score');
-      if (scoreDiv) scoreDiv.textContent = m.home + ' ' + aiPred.homeGoals + ' : ' + aiPred.awayGoals + ' ' + m.away;
-      
-      let bars = predBox.querySelectorAll('.pred-bar-fill');
-      if (bars[0]) bars[0].style.width = aiPred.homePct + '%';
-      if (bars[1]) bars[1].style.width = aiPred.drawPct + '%';
-      if (bars[2]) bars[2].style.width = aiPred.awayPct + '%';
-      
-      let vals = predBox.querySelectorAll('.pred-bar-val');
-      if (vals[0]) vals[0].textContent = aiPred.homePct + '%';
-      if (vals[1]) vals[1].textContent = aiPred.drawPct + '%';
-      if (vals[2]) vals[2].textContent = aiPred.awayPct + '%';
-      
-      let reasonDiv = predBox.querySelector('.pred-reason');
-      if (reasonDiv) reasonDiv.textContent = '📊 ' + (aiPred.reason || generateReason(m, aiPred));
-    }
-  }
-}
-
-// ========== 尝试Football-Data API ==========
+{id:5,home:'墨西哥',away:'南非',hf:'🇲🇽',af:'🇿🇦',time:'06/14 03:00',status:'upcoming',group:'A'},
+{id:6,home:'加拿大',away:'波黑',hf:'🇨🇦',af:'🇧🇦',time:'06/14 06:00',status:'upcoming',group:'B'},
+{id:7,home:'巴西',away:'摩洛哥',hf:'🇧🇷',af:'🇲🇦',time:'06/14 09:00',status:'upcoming',group:'C'},
+{id:8,home:'美国',away:'巴拉圭',hf:'🇺🇸',af:'🇵🇾',time:'06/14 03:00',status:'upcoming',group:'D'},
+{id:9,home:'德国',away:'库拉索',hf:'🇩🇪',af:'🇨🇼',time:'06/14 06:00',status:'upcoming',group:'E'},
+{id:10,home:'荷兰',away:'日本',hf:'🇳🇱',af:'🇯🇵',time:'06/14 09:00',status:'upcoming',group:'F'},
+{id:11,home:'比利时',away:'埃及',hf:'🇧🇪',af:'🇪🇬',time:'06/14 03:00',status:'upcoming',group:'G'},
+{id:12,home:'西班牙',away:'佛得角',hf:'🇪🇸',af:'🇨🇻',time:'06/14 06:00',status:'upcoming',group:'H'},
+{id:13,home:'法国',away:'塞内加尔',hf:'🇫🇷',af:'🇸🇳',time:'06/14 09:00',status:'upcoming',group:'I'},
+{id:14,home:'阿根廷',away:'阿尔及利亚',hf:'🇦🇷',af:'🇩🇿',time:'06/14 03:00',status:'upcoming',group:'J'},
+{id:15,home:'葡萄牙',away:'民主刚果',hf:'🇵🇹',af:'🇨🇩',time:'06/14 06:00',status:'upcoming',group:'K'},
+{id:16,home:'英格兰',away:'克罗地亚',hf:'🏴󠁧󠁢󠁥󠁮󠁧󠁿',af:'🇭🇷',time:'06/14 09:00',status:'upcoming',group:'L'},
+{id:17,home:'墨西哥',away:'韩国',hf:'🇲🇽',af:'🇰🇷',time:'06/15 03:00',status:'upcoming',group:'A'},
+{id:18,home:'加拿大',away:'卡塔尔',hf:'🇨🇦',af:'🇶🇦',time:'06/15 06:00',status:'upcoming',group:'B'},
+{id:19,home:'巴西',away:'海地',hf:'🇧🇷',af:'🇭🇹',time:'06/15 09:00',status:'upcoming',group:'C'},
+{id:20,home:'美国',away:'澳大利亚',hf:'🇺🇸',af:'🇦🇺',time:'06/15 03:00',status:'upcoming',group:'D'},
+{id:21,home:'德国',away:'科特迪瓦',hf:'🇩🇪',af:'🇨🇮',time:'06/15 06:00',status:'upcoming',group:'E'},
+{id:22,home:'荷兰',away:'瑞典',hf:'🇳🇱',af:'🇸🇪',time:'06/15 09:00',status:'upcoming',group:'F'},
+{id:23,home:'比利时',away:'伊朗',hf:'🇧🇪',af:'🇮🇷',time:'06/15 03:00',status:'upcoming',group:'G'},
+{id:24,home:'西班牙',away:'沙特阿拉伯',hf:'🇪🇸',af:'🇸🇦',time:'06/15 06:00',status:'upcoming',group:'H'},
+{id:25,home:'法国',away:'伊拉克',hf:'🇫🇷',af:'🇮🇶',time:'06/15 09:00',status:'upcoming',group:'I'},
+{id:26,home:'阿根廷',away:'奥地利',hf:'🇦🇷',af:'🇦🇹',time:'06/15 03:00',status:'upcoming',group:'J'},
+{id:27,home:'葡萄牙',away:'乌兹别克斯坦',hf:'🇵🇹',af:'🇺🇿',time:'06/15 06:00',status:'upcoming',group:'K'},
+{id:28,home:'英格兰',away:'加纳',hf:'🏴󠁧󠁢󠁥󠁮󠁧󠁿',af:'🇬🇭',time:'06/15 09:00',status:'upcoming',group:'L'},
+{id:29,home:'墨西哥',away:'捷克',hf:'🇲🇽',af:'🇨🇿',time:'06/16 03:00',status:'upcoming',group:'A'},
+{id:30,home:'加拿大',away:'瑞士',hf:'🇨🇦',af:'🇨🇭',time:'06/16 06:00',status:'upcoming',group:'B'},
+{id:31,home:'巴西',away:'苏格兰',hf:'🇧🇷',af:'🏴󠁧󠁢󠁳󠁣󠁴󠁿',time:'06/16 09:00',status:'upcoming',group:'C'},
+{id:32,home:'美国',away:'土耳其',hf:'🇺🇸',af:'🇹🇷',time:'06/16 03:00',status:'upcoming',group:'D'},
+{id:33,home:'德国',away:'厄瓜多尔',hf:'🇩🇪',af:'🇪🇨',time:'06/16 06:00',status:'upcoming',group:'E'},
+{id:34,home:'荷兰',away:'突尼斯',hf:'🇳🇱',af:'🇹🇳',time:'06/16 09:00',status:'upcoming',group:'F'},
+{id:35,home:'比利时',away:'新西兰',hf:'🇧🇪',af:'🇳🇿',time:'06/16 03:00',status:'upcoming',group:'G'},
+{id:36,home:'西班牙',away:'乌拉圭',hf:'🇪🇸',af:'🇺🇾',time:'06/16 06:00',status:'upcoming',group:'H'},
+{id:37,home:'法国',away:'挪威',hf:'🇫🇷',af:'🇳🇴',time:'06/16 09:00',status:'upcoming',group:'I'},
+{id:38,home:'阿根廷',away:'约旦',hf:'🇦🇷',af:'🇯🇴',time:'06/16 03:00',status:'upcoming',group:'J'},
+{id:39,home:'葡萄牙',away:'哥伦比亚',hf:'🇵🇹',af:'🇨🇴',time:'06/16 06:00',status:'upcoming',group:'K'},
+{id:40,home:'英格兰',away:'巴拿马',hf:'🏴󠁧󠁢󠁥󠁮󠁧󠁿',af:'🇵🇦',time:'06/16 09:00',status:'upcoming',group:'L'},
+{id:41,home:'南非',away:'韩国',hf:'🇿🇦',af:'🇰🇷',time:'06/17 03:00',status:'upcoming',group:'A'},
+{id:42,home:'波黑',away:'卡塔尔',hf:'🇧🇦',af:'🇶🇦',time:'06/17 06:00',status:'upcoming',group:'B'},
+{id:43,home:'摩洛哥',away:'海地',hf:'🇲🇦',af:'🇭🇹',time:'06/17 09:00',status:'upcoming',group:'C'},
+{id:44,home:'巴拉圭',away:'澳大利亚',hf:'🇵🇾',af:'🇦🇺',time:'06/17 03:00',status:'upcoming',group:'D'},
+{id:45,home:'库拉索',away:'科特迪瓦',hf:'🇨🇼',af:'🇨🇮',time:'06/17 06:00',status:'upcoming',group:'E'},
+{id:46,home:'日本',away:'瑞典',hf:'🇯🇵',af:'🇸🇪',time:'06/17 09:00',status:'upcoming',group:'F'},
+{id:47,home:'埃及',away:'伊朗',hf:'🇪🇬',af:'🇮🇷',time:'06/17 03:00',status:'upcoming',group:'G'},
+{id:48,home:'佛得角',away:'沙特阿拉伯',hf:'🇨🇻',af:'🇸🇦',time:'06/17 06:00',status:'upcoming',group:'H'},
+{id:49,home:'塞内加尔',away:'伊拉克',hf:'🇸🇳',af:'🇮🇶',time:'06/17 09:00',status:'upcoming',group:'I'},
+{id:50,home:'阿尔及利亚',away:'奥地利',hf:'🇩🇿',af:'🇦🇹',time:'06/17 03:00',status:'upcoming',group:'J'},
+{id:51,home:'民主刚果',away:'乌兹别克斯坦',hf:'🇨🇩',af:'🇺🇿',time:'06/17 06:00',status:'upcoming',group:'K'},
+{id:52,home:'克罗地亚',away:'加纳',hf:'🇭🇷',af:'🇬🇭',time:'06/17 09:00',status:'upcoming',group:'L'},
+{id:53,home:'南非',away:'捷克',hf:'🇿🇦',af:'🇨🇿',time:'06/18 03:00',status:'upcoming',group:'A'},
+{id:54,home:'波黑',away:'瑞士',hf:'🇧🇦',af:'🇨🇭',time:'06/18 06:00',status:'upcoming',group:'B'},
+{id:55,home:'摩洛哥',away:'苏格兰',hf:'🇲🇦',af:'🏴󠁧󠁢󠁳󠁣󠁴󠁿',time:'06/18 09:00',status:'upcoming',group:'C'},
+{id:56,home:'巴拉圭',away:'土耳其',hf:'🇵🇾',af:'🇹🇷',time:'06/18 03:00',status:'upcoming',group:'D'},
+{id:57,home:'库拉索',away:'厄瓜多尔',hf:'🇨🇼',af:'🇪🇨',time:'06/18 06:00',status:'upcoming',group:'E'},
+{id:58,home:'日本',away:'突尼斯',hf:'🇯🇵',af:'🇹🇳',time:'06/18 09:00',status:'upcoming',group:'F'},
+{id:59,home:'埃及',away:'新西兰',hf:'🇪🇬',af:'🇳🇿',time:'06/18 03:00',status:'upcoming',group:'G'},
+{id:60,home:'佛得角',away:'乌拉圭',hf:'🇨🇻',af:'🇺🇾',time:'06/18 06:00',status:'upcoming',group:'H'},
+{id:61,home:'塞内加尔',away:'挪威',hf:'🇸🇳',af:'🇳🇴',time:'06/18 09:00',status:'upcoming',group:'I'},
+{id:62,home:'阿尔及利亚',away:'约旦',hf:'🇩🇿',af:'🇯🇴',time:'06/18 03:00',status:'upcoming',group:'J'},
+{id:63,home:'民主刚果',away:'哥伦比亚',hf:'🇨🇩',af:'🇨🇴',time:'06/18 06:00',status:'upcoming',group:'K'},
+{id:64,home:'克罗地亚',away:'巴拿马',hf:'🇭🇷',af:'🇵🇦',time:'06/18 09:00',status:'upcoming',group:'L'},
+{id:65,home:'韩国',away:'捷克',hf:'🇰🇷',af:'🇨🇿',time:'06/19 03:00',status:'upcoming',group:'A'},
+{id:66,home:'卡塔尔',away:'瑞士',hf:'🇶🇦',af:'🇨🇭',time:'06/19 06:00',status:'upcoming',group:'B'},
+{id:67,home:'海地',away:'苏格兰',hf:'🇭🇹',af:'🏴󠁧󠁢󠁳󠁣󠁴󠁿',time:'06/19 09:00',status:'upcoming',group:'C'},
+{id:68,home:'澳大利亚',away:'土耳其',hf:'🇦🇺',af:'🇹🇷',time:'06/19 03:00',status:'upcoming',group:'D'},
+{id:69,home:'科特迪瓦',away:'厄瓜多尔',hf:'🇨🇮',af:'🇪🇨',time:'06/19 06:00',status:'upcoming',group:'E'},
+{id:70,home:'瑞典',away:'突尼斯',hf:'🇸🇪',af:'🇹🇳',time:'06/19 09:00',status:'upcoming',group:'F'},
+{id:71,home:'伊朗',away:'新西兰',hf:'🇮🇷',af:'🇳🇿',time:'06/19 03:00',status:'upcoming',group:'G'},
+{id:72,home:'沙特阿拉伯',away:'乌拉圭',hf:'🇸🇦',af:'🇺🇾',time:'06/19 06:00',status:'upcoming',group:'H'},
+{id:73,home:'伊拉克',away:'挪威',hf:'🇮🇶',af:'🇳🇴',time:'06/19 09:00',status:'upcoming',group:'I'},
+{id:74,home:'奥地利',away:'约旦',hf:'🇦🇹',af:'🇯🇴',time:'06/19 03:00',status:'upcoming',group:'J'},
+{id:75,home:'乌兹别克斯坦',away:'哥伦比亚',hf:'🇺🇿',af:'🇨🇴',time:'06/19 06:00',status:'upcoming',group:'K'},
+{id:76,home:'加纳',away:'巴拿马',hf:'🇬🇭',af:'🇵🇦',time:'06/19 09:00',status:'upcoming',group:'L'},
+{id:77,home:'TBD77',away:'TBD78',hf:'⚽',af:'⚽',time:'07/01 03:00',status:'upcoming',group:'R32'},
+{id:79,home:'TBD79',away:'TBD80',hf:'⚽',af:'⚽',time:'07/01 06:00',status:'upcoming',group:'R32'},
+{id:81,home:'TBD81',away:'TBD82',hf:'⚽',af:'⚽',time:'07/01 09:00',status:'upcoming',group:'R32'},
+{id:83,home:'TBD83',away:'TBD84',hf:'⚽',af:'⚽',time:'07/01 03:00',status:'upcoming',group:'R32'},
+{id:85,home:'TBD85',away:'TBD86',hf:'⚽',af:'⚽',time:'07/01 06:00',status:'upcoming',group:'R32'},
+{id:87,home:'TBD87',away:'TBD88',hf:'⚽',af:'⚽',time:'07/01 09:00',status:'upcoming',group:'R32'},
+{id:89,home:'TBD89',away:'TBD90',hf:'⚽',af:'⚽',time:'07/01 03:00',status:'upcoming',group:'R32'},
+{id:91,home:'TBD91',away:'TBD92',hf:'⚽',af:'⚽',time:'07/01 06:00',status:'upcoming',group:'R32'},
+{id:93,home:'TBD93',away:'TBD94',hf:'⚽',af:'⚽',time:'07/01 09:00',status:'upcoming',group:'R32'},
+{id:95,home:'TBD95',away:'TBD96',hf:'⚽',af:'⚽',time:'07/01 03:00',status:'upcoming',group:'R32'},
+{id:97,home:'TBD97',away:'TBD98',hf:'⚽',af:'⚽',time:'07/01 06:00',status:'upcoming',group:'R32'},
+{id:99,home:'TBD99',away:'TBD100',hf:'⚽',af:'⚽',time:'07/01 09:00',status:'upcoming',group:'R32'},
+{id:101,home:'TBD101',away:'TBD102',hf:'⚽',af:'⚽',time:'07/01 03:00',status:'upcoming',group:'R32'},
+{id:103,home:'TBD103',away:'TBD104',hf:'⚽',af:'⚽',time:'07/01 06:00',status:'upcoming',group:'R32'},
+{id:105,home:'TBD105',away:'TBD106',hf:'⚽',af:'⚽',time:'07/01 09:00',status:'upcoming',group:'R32'},
+{id:107,home:'TBD107',away:'TBD108',hf:'⚽',af:'⚽',time:'07/01 03:00',status:'upcoming',group:'R32'},
+{id:109,home:'TBD109',away:'TBD110',hf:'⚽',af:'⚽',time:'07/02 03:00',status:'upcoming',group:'R32'},
+{id:111,home:'TBD111',away:'TBD112',hf:'⚽',af:'⚽',time:'07/02 06:00',status:'upcoming',group:'R32'},
+{id:113,home:'TBD113',away:'TBD114',hf:'⚽',af:'⚽',time:'07/02 09:00',status:'upcoming',group:'R32'},
+{id:115,home:'TBD115',away:'TBD116',hf:'⚽',af:'⚽',time:'07/02 03:00',status:'upcoming',group:'R32'},
+{id:117,home:'TBD117',away:'TBD118',hf:'⚽',af:'⚽',time:'07/02 06:00',status:'upcoming',group:'R32'},
+{id:119,home:'TBD119',away:'TBD120',hf:'⚽',af:'⚽',time:'07/02 09:00',status:'upcoming',group:'R32'},
+{id:121,home:'TBD121',away:'TBD122',hf:'⚽',af:'⚽',time:'07/02 03:00',status:'upcoming',group:'R32'},
+{id:123,home:'TBD123',away:'TBD124',hf:'⚽',af:'⚽',time:'07/02 06:00',status:'upcoming',group:'R32'},
+{id:125,home:'TBD125',away:'TBD126',hf:'⚽',af:'⚽',time:'07/02 09:00',status:'upcoming',group:'R32'},
+{id:127,home:'TBD127',away:'TBD128',hf:'⚽',af:'⚽',time:'07/02 03:00',status:'upcoming',group:'R32'},
+{id:129,home:'TBD129',away:'TBD130',hf:'⚽',af:'⚽',time:'07/02 06:00',status:'upcoming',group:'R32'},
+{id:131,home:'TBD131',away:'TBD132',hf:'⚽',af:'⚽',time:'07/02 09:00',status:'upcoming',group:'R32'},
+{id:133,home:'TBD133',away:'TBD134',hf:'⚽',af:'⚽',time:'07/02 03:00',status:'upcoming',group:'R32'},
+{id:135,home:'TBD135',away:'TBD136',hf:'⚽',af:'⚽',time:'07/02 06:00',status:'upcoming',group:'R32'},
+{id:137,home:'TBD137',away:'TBD138',hf:'⚽',af:'⚽',time:'07/02 09:00',status:'upcoming',group:'R32'},
+{id:139,home:'TBD139',away:'TBD140',hf:'⚽',af:'⚽',time:'07/02 03:00',status:'upcoming',group:'R32'},
+{id:141,home:'TBD141',away:'TBD142',hf:'⚽',af:'⚽',time:'07/03 03:00',status:'upcoming',group:'R32'},
+{id:143,home:'TBD143',away:'TBD144',hf:'⚽',af:'⚽',time:'07/03 06:00',status:'upcoming',group:'R32'},
+{id:145,home:'TBD145',away:'TBD146',hf:'⚽',af:'⚽',time:'07/03 09:00',status:'upcoming',group:'R32'},
+{id:147,home:'TBD147',away:'TBD148',hf:'⚽',af:'⚽',time:'07/03 03:00',status:'upcoming',group:'R32'},
+{id:149,home:'TBD149',away:'TBD150',hf:'⚽',af:'⚽',time:'07/03 06:00',status:'upcoming',group:'R32'},
+{id:151,home:'TBD151',away:'TBD152',hf:'⚽',af:'⚽',time:'07/03 09:00',status:'upcoming',group:'R32'},
+{id:153,home:'TBD153',away:'TBD154',hf:'⚽',af:'⚽',time:'07/03 03:00',status:'upcoming',group:'R32'},
+{id:155,home:'TBD155',away:'TBD156',hf:'⚽',af:'⚽',time:'07/03 06:00',status:'upcoming',group:'R32'},
+{id:157,home:'TBD157',away:'TBD158',hf:'⚽',af:'⚽',time:'07/03 09:00',status:'upcoming',group:'R32'},
+{id:159,home:'TBD159',away:'TBD160',hf:'⚽',af:'⚽',time:'07/03 03:00',status:'upcoming',group:'R32'},
+{id:161,home:'TBD161',away:'TBD162',hf:'⚽',af:'⚽',time:'07/03 06:00',status:'upcoming',group:'R32'},
+{id:163,home:'TBD163',away:'TBD164',hf:'⚽',af:'⚽',time:'07/03 09:00',status:'upcoming',group:'R32'},
+{id:165,home:'TBD165',away:'TBD166',hf:'⚽',af:'⚽',time:'07/03 03:00',status:'upcoming',group:'R32'},
+{id:167,home:'TBD167',away:'TBD168',hf:'⚽',af:'⚽',time:'07/03 06:00',status:'upcoming',group:'R32'},
+{id:169,home:'TBD169',away:'TBD170',hf:'⚽',af:'⚽',time:'07/03 09:00',status:'upcoming',group:'R32'},
+{id:171,home:'TBD171',away:'TBD172',hf:'⚽',af:'⚽',time:'07/03 03:00',status:'upcoming',group:'R32'},
+{id:173,home:'TBD173',away:'TBD174',hf:'⚽',af:'⚽',time:'07/04 03:00',status:'upcoming',group:'R32'},
+{id:175,home:'TBD175',away:'TBD176',hf:'⚽',af:'⚽',time:'07/04 06:00',status:'upcoming',group:'R32'},
+{id:177,home:'TBD177',away:'TBD178',hf:'⚽',af:'⚽',time:'07/04 09:00',status:'upcoming',group:'R32'},
+{id:179,home:'TBD179',away:'TBD180',hf:'⚽',af:'⚽',time:'07/04 03:00',status:'upcoming',group:'R32'},
+{id:181,home:'TBD181',away:'TBD182',hf:'⚽',af:'⚽',time:'07/04 06:00',status:'upcoming',group:'R32'},
+{id:183,home:'TBD183',away:'TBD184',hf:'⚽',af:'⚽',time:'07/04 09:00',status:'upcoming',group:'R32'},
+{id:185,home:'TBD185',away:'TBD186',hf:'⚽',af:'⚽',time:'07/04 03:00',status:'upcoming',group:'R32'},
+{id:187,home:'TBD187',away:'TBD188',hf:'⚽',af:'⚽',time:'07/04 06:00',status:'upcoming',group:'R32'},
+{id:189,home:'TBD189',away:'TBD190',hf:'⚽',af:'⚽',time:'07/05 03:00',status:'upcoming',group:'QF'},
+{id:191,home:'TBD191',away:'TBD192',hf:'⚽',af:'⚽',time:'07/05 06:00',status:'upcoming',group:'QF'},
+{id:193,home:'TBD193',away:'TBD194',hf:'⚽',af:'⚽',time:'07/05 09:00',status:'upcoming',group:'QF'},
+{id:195,home:'TBD195',away:'TBD196',hf:'⚽',af:'⚽',time:'07/05 03:00',status:'upcoming',group:'QF'},
+{id:197,home:'TBD197',away:'TBD198',hf:'⚽',af:'⚽',time:'07/05 06:00',status:'upcoming',group:'QF'},
+{id:199,home:'TBD199',away:'TBD200',hf:'⚽',af:'⚽',time:'07/05 09:00',status:'upcoming',group:'QF'},
+{id:201,home:'TBD201',away:'TBD202',hf:'⚽',af:'⚽',time:'07/05 03:00',status:'upcoming',group:'QF'},
+{id:203,home:'TBD203',away:'TBD204',hf:'⚽',af:'⚽',time:'07/05 06:00',status:'upcoming',group:'QF'},
+{id:205,home:'TBD205',away:'TBD206',hf:'⚽',af:'⚽',time:'07/06 03:00',status:'upcoming',group:'QF'},
+{id:207,home:'TBD207',away:'TBD208',hf:'⚽',af:'⚽',time:'07/06 06:00',status:'upcoming',group:'QF'},
+{id:209,home:'TBD209',away:'TBD210',hf:'⚽',af:'⚽',time:'07/06 09:00',status:'upcoming',group:'QF'},
+{id:211,home:'TBD211',away:'TBD212',hf:'⚽',af:'⚽',time:'07/06 03:00',status:'upcoming',group:'QF'},
+{id:213,home:'TBD213',away:'TBD214',hf:'⚽',af:'⚽',time:'07/09 03:00',status:'upcoming',group:'SF'},
+{id:215,home:'TBD215',away:'TBD216',hf:'⚽',af:'⚽',time:'07/09 06:00',status:'upcoming',group:'SF'},
+{id:217,home:'TBD217',away:'TBD218',hf:'⚽',af:'⚽',time:'07/09 09:00',status:'upcoming',group:'SF'},
+{id:219,home:'TBD219',away:'TBD220',hf:'⚽',af:'⚽',time:'07/09 03:00',status:'upcoming',group:'SF'},
+{id:221,home:'TBD221',away:'TBD222',hf:'⚽',af:'⚽',time:'07/12 03:00',status:'upcoming',group:'F'},
+{id:223,home:'TBD223',away:'TBD224',hf:'⚽',af:'⚽',time:'07/12 06:00',status:'upcoming',group:'F'}
+];// ========== 尝试Football-Data API ==========
 async function fetchFootballData(){
 try{
 let resp=await fetch(FOOTBALL_BASE+'/competitions/WC/matches?status=FINISHED',{
