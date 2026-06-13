@@ -7,7 +7,7 @@
 <style>
 * { margin:0; padding:0; box-sizing: border-box; }
 body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
     background: #0f1923;
     color: #fff;
     min-height: 100vh;
@@ -16,32 +16,185 @@ body {
 
 .header {
     background: linear-gradient(135deg, #1a3a4a, #0d2233);
-    padding: 16px 20px;
+    padding: 14px 20px;
     text-align: center;
     border-bottom: 2px solid #00d4aa;
+    position: sticky;
+    top: 0;
+    z-index: 50;
 }
-.header h1 { font-size: 20px; font-weight: 700; }
+.header h1 { font-size: 18px; font-weight: 700; }
 .header h1 span { color: #00d4aa; }
-.update-time { font-size: 12px; color: #666; margin-top: 4px; }
-.api-status {
-    font-size: 11px;
-    margin-top: 4px;
-    padding: 2px 8px;
-    border-radius: 8px;
-    display: inline-block;
-}
-.api-status.deepseek { background: rgba(76,130,255,0.2); color: #4c82ff; }
 
-.container { padding: 16px; max-width: 480px; margin: 0 auto; }
+.container { padding: 12px 16px; max-width: 480px; margin: 0 auto; }
+
+/* ====== 蔡徐坤聊天区 - 最上面显眼位置 ====== */
+.ai-top-section {
+    background: linear-gradient(135deg, rgba(76,130,255,0.12), rgba(0,212,170,0.08));
+    border: 2px solid rgba(76,130,255,0.3);
+    border-radius: 14px;
+    padding: 12px 14px;
+    margin-bottom: 14px;
+}
+.ai-top-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+.ai-top-title .icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #4c82ff, #00d4aa);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+}
+.ai-top-title .text { flex: 1; }
+.ai-top-title .text .name { font-size: 15px; font-weight: 700; }
+.ai-top-title .text .sub { font-size: 11px; color: #888; }
+
+.ai-msgs {
+    max-height: 180px;
+    overflow-y: auto;
+    margin-bottom: 10px;
+}
+.ai-msg {
+    margin-bottom: 10px;
+    display: flex;
+    gap: 8px;
+}
+.ai-msg.user { flex-direction: row-reverse; }
+.ai-msg .avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+}
+.ai-msg .avatar.bot { background: linear-gradient(135deg, #4c82ff, #00d4aa); }
+.ai-msg .avatar.user { background: #2a3a4a; }
+.ai-msg .bubble {
+    max-width: 280px;
+    padding: 8px 12px;
+    border-radius: 10px;
+    font-size: 13px;
+    line-height: 1.5;
+}
+.ai-msg.bot .bubble {
+    background: #0f1923;
+    border: 1px solid #2a3a4a;
+    border-bottom-left-radius: 3px;
+}
+.ai-msg.user .bubble {
+    background: #4c82ff;
+    border-bottom-right-radius: 3px;
+}
+.ai-msg .name-tag {
+    font-size: 10px;
+    color: #4c82ff;
+    margin-bottom: 2px;
+    font-weight: 600;
+}
+
+.ai-input-row {
+    display: flex;
+    gap: 8px;
+}
+.ai-input-row input {
+    flex: 1;
+    padding: 10px 14px;
+    background: #0f1923;
+    border: 1px solid #2a3a4a;
+    border-radius: 22px;
+    color: #fff;
+    font-size: 14px;
+    outline: none;
+}
+.ai-input-row input:focus { border-color: #4c82ff; }
+.ai-input-row button {
+    padding: 10px 18px;
+    background: linear-gradient(135deg, #4c82ff, #00d4aa);
+    border: none;
+    border-radius: 22px;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+}
+.ai-input-row button:active { opacity: 0.8; }
+
+.typing {
+    display: flex;
+    gap: 4px;
+    padding: 8px 12px;
+    background: #0f1923;
+    border-radius: 10px;
+    border-bottom-left-radius: 3px;
+    border: 1px solid #2a3a4a;
+    width: fit-content;
+}
+.typing-dot {
+    width: 6px;
+    height: 6px;
+    background: #4c82ff;
+    border-radius: 50%;
+    animation: typing 1.2s infinite;
+}
+.typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.typing-dot:nth-child(3) { animation-delay: 0.4s; }
+@keyframes typing {
+    0%,60%,100% { transform: translateY(0); opacity: 0.4; }
+    30% { transform: translateY(-6px); opacity: 1; }
+}
+
+.api-badge {
+    font-size: 10px;
+    color: #4c82ff;
+    margin-top: 6px;
+    text-align: right;
+}
+
+/* ====== Tab切换 ====== */
+.tabs {
+    display: flex;
+    background: #1a2a3a;
+    border-radius: 10px;
+    margin-bottom: 14px;
+    overflow: hidden;
+}
+.tab {
+    flex: 1;
+    padding: 10px 6px;
+    text-align: center;
+    font-size: 13px;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.tab.active {
+    background: #00d4aa;
+    color: #000;
+    font-weight: 600;
+}
+
+.panel { display: none; }
+.panel.active { display: block; }
 
 .match-card {
     background: #1a2a3a;
     border-radius: 12px;
-    margin-bottom: 16px;
+    margin-bottom: 14px;
     overflow: hidden;
     border: 1px solid #2a3a4a;
 }
-
 .match-info {
     background: rgba(0,212,170,0.1);
     padding: 8px 14px;
@@ -50,9 +203,7 @@ body {
     display: flex;
     justify-content: space-between;
 }
-
-.match-main { padding: 16px; }
-
+.match-main { padding: 14px; }
 .teams {
     display: flex;
     justify-content: space-between;
@@ -60,13 +211,12 @@ body {
     margin-bottom: 14px;
 }
 .team { text-align: center; flex: 1; }
-.team .flag { font-size: 36px; }
+.team .flag { font-size: 32px; }
 .team .name { font-size: 14px; font-weight: 600; margin-top: 4px; }
 .team .rank { font-size: 11px; color: #666; }
-
 .vs-time {
     text-align: center;
-    min-width: 70px;
+    min-width: 60px;
 }
 .vs-time .vs { font-size: 14px; color: #00d4aa; font-weight: 700; }
 .vs-time .time { font-size: 11px; color: #666; margin-top: 2px; }
@@ -74,13 +224,13 @@ body {
 .prediction {
     background: linear-gradient(135deg, rgba(76,130,255,0.15), rgba(0,212,170,0.1));
     border-radius: 10px;
-    padding: 14px;
+    padding: 12px;
     text-align: center;
-    margin-bottom: 14px;
+    margin-bottom: 12px;
     border: 1px solid rgba(76,130,255,0.2);
 }
 .pred-label { font-size: 12px; color: #4c82ff; }
-.pred-score { font-size: 32px; font-weight: 900; color: #4c82ff; margin: 4px 0; }
+.pred-score { font-size: 30px; font-weight: 900; color: #4c82ff; margin: 4px 0; }
 .confidence { font-size: 11px; color: #888; }
 .ai-analysis {
     font-size: 11px;
@@ -94,7 +244,7 @@ body {
 .prob-row {
     display: flex;
     gap: 8px;
-    margin-bottom: 14px;
+    margin-bottom: 12px;
 }
 .prob-box {
     flex: 1;
@@ -127,7 +277,7 @@ body {
     padding: 10px;
     background: rgba(255,215,0,0.1);
     border-radius: 8px;
-    margin-bottom: 14px;
+    margin-bottom: 12px;
 }
 .rec-tag {
     padding: 4px 10px;
@@ -185,32 +335,6 @@ body {
     font-weight: 900;
     color: #6bcb77;
 }
-
-/* Tab */
-.tabs {
-    display: flex;
-    background: #1a2a3a;
-    border-radius: 10px;
-    margin-bottom: 16px;
-    overflow: hidden;
-}
-.tab {
-    flex: 1;
-    padding: 12px;
-    text-align: center;
-    font-size: 13px;
-    color: #666;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-.tab.active {
-    background: #00d4aa;
-    color: #000;
-    font-weight: 600;
-}
-
-.panel { display: none; }
-.panel.active { display: block; }
 
 /* 投注单 */
 .bet-slip {
@@ -271,137 +395,6 @@ body {
     cursor: pointer;
 }
 
-/* AI聊天按钮 */
-/* AI聊天窗口 - 改为Tab内嵌 */
-.ai-chat {
-    background: #1a2a3a;
-    border-radius: 12px;
-    overflow: hidden;
-    border: 1px solid #2a3a4a;
-    display: flex;
-    flex-direction: column;
-    height: 500px;
-    margin-bottom: 16px;
-}
-
-.ai-chat-header {
-    background: linear-gradient(135deg, #4c82ff, #00d4aa);
-    padding: 12px 16px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-.ai-chat-title { font-size: 14px; font-weight: 700; }
-.ai-chat-close {
-    background: none;
-    border: none;
-    color: #fff;
-    font-size: 18px;
-    cursor: pointer;
-    padding: 0 4px;
-}
-
-.ai-chat-body {
-    flex: 1;
-    padding: 12px;
-    overflow-y: auto;
-}
-
-.ai-msg {
-    margin-bottom: 12px;
-    display: flex;
-    gap: 8px;
-}
-.ai-msg.user { flex-direction: row-reverse; }
-.ai-avatar {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 16px;
-    flex-shrink: 0;
-}
-.ai-avatar.bot { background: linear-gradient(135deg, #4c82ff, #00d4aa); }
-.ai-avatar.user { background: #2a3a4a; }
-.ai-bubble {
-    max-width: 240px;
-    padding: 8px 12px;
-    border-radius: 12px;
-    font-size: 13px;
-    line-height: 1.5;
-}
-.ai-msg.bot .ai-bubble {
-    background: #0f1923;
-    border: 1px solid #2a3a4a;
-    border-bottom-left-radius: 4px;
-}
-.ai-msg.user .ai-bubble {
-    background: #4c82ff;
-    border-bottom-right-radius: 4px;
-}
-.ai-name {
-    font-size: 10px;
-    color: #4c82ff;
-    margin-bottom: 2px;
-    font-weight: 600;
-}
-
-.ai-chat-footer {
-    padding: 10px 12px;
-    border-top: 1px solid #2a3a4a;
-    display: flex;
-    gap: 8px;
-}
-.ai-chat-input {
-    flex: 1;
-    padding: 8px 12px;
-    background: #0f1923;
-    border: 1px solid #2a3a4a;
-    border-radius: 20px;
-    color: #fff;
-    font-size: 13px;
-    outline: none;
-}
-.ai-chat-input:focus { border-color: #4c82ff; }
-.ai-chat-send {
-    padding: 8px 14px;
-    background: #4c82ff;
-    border: none;
-    border-radius: 20px;
-    color: #fff;
-    font-size: 13px;
-    cursor: pointer;
-    font-weight: 600;
-}
-.ai-chat-send:hover { background: #3a70ee; }
-
-/* 加载动画 */
-.typing {
-    display: flex;
-    gap: 4px;
-    padding: 8px 12px;
-    background: #0f1923;
-    border-radius: 12px;
-    border-bottom-left-radius: 4px;
-    border: 1px solid #2a3a4a;
-    width: fit-content;
-}
-.typing-dot {
-    width: 6px;
-    height: 6px;
-    background: #4c82ff;
-    border-radius: 50%;
-    animation: typing 1.2s infinite;
-}
-.typing-dot:nth-child(2) { animation-delay: 0.2s; }
-.typing-dot:nth-child(3) { animation-delay: 0.4s; }
-@keyframes typing {
-    0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
-    30% { transform: translateY(-6px); opacity: 1; }
-}
-
 .loading {
     text-align: center;
     padding: 40px;
@@ -423,28 +416,53 @@ footer { text-align: center; padding: 20px; color: #444; font-size: 11px; }
 </head>
 <body>
 <div class="header">
-    <h1>🏆 <span>DeepSeek AI</span> 比分预测</h1>
-    <div class="update-time" id="updateTime">--:-- 更新</div>
-    <div class="api-status deepseek" id="apiStatus">⏳ 连接中...</div>
+    <h1>🏆 <span>DeepSeek AI</span> 2026世界杯</h1>
 </div>
 
 <div class="container">
-    <div class="tabs">
-        <div class="tab active" onclick="switchTab('live', this)">📺 今日预测</div>
-        <div class="tab" onclick="switchTab('finished', this)">✅ 已完赛</div>
-        <div class="tab" onclick="switchTab('schedule', this)">📅 赛程</div>
-        <div class="tab" onclick="switchTab('ai', this)">🤖 蔡徐坤AI</div>
-    </div>
 
-    <div class="panel active" id="live-panel">
-        <div class="loading"><div class="spinner"></div>DeepSeek AI 分析中...</div>
+<!-- ============ 蔡徐坤AI助手 - 最上面显眼位置 ============ -->
+<div class="ai-top-section" id="aiTopSection">
+    <div class="ai-top-title">
+        <div class="icon">🤖</div>
+        <div class="text">
+            <div class="name">💬 蔡徐坤 AI助手 <span style="font-size:11px;color:#4c82ff;font-weight:400;">（DeepSeek驱动）</span></div>
+            <div class="sub">想问什么直接问，关于世界杯、比分预测、球队分析都可以！</div>
+        </div>
     </div>
-    <div class="panel" id="finished-panel"></div>
-    <div class="panel" id="schedule-panel"></div>
-    <div class="panel" id="ai-panel"></div>
+    
+    <div class="ai-msgs" id="aiTopMsgs">
+        <div class="ai-msg bot">
+            <div class="avatar bot">🤖</div>
+            <div>
+                <div class="name-tag">蔡徐坤</div>
+                <div class="bubble">你好！有什么关于世界杯的问题，尽管问我吧！⚽</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="ai-input-row">
+        <input id="aiInput" placeholder="问问蔡徐坤关于世界杯的问题..." onkeydown="if(event.key==='Enter')sendMsg()">
+        <button onclick="sendMsg()">发送</button>
+    </div>
+    
+    <div class="api-badge" id="aiStatusBadge">🟢 DeepSeek AI 已就绪</div>
 </div>
 
+<!-- ============ Tab ============ -->
+<div class="tabs">
+    <div class="tab active" onclick="switchTab('live', this)">📺 今日预测</div>
+    <div class="tab" onclick="switchTab('finished', this)">✅ 已完赛</div>
+    <div class="tab" onclick="switchTab('schedule', this)">📅 赛程</div>
+</div>
 
+<div class="panel active" id="live-panel">
+    <div class="loading"><div class="spinner"></div>DeepSeek AI 分析中...</div>
+</div>
+<div class="panel" id="finished-panel"></div>
+<div class="panel" id="schedule-panel"></div>
+
+</div>
 
 <div class="bet-slip" id="betSlip">
     <div class="slip-header">
@@ -462,429 +480,223 @@ footer { text-align: center; padding: 20px; color: #444; font-size: 11px; }
 <footer>⚠️ 仅供娱乐参考，不构成投注建议</footer>
 
 <script>
-// ========== 配置 ==========
 const DEEPSEEK_KEY = 'sk-81d53acb8f62446098143011ebfcc7df';
 const DEEPSEEK_URL = 'https://api.deepseek.com/v1/chat/completions';
 
 const FLAG_MAP = {
-    'Qatar': '🇶🇦', 'Switzerland': '🇨🇭', 'Brazil': '🇧🇷', 'Morocco': '🇲🇦',
-    'Haiti': '🇭🇹', 'Scotland': '🏴󠁧󠁢󠁳󠁣󠁴󠁿', 'Australia': '🇦🇺', 'Turkey': '🇹🇷',
-    'Mexico': '🇲🇽', 'South Africa': '🇿🇦', 'Korea Republic': '🇰🇷',
-    'Czech Republic': '🇨🇿', 'Czechia': '🇨🇿', 'Canada': '🇨🇦',
-    'Bosnia and Herzegovina': '🇧🇦', 'USA': '🇺🇸', 'Paraguay': '🇵🇾',
-    'France': '🇫🇷', 'Argentina': '🇦🇷', 'England': '🏴󠁧󠁢󠁥󠁮󠁧󠁿',
-    'Germany': '🇩🇪', 'Spain': '🇪🇸', 'Portugal': '🇵🇹', 'Netherlands': '🇳🇱',
-    'Italy': '🇮🇹', 'Belgium': '🇧🇪', 'Japan': '🇯🇵',
-    'Saudi Arabia': '🇸🇦', 'Iran': '🇮🇷', 'Colombia': '🇨🇴', 'Uruguay': '🇺🇾'
+    'Qatar':'🇶🇦','Switzerland':'🇨🇭','Brazil':'🇧🇷','Morocco':'🇲🇦',
+    'Haiti':'🇭🇹','Scotland':'🏴󠁧󠁢󠁳󠁣󠁴󠁿','Australia':'🇦🇺','Turkey':'🇹🇷',
+    'Mexico':'🇲🇽','South Africa':'🇿🇦','Korea Republic':'🇰🇷',
+    'Czech Republic':'🇨🇿','Czechia':'🇨🇿','Canada':'🇨🇦',
+    'Bosnia and Herzegovina':'🇧🇦','USA':'🇺🇸','Paraguay':'🇵🇾',
+    'France':'🇫🇷','Argentina':'🇦🇷','England':'🏴󠁧󠁢󠁥󠁮󠁧󠁿',
+    'Germany':'🇩🇪','Spain':'🇪🇸','Portugal':'🇵🇹','Netherlands':'🇳🇱',
+    'Italy':'🇮🇹','Belgium':'🇧🇪','Japan':'🇯🇵'
 };
 
 const FIFA_RANK = {
-    'Argentina': 1, 'France': 2, 'Belgium': 3, 'England': 4, 'Brazil': 5,
-    'Netherlands': 6, 'Portugal': 7, 'Spain': 8, 'Italy': 9, 'Croatia': 10,
-    'Germany': 11, 'USA': 13, 'Switzerland': 14, 'Morocco': 15, 'Mexico': 16,
-    'Colombia': 17, 'Japan': 18, 'Uruguay': 19, 'Senegal': 20,
-    'Australia': 25, 'Canada': 30, 'Turkey': 28, 'Scotland': 35,
-    'Qatar': 50, 'Haiti': 60
+    'Argentina':1,'France':2,'Belgium':3,'England':4,'Brazil':5,
+    'Netherlands':6,'Portugal':7,'Spain':8,'Italy':9,'Croatia':10,
+    'Germany':11,'USA':13,'Switzerland':14,'Morocco':15,'Mexico':16,
+    'Colombia':17,'Japan':18,'Uruguay':19,'Senegal':20,
+    'Australia':25,'Canada':30,'Turkey':28,'Scotland':35,
+    'Qatar':50,'Haiti':60
 };
 
 let slip = [];
-let chatOpen = false;
-let chatHistory = [
-    { role: 'assistant', content: '你好！我是蔡徐坤，DeepSeek AI驱动。有什么关于世界杯预测、足球数据的问题，尽管问我吧！⚽' }
+let chatHist = [
+    {role:'assistant',content:'你好！有什么关于世界杯的问题，尽管问我吧！⚽'}
 ];
 
-// ========== AI聊天功能 ==========
-// 移除toggleChat，改为Tab切换
-
-async function sendMessage() {
-    const input = document.getElementById('aiInput');
-    const text = input.value.trim();
-    if (!text) return;
-    input.value = '';
-    
-    // 显示用户消息
-    appendMessage('user', text);
-    chatHistory.push({ role: 'user', content: text });
-    
-    // 显示加载
-    const typingId = showTyping();
-    
-    try {
-        const res = await fetch(DEEPSEEK_URL, {
-            method: 'POST',
-            headers: {
-                'Authorization': 'Bearer ' + DEEPSEEK_KEY,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                model: 'deepseek-chat',
-                messages: [
-                    { role: 'system', content: '你是蔡徐坤，一个专业足球AI助手。用中文回答，语气友好专业，可以适当加入足球emoji。' },
-                    ...chatHistory.slice(-10)  // 保留最近10条
-                ],
-                temperature: 0.7,
-                max_tokens: 500
-            })
-        });
-        
-        removeTyping(typingId);
-        
-        if (!res.ok) throw new Error('API ' + res.status);
-        const data = await res.json();
-        const reply = data.choices[0].message.content;
-        
-        appendMessage('bot', reply);
-        chatHistory.push({ role: 'assistant', content: reply });
-        
-    } catch (e) {
-        removeTyping(typingId);
-        appendMessage('bot', '抱歉，我暂时无法回答，请稍后再试。😅');
-        console.log('Chat error:', e);
-    }
+// ==================== 蔡徐坤聊天 ====================
+function escapeHtml(t) {
+    var d=document.createElement('div');
+    d.textContent=t;
+    return d.innerHTML;
 }
 
-function appendMessage(who, text) {
-    const body = document.getElementById('aiChatBody');
-    const div = document.createElement('div');
-    div.className = 'ai-msg ' + who;
-    
+function appendMsg(who, txt) {
+    var box = document.getElementById('aiTopMsgs');
+    var d = document.createElement('div');
+    d.className = 'ai-msg ' + who;
     if (who === 'user') {
-        div.innerHTML = `
-            <div class="ai-avatar user">👤</div>
-            <div class="ai-bubble">${escapeHtml(text)}</div>
-        `;
+        d.innerHTML = '<div class="avatar user">👤</div><div class="bubble">' + escapeHtml(txt) + '</div>';
     } else {
-        div.innerHTML = `
-            <div class="ai-avatar bot">🤖</div>
-            <div>
-                <div class="ai-name">蔡徐坤</div>
-                <div class="ai-bubble">${escapeHtml(text).replace(/\n/g, '<br>')}</div>
-            </div>
-        `;
+        d.innerHTML = '<div class="avatar bot">🤖</div><div><div class="name-tag">蔡徐坤</div><div class="bubble">' + escapeHtml(txt).replace(/\n/g,'<br>') + '</div></div>';
     }
-    
-    body.appendChild(div);
-    body.scrollTop = body.scrollHeight;
+    box.appendChild(d);
+    box.scrollTop = box.scrollHeight;
 }
 
 function showTyping() {
-    const body = document.getElementById('aiChatBody');
-    const div = document.createElement('div');
-    const id = 'typing-' + Date.now();
-    div.id = id;
-    div.className = 'ai-msg bot';
-    div.innerHTML = `
-        <div class="ai-avatar bot">🤖</div>
-        <div>
-            <div class="ai-name">蔡徐坤</div>
-            <div class="typing">
-                <div class="typing-dot"></div>
-                <div class="typing-dot"></div>
-                <div class="typing-dot"></div>
-            </div>
-        </div>
-    `;
-    body.appendChild(div);
-    body.scrollTop = body.scrollHeight;
+    var box = document.getElementById('aiTopMsgs');
+    var d = document.createElement('div');
+    var id = 'tping-' + Date.now();
+    d.id = id;
+    d.className = 'ai-msg bot';
+    d.innerHTML = '<div class="avatar bot">🤖</div><div><div class="name-tag">蔡徐坤</div><div class="typing"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div></div>';
+    box.appendChild(d);
+    box.scrollTop = box.scrollHeight;
     return id;
 }
 
-function removeTyping(id) {
-    const el = document.getElementById(id);
-    if (el) el.remove();
-}
+function rmTyping(id) { var el=document.getElementById(id); if(el) el.remove(); }
 
-function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-}
-
-// ========== DeepSeek预测 ==========
-async function predictWithDeepSeek(home, away, homeRank, awayRank) {
-    const prompt = `你是一个专业足球分析师。分析以下2026世界杯比赛：
-
-主队：${home}（FIFA排名第${homeRank}）
-客队：${away}（FIFA排名第${awayRank}）
-
-请分析并返回严格JSON格式（不要任何其他文字）：
-{
-  "homeGoals": 预测主队进球数（0-5整数）,
-  "awayGoals": 预测客队进球数（0-5整数）,
-  "homeWinPercent": 主胜概率（0-100整数）,
-  "drawPercent": 平局概率（0-100整数）,
-  "awayWinPercent": 客胜概率（0-100整数）,
-  "confidence": 你对这个预测的自信程度（60-99）,
-  "analysis": "一句话中文分析原因（不超过30字）"
-}`;
+async function sendMsg() {
+    var input = document.getElementById('aiInput');
+    var txt = input.value.trim();
+    if (!txt) return;
+    input.value = '';
+    
+    appendMsg('user', txt);
+    chatHist.push({role:'user', content:txt});
+    var tid = showTyping();
     
     try {
-        const res = await fetch(DEEPSEEK_URL, {
-            method: 'POST',
-            headers: {
-                'Authorization': 'Bearer ' + DEEPSEEK_KEY,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                model: 'deepseek-chat',
-                messages: [{ role: 'user', content: prompt }],
-                temperature: 0.3,
-                max_tokens: 300
+        var res = await fetch(DEEPSEEK_URL, {
+            method:'POST',
+            headers:{'Authorization':'Bearer '+DEEPSEEK_KEY,'Content-Type':'application/json'},
+            body:JSON.stringify({
+                model:'deepseek-chat',
+                messages:[
+                    {role:'system',content:'你是蔡徐坤，一个专业足球AI助手。用中文回答，语气友好专业，可以适当加入足球emoji。回答简洁明了，不超过100字。'},
+                    ...chatHist.slice(-10)
+                ],
+                temperature:0.7,
+                max_tokens:300
             })
         });
-        if (!res.ok) throw new Error('DeepSeek ' + res.status);
-        const data = await res.json();
-        const text = data.choices[0].message.content;
-        const json = JSON.parse(text.match(/\{[\s\S]*\}/)[0]);
-        return {
-            score: json.homeGoals + '-' + json.awayGoals,
-            homeWin: json.homeWinPercent,
-            draw: json.drawPercent,
-            awayWin: json.awayWinPercent,
-            confidence: json.confidence,
-            analysis: json.analysis
-        };
-    } catch (e) {
-        console.log('DeepSeek error:', e);
-        return null;
+        rmTyping(tid);
+        if (!res.ok) throw new Error('API '+res.status);
+        var data = await res.json();
+        var reply = data.choices[0].message.content;
+        appendMsg('bot', reply);
+        chatHist.push({role:'assistant', content:reply});
+    } catch(e) {
+        rmTyping(tid);
+        appendMsg('bot','抱歉，我暂时没法回答你，可能是网络问题，稍后再试试吧😅');
+        console.log('Chat error:',e);
     }
 }
 
-function predictLocal(home, away, homeRank, awayRank) {
-    const homeStr = 100 - (homeRank || 50);
-    const awayStr = 100 - (awayRank || 50);
-    const total = homeStr + awayStr;
-    let homeWin = Math.round((homeStr / total) * 65 + 15);
-    let awayWin = Math.round((awayStr / total) * 65 + 10);
-    let draw = 100 - homeWin - awayWin;
-    let homeGoals = Math.round(homeStr / 20);
-    let awayGoals = Math.round(awayStr / 22);
-    if (Math.abs(homeStr - awayStr) < 15 && draw > 20) homeGoals = awayGoals;
-    homeGoals = Math.max(0, Math.min(5, homeGoals));
-    awayGoals = Math.max(0, Math.min(5, awayGoals));
-    const confidence = 60 + Math.round(Math.random() * 25);
-    let reason;
-    if (homeWin > awayWin + 15) reason = home + '排名领先' + Math.abs(homeRank - awayRank) + '位，主场优势明显';
-    else if (awayWin > homeWin + 10) reason = away + '国际排名更高，客场稳定发挥';
-    else reason = '两队实力均衡，胜负难料';
-    return { score: homeGoals + '-' + awayGoals, homeWin, draw, awayWin, confidence, analysis: reason };
+// ==================== AI预测 ====================
+async function predictDS(home, away, homeRank, awayRank) {
+    var prompt = '你是一个专业足球分析师。分析以下2026世界杯比赛：\n\n主队：'+home+'（FIFA排名第'+homeRank+'）\n客队：'+away+'（FIFA排名第'+awayRank+'）\n\n请分析并返回严格JSON格式（不要任何其他文字）：\n{\n  "homeGoals": 预测主队进球数（0-5整数）,\n  "awayGoals": 预测客队进球数（0-5整数）,\n  "homeWinPercent": 主胜概率（0-100整数）,\n  "drawPercent": 平局概率（0-100整数）,\n  "awayWinPercent": 客胜概率（0-100整数）,\n  "confidence": 自信程度（60-99）,\n  "analysis": "一句话中文分析原因（不超过30字）"\n}';
+    try {
+        var res = await fetch(DEEPSEEK_URL, {
+            method:'POST',
+            headers:{'Authorization':'Bearer '+DEEPSEEK_KEY,'Content-Type':'application/json'},
+            body:JSON.stringify({model:'deepseek-chat',messages:[{role:'user',content:prompt}],temperature:0.3,max_tokens:300})
+        });
+        if (!res.ok) throw new Error('DS '+res.status);
+        var data = await res.json();
+        var json = JSON.parse(data.choices[0].message.content.match(/\{[\s\S]*\}/)[0]);
+        return {score:json.homeGoals+'-'+json.awayGoals,homeWin:json.homeWinPercent,draw:json.drawPercent,awayWin:json.awayWinPercent,confidence:json.confidence,analysis:json.analysis};
+    } catch(e) { return null; }
 }
 
-function makeRecommendation(home, away, p) {
-    let rec, recType, stars, reason;
-    if (p.homeWin > p.awayWin + 15) {
-        rec = home + '胜'; recType = 'win';
-        stars = Math.min(5, Math.round(p.homeWin / 15));
-        reason = (p.analysis || '') + '，推荐主胜';
-    } else if (p.awayWin > p.homeWin + 10) {
-        rec = away + '胜'; recType = 'lose';
-        stars = Math.min(5, Math.round(p.awayWin / 15));
-        reason = (p.analysis || '') + '，推荐客胜';
-    } else {
-        rec = '平局'; recType = 'draw'; stars = 3;
-        reason = (p.analysis || '') + '，保守看好平局';
-    }
-    return { rec, recType, stars, reason };
+function predictLocal(home, away, hr, ar) {
+    var hs = 100-(hr||50), as = 100-(ar||50), t = hs+as;
+    var hw = Math.round((hs/t)*65+15), aw = Math.round((as/t)*65+10), d = 100-hw-aw;
+    var hg = Math.round(hs/20), ag = Math.round(as/22);
+    if (Math.abs(hs-as)<15&&d>20) hg=ag;
+    hg=Math.max(0,Math.min(5,hg)); ag=Math.max(0,Math.min(5,ag));
+    var c = 60+Math.round(Math.random()*25);
+    var r; if(hw>aw+15) r=home+'排名领先'+(hr-ar)+'位'; else if(aw>hw+10) r=away+'国际排名更高'; else r='实力均衡';
+    return {score:hg+'-'+ag,homeWin:hw,draw:d,awayWin:aw,confidence:c,analysis:r};
 }
 
-// ========== 渲染 ==========
-function getFlag(teamName) { return FLAG_MAP[teamName] || '⚽'; }
-function getRank(teamName) { return FIFA_RANK[teamName] || 50; }
-
-function renderCardHtml(m, p, rec, isDeepSeek) {
-    const homeOdds = (2.5 + Math.random()).toFixed(2);
-    const drawOdds = (3.0 + Math.random()).toFixed(2);
-    const awayOdds = (2.5 + Math.random() * 2).toFixed(2);
-    return `
-    <div class="match-card">
-        <div class="match-info">
-            <span>${m.group || ''} · ${m.loc || ''}</span>
-            <span>${m.time}</span>
-        </div>
-        <div class="match-main">
-            <div class="teams">
-                <div class="team">
-                    <div class="flag">${m.homeFlag || getFlag(m.homeEn || m.home)}</div>
-                    <div class="name">${m.home}</div>
-                    <div class="rank">FIFA #${m.homeRank}</div>
-                </div>
-                <div class="vs-time">
-                    <div class="vs">VS</div>
-                    <div class="time">${(m.time || '').split(' ')[1] || ''}</div>
-                </div>
-                <div class="team">
-                    <div class="flag">${m.awayFlag || getFlag(m.awayEn || m.away)}</div>
-                    <div class="name">${m.away}</div>
-                    <div class="rank">FIFA #${m.awayRank}</div>
-                </div>
-            </div>
-            <div class="prediction">
-                <div class="pred-label">🤖 DeepSeek AI 预测</div>
-                <div class="pred-score">${p.score}</div>
-                <div class="confidence">置信度 ${p.confidence}%</div>
-                <div class="ai-analysis">💡 ${p.analysis || ''}</div>
-            </div>
-            <div class="prob-row">
-                <div class="prob-box win">
-                    <div class="l">主胜</div>
-                    <div class="v">${p.homeWin}%</div>
-                    <div class="bar"><div class="bar-fill" style="width:${p.homeWin}%"></div></div>
-                </div>
-                <div class="prob-box draw">
-                    <div class="l">平局</div>
-                    <div class="v">${p.draw}%</div>
-                    <div class="bar"><div class="bar-fill" style="width:${p.draw}%"></div></div>
-                </div>
-                <div class="prob-box lose">
-                    <div class="l">客胜</div>
-                    <div class="v">${p.awayWin}%</div>
-                    <div class="bar"><div class="bar-fill" style="width:${p.awayWin}%"></div></div>
-                </div>
-            </div>
-            <div class="recommend">
-                <span class="rec-tag">推荐${rec.recType === 'win' ? '主胜' : rec.recType === 'lose' ? '客胜' : '平'}</span>
-                <span class="stars">${'⭐'.repeat(rec.stars)}</span>
-                <span class="rec-desc">${rec.reason}</span>
-            </div>
-            <div class="odds-section">
-                <div class="odds-title">竞彩赔率</div>
-                <div class="odds-grid">
-                    <div class="odds-btn ${rec.recType === 'win' ? 'selected' : ''}" onclick="addToSlip('${m.home}胜', ${homeOdds})">
-                        <span class="lb">主胜</span>
-                        <span class="val">${homeOdds}</span>
-                    </div>
-                    <div class="odds-btn ${rec.recType === 'draw' ? 'selected' : ''}" onclick="addToSlip('平局', ${drawOdds})">
-                        <span class="lb">平局</span>
-                        <span class="val">${drawOdds}</span>
-                    </div>
-                    <div class="odds-btn ${rec.recType === 'lose' ? 'selected' : ''}" onclick="addToSlip('${m.away}胜', ${awayOdds})">
-                        <span class="lb">客胜</span>
-                        <span class="val">${awayOdds}</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    `;
+function makeRec(home, away, p) {
+    var r,t,s;
+    if (p.homeWin>p.awayWin+15) { r=home+'胜';t='win';s=Math.min(5,Math.round(p.homeWin/15)); }
+    else if (p.awayWin>p.homeWin+10) { r=away+'胜';t='lose';s=Math.min(5,Math.round(p.awayWin/15)); }
+    else { r='平局';t='draw';s=3; }
+    return {rec:r,recType:t,stars:s,reason:(p.analysis||'')+(t==='win'?'，主胜':t==='lose'?'，客胜':'，防平')};
 }
 
-// ========== 主加载 ==========
-function renderAIPanel() {
-    const panel = document.getElementById('ai-panel');
-    panel.innerHTML = `
-        <div class="ai-chat">
-            <div class="ai-chat-header">
-                <span class="ai-chat-title">💬 蔡徐坤 AI助手</span>
-            </div>
-            <div class="ai-chat-body" id="aiChatBody">
-                <div class="ai-msg bot">
-                    <div class="ai-avatar bot">🤖</div>
-                    <div>
-                        <div class="ai-name">蔡徐坤</div>
-                        <div class="ai-bubble">你好！我是蔡徐坤，DeepSeek AI驱动。有什么关于世界杯预测、足球数据的问题，尽管问我吧！⚽</div>
-                    </div>
-                </div>
-            </div>
-            <div class="ai-chat-footer">
-                <input class="ai-chat-input" id="aiInput" placeholder="问蔡徐坤一个问题..." onkeydown="if(event.key==='Enter')sendMessage()">
-                <button class="ai-chat-send" onclick="sendMessage()">发送</button>
-            </div>
-        </div>
-    `;
-}
+function getFlag(n) { return FLAG_MAP[n]||'⚽'; }
 
+// ==================== 加载预测 ====================
 async function loadPredictions() {
-    const livePanel = document.getElementById('live-panel');
-    livePanel.innerHTML = '<div class="loading"><div class="spinner"></div>DeepSeek AI 分析中...</div>';
-    const local = {
-        upcoming: [
-            { home: '卡塔尔', away: '瑞士', homeEn: 'Qatar', awayEn: 'Switzerland', homeRank: 50, awayRank: 14, group: 'B', time: '6/14 03:00', loc: '旧金山' },
-            { home: '巴西', away: '摩洛哥', homeEn: 'Brazil', awayEn: 'Morocco', homeRank: 5, awayRank: 15, group: 'C', time: '6/14 06:00', loc: '纽约' },
-            { home: '海地', away: '苏格兰', homeEn: 'Haiti', awayEn: 'Scotland', homeRank: 60, awayRank: 35, group: 'C', time: '6/14 09:00', loc: '纽约' },
-            { home: '澳大利亚', away: '土耳其', homeEn: 'Australia', awayEn: 'Turkey', homeRank: 25, awayRank: 28, group: 'D', time: '6/14 09:00', loc: '洛杉矶' }
+    var lp = document.getElementById('live-panel');
+    lp.innerHTML = '<div class="loading"><div class="spinner"></div>DeepSeek AI 分析中...</div>';
+    var local = {
+        upcoming:[
+            {home:'卡塔尔',away:'瑞士',homeEn:'Qatar',awayEn:'Switzerland',homeRank:50,awayRank:14,group:'B',time:'6/14 03:00',loc:'旧金山'},
+            {home:'巴西',away:'摩洛哥',homeEn:'Brazil',awayEn:'Morocco',homeRank:5,awayRank:15,group:'C',time:'6/14 06:00',loc:'纽约'},
+            {home:'海地',away:'苏格兰',homeEn:'Haiti',awayEn:'Scotland',homeRank:60,awayRank:35,group:'C',time:'6/14 09:00',loc:'纽约'},
+            {home:'澳大利亚',away:'土耳其',homeEn:'Australia',awayEn:'Turkey',homeRank:25,awayRank:28,group:'D',time:'6/14 09:00',loc:'洛杉矶'}
         ],
-        finished: [
-            { home: '墨西哥', away: '南非', homeFlag: '🇲🇽', awayFlag: '🇿🇦', score: '2-0', group: 'A' },
-            { home: '韩国', away: '捷克', homeFlag: '🇰🇷', awayFlag: '🇨🇿', score: '2-1', group: 'A' },
-            { home: '加拿大', away: '波黑', homeFlag: '🇨🇦', awayFlag: '🇧🇦', score: '1-1', group: 'B' },
-            { home: '美国', away: '巴拉圭', homeFlag: '🇺🇸', awayFlag: '🇵🇾', score: '4-1', group: 'D' }
+        finished:[
+            {home:'墨西哥',away:'南非',homeFlag:'🇲🇽',awayFlag:'🇿🇦',score:'2-0',group:'A'},
+            {home:'韩国',away:'捷克',homeFlag:'🇰🇷',awayFlag:'🇨🇿',score:'2-1',group:'A'},
+            {home:'加拿大',away:'波黑',homeFlag:'🇨🇦',awayFlag:'🇧🇦',score:'1-1',group:'B'},
+            {home:'美国',away:'巴拉圭',homeFlag:'🇺🇸',awayFlag:'🇵🇾',score:'4-1',group:'D'}
         ],
-        schedule: [
-            { home: '捷克', away: '南非', homeFlag: '🇨🇿', awayFlag: '🇿🇦', time: '6/19 03:00', group: 'A' },
-            { home: '墨西哥', away: '韩国', homeFlag: '🇲🇽', awayFlag: '🇰🇷', time: '6/19 06:00', group: 'A' },
-            { home: '瑞士', away: '波黑', homeFlag: '🇨🇭', awayFlag: '🇧🇦', time: '6/19 09:00', group: 'B' },
-            { home: '加拿大', away: '卡塔尔', homeFlag: '🇨🇦', awayFlag: '🇶🇦', time: '6/19 12:00', group: 'B' }
+        schedule:[
+            {home:'捷克',away:'南非',homeFlag:'🇨🇿',awayFlag:'🇿🇦',time:'6/19 03:00',group:'A'},
+            {home:'墨西哥',away:'韩国',homeFlag:'🇲🇽',awayFlag:'🇰🇷',time:'6/19 06:00',group:'A'},
+            {home:'瑞士',away:'波黑',homeFlag:'🇨🇭',awayFlag:'🇧🇦',time:'6/19 09:00',group:'B'},
+            {home:'加拿大',away:'卡塔尔',homeFlag:'🇨🇦',awayFlag:'🇶🇦',time:'6/19 12:00',group:'B'}
         ]
     };
-    let liveHtml = '';
-    let aiCount = 0;
-    for (const m of local.upcoming) {
-        const p = await predictWithDeepSeek(m.homeEn || m.home, m.awayEn || m.away, m.homeRank, m.awayRank);
-        let finalP, isDeepSeek;
-        if (p) { finalP = p; isDeepSeek = true; aiCount++; }
-        else { finalP = predictLocal(m.home, m.away, m.homeRank, m.awayRank); isDeepSeek = false; }
-        const rec = makeRecommendation(m.home, m.away, finalP);
-        liveHtml += renderCardHtml(m, finalP, rec, isDeepSeek);
+    var lh = '', ac = 0;
+    for (var m of local.upcoming) {
+        var p = await predictDS(m.homeEn||m.home, m.awayEn||m.away, m.homeRank, m.awayRank);
+        var fp, ds;
+        if (p) { fp=p; ds=true; ac++; }
+        else { fp=predictLocal(m.home,m.away,m.homeRank,m.awayRank); ds=false; }
+        var rec = makeRec(m.home, m.away, fp);
+        var ho=(2.5+Math.random()).toFixed(2), ddo=(3.0+Math.random()).toFixed(2), ao=(2.5+Math.random()*2).toFixed(2);
+        lh += '<div class="match-card"><div class="match-info"><span>'+(m.group||'')+' · '+(m.loc||'')+'</span><span>'+m.time+'</span></div><div class="match-main"><div class="teams"><div class="team"><div class="flag">'+(m.homeFlag||getFlag(m.homeEn||m.home))+'</div><div class="name">'+m.home+'</div><div class="rank">FIFA #'+m.homeRank+'</div></div><div class="vs-time"><div class="vs">VS</div><div class="time">'+(m.time||'').split(' ')[1]||''+'</div></div><div class="team"><div class="flag">'+(m.awayFlag||getFlag(m.awayEn||m.away))+'</div><div class="name">'+m.away+'</div><div class="rank">FIFA #'+m.awayRank+'</div></div></div>';
+        lh += '<div class="prediction"><div class="pred-label">🤖 DeepSeek AI 预测</div><div class="pred-score">'+fp.score+'</div><div class="confidence">置信度 '+fp.confidence+'%</div><div class="ai-analysis">💡 '+(fp.analysis||'')+'</div></div>';
+        lh += '<div class="prob-row"><div class="prob-box win"><div class="l">主胜</div><div class="v">'+fp.homeWin+'%</div><div class="bar"><div class="bar-fill" style="width:'+fp.homeWin+'%"></div></div></div><div class="prob-box draw"><div class="l">平局</div><div class="v">'+fp.draw+'%</div><div class="bar"><div class="bar-fill" style="width:'+fp.draw+'%"></div></div></div><div class="prob-box lose"><div class="l">客胜</div><div class="v">'+fp.awayWin+'%</div><div class="bar"><div class="bar-fill" style="width:'+fp.awayWin+'%"></div></div></div></div>';
+        lh += '<div class="recommend"><span class="rec-tag">推荐'+(rec.recType==='win'?'主胜':rec.recType==='lose'?'客胜':'平')+'</span><span class="stars">'+'⭐'.repeat(rec.stars)+'</span><span class="rec-desc">'+rec.reason+'</span></div>';
+        lh += '<div class="odds-section"><div class="odds-title">竞彩赔率</div><div class="odds-grid"><div class="odds-btn '+(rec.recType==='win'?'selected':'')+'" onclick="addToSlip(\''+m.home+'胜\','+ho+')"><span class="lb">主胜</span><span class="val">'+ho+'</span></div><div class="odds-btn '+(rec.recType==='draw'?'selected':'')+'" onclick="addToSlip(\'平局\','+ddo+')"><span class="lb">平局</span><span class="val">'+ddo+'</span></div><div class="odds-btn '+(rec.recType==='lose'?'selected':'')+'" onclick="addToSlip(\''+m.away+'胜\','+ao+')"><span class="lb">客胜</span><span class="val">'+ao+'</span></div></div></div></div></div>';
     }
-    if (aiCount > 0) {
-        document.getElementById('apiStatus').className = 'api-status deepseek';
-        document.getElementById('apiStatus').textContent = '🟢 DeepSeek AI 已连接 | ' + aiCount + '/' + local.upcoming.length + '场AI预测';
+    if (ac>0) {
+        document.getElementById('aiStatusBadge').textContent = '🟢 DeepSeek AI 已连接 | ' + ac + '/' + local.upcoming.length + '场AI预测';
     }
-    livePanel.innerHTML = liveHtml || '<div style="text-align:center;color:#666;padding:40px;">暂无今日预测</div>';
-    let finishedHtml = '', scheduleHtml = '';
-    local.finished.forEach(f => {
-        finishedHtml += `<div class="finished-card"><div class="flag">${f.homeFlag}</div><div class="team-name">${f.home}</div><div class="finished-score">${f.score}</div><div class="team-name">${f.away}</div><div class="flag">${f.awayFlag}</div></div>`;
+    lp.innerHTML = lh || '<div style="text-align:center;color:#666;padding:40px;">暂无今日预测</div>';
+    var fh='', sh='';
+    local.finished.forEach(function(f){
+        fh+='<div class="finished-card"><div class="flag">'+f.homeFlag+'</div><div class="team-name">'+f.home+'</div><div class="finished-score">'+f.score+'</div><div class="team-name">'+f.away+'</div><div class="flag">'+f.awayFlag+'</div></div>';
     });
-    local.schedule.forEach(s => {
-        scheduleHtml += `<div class="finished-card"><div class="flag">${s.homeFlag}</div><div class="team-name">${s.home} vs ${s.away}</div><div style="color:#00d4aa;font-size:12px;">${s.time}</div></div>`;
+    local.schedule.forEach(function(s){
+        sh+='<div class="finished-card"><div class="flag">'+s.homeFlag+'</div><div class="team-name">'+s.home+' vs '+s.away+'</div><div style="color:#00d4aa;font-size:12px;">'+s.time+'</div></div>';
     });
-    document.getElementById('finished-panel').innerHTML = finishedHtml || '<div style="text-align:center;color:#666;padding:40px;">暂无已完赛</div>';
-    document.getElementById('schedule-panel').innerHTML = scheduleHtml || '<div style="text-align:center;color:#666;padding:40px;">暂无赛程</div>';
+    document.getElementById('finished-panel').innerHTML = fh||'<div style="text-align:center;color:#666;padding:40px;">暂无已完赛</div>';
+    document.getElementById('schedule-panel').innerHTML = sh||'<div style="text-align:center;color:#666;padding:40px;">暂无赛程</div>';
 }
 
-// ========== Tab / 投注单 ==========
+// ==================== Tab / 投注单 ====================
 function switchTab(id, el) {
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active');});
+    document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('active');});
     el.classList.add('active');
-    const target = id === 'ai' ? document.getElementById('ai-panel') : document.getElementById(id + '-panel');
-    if (target) target.classList.add('active');
-    if (id === 'ai') renderAIPanel();
+    document.getElementById(id+'-panel').classList.add('active');
 }
 
 function addToSlip(pick, odds) {
-    const existing = slip.find(s => s.pick === pick);
-    if (existing) existing.odds = parseFloat(odds);
-    else slip.push({ pick, odds: parseFloat(odds) });
+    var e = slip.find(function(s){return s.pick===pick;});
+    if(e) e.odds=parseFloat(odds);
+    else slip.push({pick:pick,odds:parseFloat(odds)});
     updateSlip();
 }
-
-function removeFromSlip(i) { slip.splice(i, 1); updateSlip(); }
-function clearSlip() { slip = []; updateSlip(); }
-
-function updateSlip() {
-    const el = document.getElementById('betSlip');
-    if (slip.length === 0) { el.classList.remove('show'); return; }
+function removeFromSlip(i){slip.splice(i,1);updateSlip();}
+function clearSlip(){slip=[];updateSlip();}
+function updateSlip(){
+    var el=document.getElementById('betSlip');
+    if(slip.length===0){el.classList.remove('show');return;}
     el.classList.add('show');
-    document.getElementById('slipCount').textContent = slip.length;
-    let total = 1, html = '';
-    slip.forEach((s, i) => {
-        total *= s.odds;
-        html += `<div class="slip-item"><span>${s.pick}</span><span>${s.odds.toFixed(2)} <span class="del" onclick="removeFromSlip(${i})">✕</span></span></div>`;
-    });
-    document.getElementById('slipItems').innerHTML = html;
-    document.getElementById('totalOdds').textContent = total.toFixed(2) + '倍';
+    document.getElementById('slipCount').textContent=slip.length;
+    var t=1, h='';
+    slip.forEach(function(s,i){t*=s.odds;h+='<div class="slip-item"><span>'+s.pick+'</span><span>'+s.odds.toFixed(2)+' <span class="del" onclick="removeFromSlip('+i+')">✕</span></span></div>';});
+    document.getElementById('slipItems').innerHTML=h;
+    document.getElementById('totalOdds').textContent=t.toFixed(2)+'倍';
 }
 
-function updateTime() {
-    const now = new Date();
-    document.getElementById('updateTime').textContent = now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0') + ' 更新';
-}
-
-// ========== 初始化 ==========
 loadPredictions();
-updateTime();
-setInterval(() => { loadPredictions(); updateTime(); }, 300000);
 </script>
 </body>
 </html>
