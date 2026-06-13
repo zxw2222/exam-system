@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2026美加墨世界杯预测</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#070b1a;--card:rgba(15,20,50,0.9);--border:rgba(0,180,255,0.2);--accent:#00d4ff;--gold:#ffd700;--green:#22c55e;--red:#ef4444;--text:#c8d8ff;--dim:rgba(150,170,220,0.6)}
+body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+#particles{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.wrap{position:relative;z-index:2;max-width:1100px;margin:0 auto;padding:0 16px}
+header{text-align:center;padding:30px 16px 20px}
+header h1{font-size:28px;font-weight:900;background:linear-gradient(90deg,var(--accent),var(--gold),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px;letter-spacing:2px}
+header p{font-size:13px;color:var(--dim)}
+.tabs{display:flex;justify-content:center;gap:8px;margin-bottom:24px;flex-wrap:wrap}
+.tab{padding:8px 18px;border-radius:20px;font-size:13px;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--dim);transition:all .3s}
+.tab:hover,.tab.active{background:rgba(0,180,255,0.15);color:var(--accent);border-color:var(--accent)}
+.panel{display:none}.panel.active{display:block}
+
+/* 小组赛 */
+.group-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;margin-bottom:30px}
+.group-card{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.group-title{padding:10px 16px;font-weight:700;font-size:15px;color:var(--accent);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.group-title .tag{font-size:11px;padding:2px 8px;border-radius:10px;background:rgba(0,180,255,0.15);color:var(--accent)}
+.group-table{width:100%;border-collapse:collapse;font-size:13px}
+.group-table th{padding:8px 10px;text-align:left;color:var(--dim);font-weight:400;border-bottom:1px solid rgba(0,180,255,0.1)}
+.group-table td{padding:8px 10px;border-bottom:1px solid rgba(0,180,255,0.05)}
+.group-table tr.qualify td{color:var(--green);font-weight:600}
+.group-table tr.qualify-third td{color:var(--gold);font-weight:500}
+.flag{font-size:18px;margin-right:4px}
+.score-badge{display:inline-block;padding:1px 6px;border-radius:4px;font-size:11px;font-weight:600;margin-left:4px}
+.score-win{background:rgba(34,197,94,0.2);color:var(--green)}
+.score-draw{background:rgba(250,200,0,0.2);color:var(--gold)}
+.score-lose{background:rgba(239,68,68,0.2);color:var(--red)}
+
+/* 淘汰赛 */
+.bracket{display:flex;gap:16px;overflow-x:auto;padding-bottom:16px;margin-bottom:20px}
+.round{min-width:200px;display:flex;flex-direction:column;gap:12px;justify-content:center}
+.round-title{text-align:center;font-size:13px;color:var(--accent);margin-bottom:8px;font-weight:700;letter-spacing:1px}
+.match{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden;font-size:13px;cursor:pointer;transition:all .3s}
+.match:hover{border-color:var(--accent);transform:scale(1.02)}
+.match-team{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;border-bottom:1px solid rgba(0,180,255,0.05)}
+.match-team:last-child{border-bottom:none}
+.match-team .name{display:flex;align-items:center;gap:6px}
+.match-team.winner{color:var(--green);font-weight:600}
+.match-team .score{font-weight:700;min-width:20px;text-align:right}
+.match-label{text-align:center;padding:4px;font-size:11px;color:var(--dim);background:rgba(0,180,255,0.05)}
+
+/* 预测面板 */
+.predict-section{margin-bottom:30px}
+.predict-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:16px}
+.predict-card h3{font-size:16px;margin-bottom:12px;color:var(--accent)}
+.predict-row{display:flex;gap:12px;align-items:center;margin-bottom:10px;flex-wrap:wrap}
+.predict-row label{font-size:13px;color:var(--dim);min-width:60px}
+.predict-row select{background:rgba(0,20,60,0.8);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:6px 10px;font-size:13px;min-width:140px}
+.predict-row select:focus{outline:none;border-color:var(--accent)}
+.btn{padding:8px 20px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .3s}
+.btn-primary{background:linear-gradient(90deg,#006aff,#00d4ff);color:#fff}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 4px 15px rgba(0,180,255,0.3)}
+.btn-gold{background:linear-gradient(90deg,#b8860b,#ffd700);color:#1a1a2e}
+.btn-gold:hover{transform:translateY(-2px);box-shadow:0 4px 15px rgba(255,215,0,0.3)}
+
+.result-box{background:rgba(0,20,60,0.6);border:1px solid rgba(0,180,255,0.15);border-radius:10px;padding:16px;margin-top:12px;display:none}
+.result-box.show{display:block}
+.result-box .champion{text-align:center;font-size:22px;font-weight:900;color:var(--gold);margin-bottom:8px}
+.result-box .champion .flag{font-size:28px}
+.result-box .detail{font-size:13px;color:var(--dim);text-align:center;line-height:1.8}
+
+/* 夺冠概率 */
+.prob-list{list-style:none}
+.prob-item{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.prob-item .name{min-width:80px;font-size:13px}
+.prob-bar{flex:1;height:20px;background:rgba(0,20,60,0.6);border-radius:10px;overflow:hidden}
+.prob-fill{height:100%;border-radius:10px;background:linear-gradient(90deg,#006aff,var(--accent));transition:width .5s}
+.prob-val{min-width:40px;font-size:12px;color:var(--dim);text-align:right}
+
+footer{text-align:center;padding:30px 16px;color:rgba(80,100,150,0.4);font-size:11px}
+@media(max-width:640px){
+  header h1{font-size:22px}
+  .group-grid{grid-template-columns:1fr}
+  .bracket{flex-direction:column}
+  .round{min-width:auto}
+}
+</style>
+</head>
+<body>
+<div id="particles"></div>
+<div class="wrap">
+
+<header>
+  <h1>🏆 2026美加墨世界杯预测</h1>
+  <p>48支球队 · 12个小组 · 104场激战 · 谁将问鼎？</p>
+</header>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('groups')">小组赛</div>
+  <div class="tab" onclick="switchTab('bracket')">淘汰赛</div>
+  <div class="tab" onclick="switchTab('predict')">我的预测</div>
+  <div class="tab" onclick="switchTab('prob')">夺冠概率</div>
+</div>
+
+<!-- 小组赛 -->
+<div class="panel active" id="groups-panel">
+  <div class="group-grid" id="groupGrid"></div>
+</div>
+
+<!-- 淘汰赛 -->
+<div class="panel" id="bracket-panel">
+  <div class="bracket" id="bracketView"></div>
+</div>
+
+<!-- 我的预测 -->
+<div class="panel" id="predict-panel">
+  <div class="predict-section">
+    <div class="predict-card">
+      <h3>⚽ 预测决赛对阵</h3>
+      <div class="predict-row">
+        <label>决赛队A</label>
+        <select id="finalA"></select>
+      </div>
+      <div class="predict-row">
+        <label>决赛队B</label>
+        <select id="finalB"></select>
+      </div>
+      <div class="predict-row">
+        <label>冠军</label>
+        <select id="champPick"></select>
+      </div>
+      <div class="predict-row">
+        <label>比分</label>
+        <select id="scoreA" style="min-width:60px">
+          <option>0</option><option>1</option><option selected>2</option><option>3</option><option>4</option><option>5</option>
+        </select>
+        <span>:</span>
+        <select id="scoreB" style="min-width:60px">
+          <option>0</option><option selected>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
+        </select>
+      </div>
+      <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn btn-primary" onclick="calcPredict()">生成预测</button>
+        <button class="btn btn-gold" onclick="randomPredict()">随机预测</button>
+      </div>
+      <div class="result-box" id="predictResult"></div>
+    </div>
+    <div class="predict-card">
+      <h3>🎯 金靴奖预测</h3>
+      <div class="predict-row">
+        <label>最佳射手</label>
+        <select id="goldenBoot">
+          <option>姆巴佩 🇫🇷</option><option>哈兰德 🇳🇴</option><option>维尼修斯 🇧🇷</option><option>梅西 🇦🇷</option><option>C罗 🇵🇹</option><option>孙兴慜 🇰🇷</option><option>凯恩 🏴󠁧󠁢󠁥󠁮󠁧󠁿</option><option>贝林厄姆 🏴󠁧󠁢󠁥󠁮󠁧󠁿</option><option>萨拉赫 🇪🇬</option><option>其他</option>
+        </select>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 夺冠概率 -->
+<div class="panel" id="prob-panel">
+  <div class="predict-card">
+    <h3>📊 AI夺冠概率预测</h3>
+    <ul class="prob-list" id="probList"></ul>
+  </div>
+</div>
+
+<footer>2026 FIFA World Cup · 美加墨 · 数据基于小组赛首轮表现与历史战绩</footer>
+</div>
+
+<script>
+var groups = {
+  'A组': {teams:[{n:'墨西哥',f:'🇲🇽',w:1,d:0,l:0,gf:2,ga:0},{n:'韩国',f:'🇰🇷',w:1,d:0,l:0,gf:2,ga:1},{n:'捷克',f:'🇨🇿',w:0,d:0,l:1,gf:1,ga:2},{n:'南非',f:'🇿🇦',w:0,d:0,l:1,gf:0,ga:2}],tag:'东道主'},
+  'B组': {teams:[{n:'加拿大',f:'🇨🇦',w:0,d:1,l:0,gf:1,ga:1},{n:'波黑',f:'🇧🇦',w:0,d:1,l:0,gf:1,ga:1},{n:'瑞士',f:'🇨🇭',w:0,d:0,l:0,gf:0,ga:0},{n:'卡塔尔',f:'🇶🇦',w:0,d:0,l:0,gf:0,ga:0}],tag:'东道主'},
+  'C组': {teams:[{n:'巴西',f:'🇧🇷',w:0,d:0,l:0,gf:0,ga:0},{n:'摩洛哥',f:'🇲🇦',w:0,d:0,l:0,gf:0,ga:0},{n:'海地',f:'🇭🇹',w:0,d:0,l:0,gf:0,ga:0},{n:'苏格兰',f:'🏴󠁧󠁢󠁳󠁣󠁴󠁿',w:0,d:0,l:0,gf:0,ga:0}],tag:'桑巴军团'},
+  'D组': {teams:[{n:'美国',f:'🇺🇸',w:1,d:0,l:0,gf:4,ga:1},{n:'巴拉圭',f:'🇵🇾',w:0,d:0,l:1,gf:1,ga:4},{n:'澳大利亚',f:'🇦🇺',w:0,d:0,l:0,gf:0,ga:0},{n:'土耳其',f:'🇹🇷',w:0,d:0,l:0,gf:0,ga:0}],tag:'东道主'},
+  'E组': {teams:[{n:'德国',f:'🇩🇪',w:0,d:0,l:0,gf:0,ga:0},{n:'库拉索',f:'🇨🇼',w:0,d:0,l:0,gf:0,ga:0},{n:'科特迪瓦',f:'🇨🇮',w:0,d:0,l:0,gf:0,ga:0},{n:'厄瓜多尔',f:'🇪🇨',w:0,d:0,l:0,gf:0,ga:0}],tag:'日耳曼战车'},
+  'F组': {teams:[{n:'荷兰',f:'🇳🇱',w:0,d:0,l:0,gf:0,ga:0},{n:'日本',f:'🇯🇵',w:0,d:0,l:0,gf:0,ga:0},{n:'瑞典',f:'🇸🇪',w:0,d:0,l:0,gf:0,ga:0},{n:'突尼斯',f:'🇹🇳',w:0,d:0,l:0,gf:0,ga:0}],tag:'橙衣军团'},
+  'G组': {teams:[{n:'比利时',f:'🇧🇪',w:0,d:0,l:0,gf:0,ga:0},{n:'埃及',f:'🇪🇬',w:0,d:0,l:0,gf:0,ga:0},{n:'伊朗',f:'🇮🇷',w:0,d:0,l:0,gf:0,ga:0},{n:'新西兰',f:'🇳🇿',w:0,d:0,l:0,gf:0,ga:0}],tag:'欧洲红魔'},
+  'H组': {teams:[{n:'西班牙',f:'🇪🇸',w:0,d:0,l:0,gf:0,ga:0},{n:'佛得角',f:'🇨🇻',w:0,d:0,l:0,gf:0,ga:0},{n:'沙特',f:'🇸🇦',w:0,d:0,l:0,gf:0,ga:0},{n:'乌拉圭',f:'🇺🇾',w:0,d:0,l:0,gf:0,ga:0}],tag:'斗牛士'},
+  'I组': {teams:[{n:'法国',f:'🇫🇷',w:0,d:0,l:0,gf:0,ga:0},{n:'塞内加尔',f:'🇸🇳',w:0,d:0,l:0,gf:0,ga:0},{n:'伊拉克',f:'🇮🇶',w:0,d:0,l:0,gf:0,ga:0},{n:'挪威',f:'🇳🇴',w:0,d:0,l:0,gf:0,ga:0}],tag:'高卢雄鸡'},
+  'J组': {teams:[{n:'阿根廷',f:'🇦🇷',w:0,d:0,l:0,gf:0,ga:0},{n:'阿尔及利亚',f:'🇩🇿',w:0,d:0,l:0,gf:0,ga:0},{n:'奥地利',f:'🇦🇹',w:0,d:0,l:0,gf:0,ga:0},{n:'约旦',f:'🇯🇴',w:0,d:0,l:0,gf:0,ga:0}],tag:'卫冕冠军'},
+  'K组': {teams:[{n:'葡萄牙',f:'🇵🇹',w:0,d:0,l:0,gf:0,ga:0},{n:'刚果(金)',f:'🇨🇩',w:0,d:0,l:0,gf:0,ga:0},{n:'乌兹别克',f:'🇺🇿',w:0,d:0,l:0,gf:0,ga:0},{n:'哥伦比亚',f:'🇨🇴',w:0,d:0,l:0,gf:0,ga:0}],tag:'C罗最后一舞'},
+  'L组': {teams:[{n:'英格兰',f:'🏴󠁧󠁢󠁥󠁮󠁧󠁿',w:0,d:0,l:0,gf:0,ga:0},{n:'克罗地亚',f:'🇭🇷',w:0,d:0,l:0,gf:0,ga:0},{n:'加纳',f:'🇬🇭',w:0,d:0,l:0,gf:0,ga:0},{n:'巴拿马',f:'🇵🇦',w:0,d:0,l:0,gf:0,ga:0}],tag:'三狮军团'}
+};
+
+// 预测排名
+var predictRank = {
+  'A组':['墨西哥','韩国','捷克','南非'],
+  'B组':['瑞士','加拿大','波黑','卡塔尔'],
+  'C组':['巴西','摩洛哥','苏格兰','海地'],
+  'D组':['美国','土耳其','澳大利亚','巴拉圭'],
+  'E组':['德国','科特迪瓦','厄瓜多尔','库拉索'],
+  'F组':['荷兰','日本','瑞典','突尼斯'],
+  'G组':['比利时','埃及','伊朗','新西兰'],
+  'H组':['西班牙','乌拉圭','沙特','佛得角'],
+  'I组':['法国','挪威','塞内加尔','伊拉克'],
+  'J组':['阿根廷','奥地利','阿尔及利亚','约旦'],
+  'K组':['葡萄牙','哥伦比亚','乌兹别克','刚果(金)'],
+  'L组':['英格兰','克罗地亚','加纳','巴拿马']
+};
+
+// 夺冠概率
+var probData = [
+  {n:'法国',f:'🇫🇷',p:16.5},{n:'巴西',f:'🇧🇷',p:14.2},{n:'阿根廷',f:'🇦🇷',p:12.8},
+  {n:'英格兰',f:'🏴󠁧󠁢󠁥󠁮󠁧󠁿',p:10.5},{n:'西班牙',f:'🇪🇸',p:8.3},{n:'德国',f:'🇩🇪',p:7.1},
+  {n:'葡萄牙',f:'🇵🇹',p:6.5},{n:'荷兰',f:'🇳🇱',p:5.2},{n:'美国',f:'🇺🇸',p:3.8},
+  {n:'比利时',f:'🇧🇪',p:3.0},{n:'乌拉圭',f:'🇺🇾',p:2.5},{n:'克罗地亚',f:'🇭🇷',p:2.0},
+  {n:'墨西哥',f:'🇲🇽',p:1.8},{n:'摩洛哥',f:'🇲🇦',p:1.5},{n:'韩国',f:'🇰🇷',p:1.2},
+  {n:'日本',f:'🇯🇵',p:1.0},{n:'其他',f:'⚽',p:2.1}
+];
+
+// 渲染小组赛
+function renderGroups(){
+  var html='';
+  for(var g in groups){
+    var gd=groups[g];
+    var rank=predictRank[g]||[];
+    html+='<div class="group-card"><div class="group-title"><span>'+g+'</span><span class="tag">'+gd.tag+'</span></div>';
+    html+='<table class="group-table"><tr><th></th><th>球队</th><th>胜</th><th>平</th><th>负</th><th>进</th><th>失</th><th>积分</th></tr>';
+    // 按预测排名排序
+    var sorted=gd.teams.slice().sort(function(a,b){
+      var pa=rank.indexOf(a.n),pb=rank.indexOf(b.n);
+      if(pa===-1)pa=99;if(pb===-1)pb=99;
+      return pa-pb;
+    });
+    sorted.forEach(function(t,i){
+      var pts=t.w*3+t.d;
+      var cls=i<2?'qualify':(i===2?'qualify-third':'');
+      html+='<tr class="'+cls+'"><td><span class="flag">'+t.f+'</span></td><td>'+t.n+'</td><td>'+t.w+'</td><td>'+t.d+'</td><td>'+t.l+'</td><td>'+t.gf+'</td><td>'+t.ga+'</td><td><strong>'+pts+'</strong></td></tr>';
+    });
+    html+='</table></div>';
+  }
+  document.getElementById('groupGrid').innerHTML=html;
+}
+
+// 渲染淘汰赛
+function renderBracket(){
+  var r32=[
+    ['A1 墨西哥','C3 苏格兰'],['B2 加拿大','D2 土耳其'],['C1 巴西','A3 韩国'],
+    ['D1 美国','B3 波黑'],['E1 德国','G3 伊朗'],['F2 日本','H2 乌拉圭'],
+    ['G1 比利时','E3 厄瓜多尔'],['H1 西班牙','F3 瑞典'],
+    ['I1 法国','K3 乌兹别克'],['J2 奥地利','L2 克罗地亚'],['K1 葡萄牙','I3 挪威'],
+    ['L1 英格兰','J3 阿尔及利亚'],['A2 韩国','C2 摩洛哥'],['B1 瑞士','D3 澳大利亚'],
+    ['F1 荷兰','H3 沙特'],['J1 阿根廷','L3 加纳']
+  ];
+  var r16=[
+    ['墨西哥','巴西'],['美国','西班牙'],['德国','乌拉圭'],['比利时','荷兰'],
+    ['法国','英格兰'],['葡萄牙','阿根廷'],['加拿大','摩洛哥'],['瑞士','日本']
+  ];
+  var qf=[['巴西','西班牙'],['荷兰','英格兰'],['法国','阿根廷'],['葡萄牙','摩洛哥']];
+  var sf=[['巴西','英格兰'],['法国','葡萄牙']];
+  var fi=['巴西','法国'];
+
+  function makeRound(title,matches){
+    var h='<div class="round"><div class="round-title">'+title+'</div>';
+    matches.forEach(function(m){
+      var w0=Math.random()>0.4,w1=!w0;
+      h+='<div class="match"><div class="match-label">'+(m[0].split(' ').pop()||m[0])+' vs '+(m[1].split(' ').pop()||m[1])+'</div>';
+      h+='<div class="match-team '+(w0?'winner':'')+'"><span class="name">'+m[0]+'</span><span class="score">'+(w0?'2':'1')+'</span></div>';
+      h+='<div class="match-team '+(w1?'winner':'')+'"><span class="name">'+m[1]+'</span><span class="score">'+(w1?'2':'1')+'</span></div>';
+      h+='</div>';
+    });
+    h+='</div>';
+    return h;
+  }
+  var html=makeRound('1/16决赛',r32.slice(0,8))+makeRound('1/8决赛',r16.slice(0,4))+makeRound('1/4决赛',qf.slice(0,2))+makeRound('半决赛',sf.slice(0,1));
+  html+='<div class="round"><div class="round-title">决赛</div><div class="match"><div class="match-label">🏆 冠军争夺战</div><div class="match-team winner"><span class="name">🇧🇷 巴西</span><span class="score">3</span></div><div class="match-team"><span class="name">🇫🇷 法国</span><span class="score">1</span></div></div></div>';
+  document.getElementById('bracketView').innerHTML=html;
+}
+
+// 渲染概率
+function renderProb(){
+  var html='';
+  probData.forEach(function(t){
+    html+='<li class="prob-item"><span class="name">'+t.f+' '+t.n+'</span><div class="prob-bar"><div class="prob-fill" style="width:'+t.p+'%"></div></div><span class="prob-val">'+t.p+'%</span></li>';
+  });
+  document.getElementById('probList').innerHTML=html;
+}
+
+// 填充select
+function fillSelects(){
+  var all=[];
+  for(var g in groups) groups[g].teams.forEach(function(t){all.push(t.f+' '+t.n)});
+  ['finalA','finalB','champPick'].forEach(function(id){
+    var sel=document.getElementById(id);
+    sel.innerHTML='';
+    all.forEach(function(t){var o=document.createElement('option');o.textContent=t;sel.appendChild(o)});
+  });
+}
+
+function switchTab(name){
+  document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active')});
+  document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('active')});
+  event.target.classList.add('active');
+  document.getElementById(name+'-panel').classList.add('active');
+}
+
+function calcPredict(){
+  var a=document.getElementById('finalA').value;
+  var b=document.getElementById('finalB').value;
+  var c=document.getElementById('champPick').value;
+  var sa=document.getElementById('scoreA').value;
+  var sb=document.getElementById('scoreB').value;
+  var box=document.getElementById('predictResult');
+  box.classList.add('show');
+  box.innerHTML='<div class="champion">'+c+'</div><div class="detail">'+a+' '+sa+' : '+sb+' '+b+'<br>🏆 '+c.split(' ').pop()+'夺冠！<br>📅 2026年7月19日 · 纽约大都会体育场</div>';
+}
+
+function randomPredict(){
+  var all=[];
+  for(var g in groups) groups[g].teams.forEach(function(t){all.push(t.f+' '+t.n)});
+  var a=all[Math.floor(Math.random()*all.length)];
+  var b;
+  do{b=all[Math.floor(Math.random()*all.length)]}while(b===a);
+  var c=Math.random()>0.5?a:b;
+  var sa=Math.floor(Math.random()*4)+1;
+  var sb=Math.floor(Math.random()*3);
+  if(sa===sb)sa++;
+  document.getElementById('finalA').value=a;
+  document.getElementById('finalB').value=b;
+  document.getElementById('champPick').value=c;
+  document.getElementById('scoreA').value=sa;
+  document.getElementById('scoreB').value=sb;
+  calcPredict();
+}
+
+// 粒子
+(function(){var c=document.createElement("canvas");c.width=window.innerWidth;c.height=window.innerHeight;document.getElementById("particles").appendChild(c);var ctx=c.getContext("2d");var ps=[];for(var i=0;i<50;i++){ps.push({x:Math.random()*c.width,y:Math.random()*c.height,r:Math.random()*1.2+0.3,vx:(Math.random()-0.5)*0.2,vy:(Math.random()-0.5)*0.2,a:Math.random()*0.4+0.05})}function draw(){ctx.clearRect(0,0,c.width,c.height);for(var i=0;i<ps.length;i++){var p=ps[i];ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,2*Math.PI);ctx.fillStyle="rgba(0,180,255,"+p.a+")";ctx.fill();p.x+=p.vx;p.y+=p.vy;if(p.x<0)p.x=c.width;if(p.x>c.width)p.x=0;if(p.y<0)p.y=c.height;if(p.y>c.height)p.y=0}requestAnimationFrame(draw)}draw();window.addEventListener("resize",function(){c.width=window.innerWidth;c.height=window.innerHeight})})();
+
+renderGroups();renderBracket();renderProb();fillSelects();
+</script>
+</body>
+</html>
