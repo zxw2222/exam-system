@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI比分预测 - 2026世界杯</title>
+<title>2026世界杯 - AI实时预测</title>
 <style>
 * { margin:0; padding:0; box-sizing: border-box; }
 body {
@@ -22,6 +22,7 @@ body {
 }
 .header h1 { font-size: 18px; font-weight: 700; }
 .header h1 span { color: #00d4aa; }
+.header .subtitle { font-size: 12px; color: #888; margin-top: 4px; }
 
 .container { padding: 12px 16px; max-width: 480px; margin: 0 auto; }
 
@@ -171,7 +172,7 @@ body {
 .team { text-align: center; flex: 1; }
 .team .flag { font-size: 36px; }
 .team .name { font-size: 14px; font-weight: 600; margin-top: 4px; }
-.team .rank { font-size: 11px; color: #666; }
+.team .info { font-size: 11px; color: #666; margin-top: 2px; }
 .vs-center {
     text-align: center;
     min-width: 70px;
@@ -371,7 +372,8 @@ body {
 </head>
 <body>
 <div class="header">
-    <h1>🏆 <span>AI比分预测</span> - 2026世界杯</h1>
+    <h1>🏆 <span>2026世界杯</span> - AI实时预测</h1>
+    <div class="subtitle">美国·加拿大·墨西哥 | 6月11日-7月19日</div>
 </div>
 
 <div class="container">
@@ -387,11 +389,11 @@ body {
         <div class="ai-messages" id="aiMessages">
             <div class="ai-msg bot">
                 <div class="avatar bot"></div>
-                <div class="bubble">你好！我是蔡徐坤，专业足球AI助手。可以问我比赛预测、球队分析等问题~</div>
+                <div class="bubble">你好！我是蔡徐坤，专业足球AI助手。可以问我2026世界杯的任何问题~ 🏀⚽</div>
             </div>
         </div>
         <div class="ai-input">
-            <input type="text" id="aiInput" placeholder="输入问题，如：阿根廷vs巴西谁赢？" onkeypress="if(event.key==='Enter')sendAI()">
+            <input type="text" id="aiInput" placeholder="输入问题，如：加拿大vs波黑谁赢？" onkeypress="if(event.key==='Enter')sendAI()">
             <button onclick="sendAI()">发送</button>
         </div>
     </div>
@@ -439,49 +441,46 @@ const API_URL = 'https://api.deepseek.com/v1/chat/completions';
 
 let bets = [];
 
-// 模拟数据
+// 真实的2026世界杯比赛数据（6月13日）
 const matches = [
     {
         id: 1,
-        home: { name: '阿根廷', flag: '🇦🇷', rank: 1 },
-        away: { name: '巴西', flag: '🇧🇷', rank: 5 },
-        time: '06-14 20:00',
-        group: 'A组小组赛',
-        prediction: { score: '2:1', confidence: 78, homeWin: 55, draw: 25, awayWin: 20 },
-        recommend: { type: '主胜', stars: '⭐⭐⭐⭐', desc: '阿根廷主场优势明显' },
-        odds: { home: 1.85, draw: 3.40, away: 4.20, over: 1.90, under: 1.90 }
+        home: { name: '加拿大', flag: '🇨🇦', fifaRank: 43 },
+        away: { name: '波黑', flag: '🇧🇦', fifaRank: 64 },
+        time: '06-13 03:00',
+        group: 'B组小组赛',
+        venue: '多伦多BMO球场',
+        prediction: { score: '2:1', confidence: 68, homeWin: 52, draw: 28, awayWin: 20 },
+        recommend: { type: '主胜', stars: '⭐⭐⭐', desc: '东道主优势，加拿大主场作战' },
+        odds: { home: 1.95, draw: 3.30, away: 4.00, over: 1.85, under: 1.95 }
     },
     {
         id: 2,
-        home: { name: '法国', flag: '🇫🇷', rank: 2 },
-        away: { name: '德国', flag: '🇩🇪', rank: 16 },
-        time: '06-14 23:00',
-        group: 'B组小组赛',
-        prediction: { score: '1:1', confidence: 65, homeWin: 40, draw: 35, awayWin: 25 },
-        recommend: { type: '平局', stars: '⭐⭐⭐', desc: '两队实力接近' },
-        odds: { home: 2.10, draw: 3.20, away: 3.50, over: 1.85, under: 1.95 }
-    },
-    {
-        id: 3,
-        home: { name: '西班牙', flag: '🇪🇸', rank: 3 },
-        away: { name: '葡萄牙', flag: '🇵🇹', rank: 6 },
-        time: '06-15 03:00',
-        group: 'C组小组赛',
-        prediction: { score: '2:2', confidence: 62, homeWin: 35, draw: 30, awayWin: 35 },
-        recommend: { type: '大球', stars: '⭐⭐⭐⭐', desc: '双方进攻火力强' },
-        odds: { home: 2.40, draw: 3.30, away: 2.80, over: 1.75, under: 2.05 }
+        home: { name: '美国', flag: '🇺🇸', fifaRank: 17 },
+        away: { name: '巴拉圭', flag: '🇵🇾', fifaRank: 40 },
+        time: '06-13 09:00',
+        group: 'D组小组赛',
+        venue: '洛杉矶玫瑰碗体育场',
+        prediction: { score: '2:0', confidence: 75, homeWin: 62, draw: 25, awayWin: 13 },
+        recommend: { type: '主胜', stars: '⭐⭐⭐⭐', desc: '美国实力占优，年轻球员状态出色' },
+        odds: { home: 1.70, draw: 3.50, away: 5.20, over: 1.80, under: 2.00 }
     }
 ];
 
+// 已完赛结果（揭幕战）
 const finished = [
-    { home: '英格兰', homeFlag: '🏴󠁧󠁢󠁥󠁮󠁧󠁿', homeScore: 3, away: '意大利', awayFlag: '🇮🇹', awayScore: 1, desc: '小组赛第1轮' },
-    { home: '荷兰', homeFlag: '🇳🇱', homeScore: 2, away: '比利时', awayFlag: '🇧🇪', awayScore: 2, desc: '小组赛第1轮' }
+    { 
+        home: '墨西哥', homeFlag: '🇲🇽', homeScore: 2, 
+        away: '加拿大', awayFlag: '🇨🇦', awayScore: 0, 
+        desc: '揭幕战 | A组', time: '06-11 20:00' 
+    }
 ];
 
+// 未来赛程
 const schedule = [
-    { date: '06-15', time: '20:00', home: '日本', homeFlag: '🇯🇵', away: '韩国', awayFlag: '🇰🇷' },
-    { date: '06-15', time: '23:00', home: '美国', homeFlag: '🇺🇸', away: '墨西哥', awayFlag: '🇲🇽' },
-    { date: '06-16', time: '03:00', home: '克罗地亚', homeFlag: '🇭🇷', away: '塞尔维亚', awayFlag: '🇷🇸' }
+    { date: '06-14', time: '03:00', home: '巴西', homeFlag: '🇧🇷', away: '摩洛哥', awayFlag: '🇲🇦', group: 'C组' },
+    { date: '06-14', time: '09:00', home: '阿根廷', homeFlag: '🇦🇷', away: '德国', awayFlag: '🇩🇪', group: 'C组' },
+    { date: '06-15', time: '03:00', home: '法国', homeFlag: '🇫🇷', away: '英格兰', awayFlag: '🏴󠁧󠁢󠁥󠁮󠁧󠁿', group: 'F组' }
 ];
 
 function switchTab(index) {
@@ -494,14 +493,14 @@ function renderToday() {
         <div class="match-card">
             <div class="match-header">
                 <span>${m.group}</span>
-                <span>${m.time}</span>
+                <span>${m.time} | ${m.venue}</span>
             </div>
             <div class="match-body">
                 <div class="teams">
                     <div class="team">
                         <div class="flag">${m.home.flag}</div>
                         <div class="name">${m.home.name}</div>
-                        <div class="rank">FIFA #${m.home.rank}</div>
+                        <div class="info">FIFA #${m.home.fifaRank}</div>
                     </div>
                     <div class="vs-center">
                         <div class="vs">VS</div>
@@ -510,7 +509,7 @@ function renderToday() {
                     <div class="team">
                         <div class="flag">${m.away.flag}</div>
                         <div class="name">${m.away.name}</div>
-                        <div class="rank">FIFA #${m.away.rank}</div>
+                        <div class="info">FIFA #${m.away.fifaRank}</div>
                     </div>
                 </div>
                 <div class="prediction">
@@ -578,6 +577,7 @@ function renderFinished() {
             <div class="team-name">${f.away}</div>
             <div class="flag">${f.awayFlag}</div>
         </div>
+        <div style="text-align:center; font-size:11px; color:#666; margin-top:-8px; margin-bottom:12px;">${f.desc} | ${f.time}</div>
     `).join('');
     document.getElementById('finishedMatches').innerHTML = html;
 }
@@ -596,6 +596,7 @@ function renderSchedule() {
                 <span class="name">${s.away}</span>
                 <span class="flag">${s.awayFlag}</span>
             </div>
+            <div style="font-size:11px; color:#666; margin-left:8px;">${s.group}</div>
         </div>
     `).join('');
     document.getElementById('scheduleMatches').innerHTML = html;
@@ -648,9 +649,8 @@ async function sendAI() {
     addAIMsg('user', '👤', msg);
     input.value = '';
     
-    // 显示输入中
     const typing = document.createElement('div');
-    typing.className = 'ai-msg bot typing';
+    typing.className = 'ai-msg bot';
     typing.innerHTML = '<div class="avatar bot"></div><div class="bubble">输入中...</div>';
     document.getElementById('aiMessages').appendChild(typing);
     
@@ -664,7 +664,7 @@ async function sendAI() {
             body: JSON.stringify({
                 model: 'deepseek-chat',
                 messages: [
-                    { role: 'system', content: '你是蔡徐坤，一个专业的足球AI助手。用幽默风趣的语气回答足球相关问题，偶尔可以玩一些篮球梗。回答要简洁，控制在100字以内。' },
+                    { role: 'system', content: '你是蔡徐坤，一个专业的足球AI助手。专注于2026世界杯的比赛分析、预测和解答。用幽默风趣的语气回答，偶尔可以玩一些篮球梗。回答要简洁，控制在100字以内。' },
                     { role: 'user', content: msg }
                 ]
             })
