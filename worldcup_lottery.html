@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2026世界杯竞彩预测</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0d1117;--card:#161b22;--border:#30363d;--accent:#f0b429;--green:#2ea043;--red:#da3633;--blue:#388bfd;--text:#e6edf3;--dim:#8b949e}
+body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+header{background:linear-gradient(135deg,#1a0a00 0%,#2d1800 50%,#1a0a00 100%);border-bottom:2px solid var(--accent);padding:16px 20px}
+header h1{font-size:22px;font-weight:900;color:var(--accent);text-align:center;letter-spacing:2px}
+header p{text-align:center;font-size:12px;color:var(--dim);margin-top:4px}
+.tabs{display:flex;justify-content:center;gap:6px;padding:12px 16px;background:var(--card);border-bottom:1px solid var(--border);flex-wrap:wrap}
+.tab{padding:6px 14px;border-radius:16px;font-size:13px;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--dim);transition:all .3s}
+.tab.active,.tab:hover{background:rgba(240,180,41,0.15);color:var(--accent);border-color:var(--accent)}
+.panel{display:none;padding:12px 16px;max-width:800px;margin:0 auto}.panel.active{display:block}
+
+/* 比赛卡片 */
+.match-card{background:var(--card);border:1px solid var(--border);border-radius:10px;margin-bottom:12px;overflow:hidden}
+.match-header{display:flex;justify-content:space-between;align-items:center;padding:8px 14px;background:rgba(240,180,41,0.08);border-bottom:1px solid var(--border);font-size:12px;color:var(--dim)}
+.match-header .live{color:var(--red);font-weight:700;animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.match-header .group-tag{color:var(--accent);font-weight:600}
+.match-body{padding:14px}
+.teams{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.team{flex:1;text-align:center}
+.team .flag{font-size:32px;display:block;margin-bottom:4px}
+.team .name{font-size:15px;font-weight:700}
+.team .rank{font-size:11px;color:var(--dim)}
+.vs{font-size:14px;color:var(--accent);font-weight:900;padding:0 10px}
+.score{font-size:28px;font-weight:900;text-align:center;color:var(--accent);margin-bottom:8px}
+
+/* 赔率行 */
+.odds-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:8px}
+.odd-btn{padding:8px 4px;border-radius:6px;text-align:center;font-size:12px;border:1px solid var(--border);background:transparent;color:var(--dim);cursor:pointer;transition:all .2s}
+.odd-btn:hover{border-color:var(--accent);color:var(--accent)}
+.odd-btn .label{font-size:10px;display:block;margin-bottom:2px}
+.odd-btn .val{font-size:15px;font-weight:700;color:var(--text)}
+.odd-btn.hot{border-color:var(--red);background:rgba(218,54,51,0.1)}
+.odd-btn.hot .val{color:var(--red)}
+.odd-btn.pick{border-color:var(--accent);background:rgba(240,180,41,0.15);color:var(--accent)}
+.odd-btn.pick .val{color:var(--accent)}
+
+/* 推荐 */
+.rec{background:rgba(240,180,41,0.08);border:1px solid rgba(240,180,41,0.2);border-radius:8px;padding:10px 14px;margin-top:8px;font-size:13px}
+.rec .title{color:var(--accent);font-weight:700;margin-bottom:4px}
+.rec .detail{color:var(--dim);line-height:1.6}
+.rec .star{color:var(--accent)}
+
+/* 让球 */
+.handicap{display:flex;justify-content:center;align-items:center;gap:8px;margin-bottom:8px;font-size:13px}
+.handicap .tag{padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700}
+.handicap .tag.up{background:rgba(218,54,51,0.15);color:var(--red)}
+.handicap .tag.down{background:rgba(46,160,67,0.15);color:var(--green)}
+
+/* 统计条 */
+.stat-bar{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--dim);margin-bottom:4px}
+.stat-bar .bar{flex:1;height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.stat-bar .fill{height:100%;border-radius:3px}
+.fill.win{background:var(--red)}
+.fill.draw{background:var(--accent)}
+.fill.lose{background:var(--green)}
+
+/* 投注单 */
+.bet-slip{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:2px solid var(--accent);padding:12px 16px;z-index:10;display:none}
+.bet-slip.show{display:block}
+.bet-slip .title{font-size:14px;font-weight:700;color:var(--accent);margin-bottom:8px}
+.bet-item{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px}
+.bet-item .remove{color:var(--red);cursor:pointer;font-size:16px}
+.bet-total{display:flex;justify-content:space-between;align-items:center;margin-top:8px;font-size:14px;font-weight:700}
+.bet-btn{width:100%;padding:10px;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;border:none;background:linear-gradient(90deg,#f0b429,#e09100);color:#1a1a2e;margin-top:8px}
+
+/* 赛程表 */
+.schedule-item{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:var(--card);border:1px solid var(--border);border-radius:8px;margin-bottom:8px;font-size:13px}
+.schedule-item .time{color:var(--accent);font-weight:600;min-width:60px}
+.schedule-item .teams-info{flex:1;text-align:center}
+.schedule-item .status{min-width:50px;text-align:right}
+.status-played{color:var(--green)}
+.status-upcoming{color:var(--accent)}
+.status-live{color:var(--red);font-weight:700}
+
+footer{text-align:center;padding:20px;color:var(--dim);font-size:11px}
+.disclaimer{text-align:center;padding:8px;background:rgba(218,54,51,0.1);color:var(--red);font-size:11px;margin-bottom:8px}
+
+@media(max-width:600px){.teams .flag{font-size:24px}.team .name{font-size:13px}.score{font-size:22px}}
+</style>
+</head>
+<body>
+<header>
+  <h1>🏆 2026世界杯竞彩预测</h1>
+  <p>AI分析 · 赔率解读 · 投注推荐 · 仅供娱乐</p>
+</header>
+
+<div class="disclaimer">⚠️ 本预测仅供娱乐参考，不构成任何投注建议，请理性购彩</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('today')">今日推荐</div>
+  <div class="tab" onclick="switchTab('schedule')">赛程</div>
+  <div class="tab" onclick="switchTab('outrights')">冠军赔率</div>
+  <div class="tab" onclick="switchTab('slip')">投注单</div>
+</div>
+
+<div class="panel active" id="today-panel">
+  <div id="matchList"></div>
+</div>
+
+<div class="panel" id="schedule-panel">
+  <div id="scheduleList"></div>
+</div>
+
+<div class="panel" id="outrights-panel">
+  <h3 style="color:var(--accent);margin-bottom:12px;font-size:16px">🏆 夺冠赔率</h3>
+  <div id="outrightsList"></div>
+</div>
+
+<div class="panel" id="slip-panel">
+  <div id="slipContent"></div>
+</div>
+
+<div class="bet-slip" id="betSlip">
+  <div class="title">📋 投注单 (<span id="slipCount">0</span>场)</div>
+  <div id="slipItems"></div>
+  <div class="bet-total"><span>预计回报</span><span id="totalOdds" style="color:var(--accent)">0.00倍</span></div>
+  <button class="bet-btn" onclick="clearSlip()">清空投注单</button>
+</div>
+
+<script>
+var matches = [
+  {id:1,time:'6/14 03:00',group:'B组',t1:'瑞士',f1:'🇨🇭',r1:19,t2:'卡塔尔',f2:'🇶🇦',r2:55,h:'瑞士-1.5',hw:1.42,hd:4.20,hl:6.50,w:1.25,d:5.50,l:9.00,big:1.85,small:1.95,rec:'胜',recD:'瑞士实力碾压，让球可博',star:3,score:'',status:'upcoming',
+    wp:70,dp:20,lp:10},
+  {id:2,time:'6/14 06:00',group:'C组',t1:'巴西',f1:'🇧🇷',r1:5,t2:'摩洛哥',f2:'🇲🇦',r2:22,h:'巴西-1',hw:1.55,hd:3.80,hl:5.80,w:1.35,d:4.80,l:8.50,big:1.90,small:1.96,rec:'胜',recD:'巴西进攻火力十足，摩洛哥防守顽强但难挡',star:4,score:'',status:'upcoming',
+    wp:65,dp:22,lp:13},
+  {id:3,time:'6/14 08:00',group:'C组',t1:'海地',f1:'🇭🇹',r1:68,t2:'苏格兰',f2:'🏴󠁧󠁢󠁳󠁣󠁴󠁿',r2:35,h:'苏格兰-1',hw:1.60,hd:3.60,hl:5.20,w:5.50,d:3.80,l:1.55,big:1.92,small:1.94,rec:'负',recD:'苏格兰整体占优，海地难有还手之力',star:3,score:'',status:'upcoming',
+    wp:15,dp:25,lp:60},
+  {id:4,time:'6/14 09:00',group:'D组',t1:'澳大利亚',f1:'🇦🇺',r1:38,t2:'土耳其',f2:'🇹🇷',r2:28,h:'土耳其-0.5',hw:2.80,hd:3.20,hl:2.40,w:3.20,d:3.10,l:2.20,big:1.88,small:1.98,rec:'负',recD:'土耳其技术细腻，澳洲身体对抗难占优',star:2,score:'',status:'upcoming',
+    wp:25,dp:30,lp:45}
+];
+
+var played = [
+  {time:'6/12 10:00',group:'A组',t1:'墨西哥',f1:'🇲🇽',r1:15,t2:'南非',f2:'🇿🇦',r2:62,score:'2-0',status:'played'},
+  {time:'6/12 10:00',group:'A组',t1:'韩国',f1:'🇰🇷',r1:23,t2:'捷克',f2:'🇨🇿',r2:36,score:'2-1',status:'played'},
+  {time:'6/13 03:00',group:'B组',t1:'加拿大',f1:'🇨🇦',r1:40,t2:'波黑',f2:'🇧🇦',r2:46,score:'1-1',status:'played'},
+  {time:'6/13 09:00',group:'D组',t1:'美国',f1:'🇺🇸',r1:13,t2:'巴拉圭',f2:'🇵🇾',r2:52,score:'4-1',status:'played'}
+];
+
+var outrights = [
+  {n:'法国',f:'🇫🇷',o:4.50},{n:'巴西',f:'🇧🇷',o:5.00},{n:'阿根廷',f:'🇦🇷',o:6.50},
+  {n:'英格兰',f:'🏴󠁧󠁢󠁥󠁮󠁧󠁿',o:8.00},{n:'西班牙',f:'🇪🇸',o:10.00},{n:'德国',f:'🇩🇪',o:12.00},
+  {n:'葡萄牙',f:'🇵🇹',o:14.00},{n:'荷兰',f:'🇳🇱',o:18.00},{n:'美国',f:'🇺🇸',o:25.00},
+  {n:'比利时',f:'🇧🇪',o:30.00},{n:'乌拉圭',f:'🇺🇾',o:35.00},{n:'克罗地亚',f:'🇭🇷',o:40.00},
+  {n:'墨西哥',f:'🇲🇽',o:50.00},{n:'摩洛哥',f:'🇲🇦',o:55.00},{n:'韩国',f:'🇰🇷',o:80.00},
+  {n:'日本',f:'🇯🇵',o:90.00}
+];
+
+var slip = [];
+
+function switchTab(name){
+  document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active')});
+  document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('active')});
+  event.target.classList.add('active');
+  document.getElementById(name+'-panel').classList.add('active');
+}
+
+function renderMatches(){
+  var html='';
+  matches.forEach(function(m){
+    html+='<div class="match-card">';
+    html+='<div class="match-header"><span>'+m.time+'</span><span class="group-tag">'+m.group+'</span><span class="live">'+(m.status==='live'?'● LIVE':'未开始')+'</span></div>';
+    html+='<div class="match-body">';
+    html+='<div class="teams"><div class="team"><span class="flag">'+m.f1+'</span><span class="name">'+m.t1+'</span><span class="rank">FIFA #'+m.r1+'</span></div>';
+    html+='<div class="vs">VS</div>';
+    html+='<div class="team"><span class="flag">'+m.f2+'</span><span class="name">'+m.t2+'</span><span class="rank">FIFA #'+m.r2+'</span></div></div>';
+    
+    // 胜平负概率条
+    html+='<div class="stat-bar"><span>'+m.wp+'%</span><div class="bar"><div class="fill win" style="width:'+m.wp+'%"></div></div><span>胜</span></div>';
+    html+='<div class="stat-bar"><span>'+m.dp+'%</span><div class="bar"><div class="fill draw" style="width:'+m.dp+'%"></div></div><span>平</span></div>';
+    html+='<div class="stat-bar"><span>'+m.lp+'%</span><div class="bar"><div class="fill lose" style="width:'+m.lp+'%"></div></div><span>负</span></div>';
+    
+    // 让球
+    html+='<div class="handicap"><span>'+m.t1+'</span><span class="tag up">'+m.h+'</span><span>'+m.t2+'</span></div>';
+    
+    // 让球赔率
+    html+='<div style="font-size:11px;color:var(--dim);margin-bottom:4px;text-align:center">让球赔率</div>';
+    html+='<div class="odds-row"><div class="odd-btn '+(m.rec==='胜'?'pick':'')+'" onclick="addBet('+m.id+',\'让球胜\','+m.hw+')"><span class="label">让球胜</span><span class="val">'+m.hw+'</span></div>';
+    html+='<div class="odd-btn" onclick="addBet('+m.id+',\'让球平\','+m.hd+')"><span class="label">让球平</span><span class="val">'+m.hd+'</span></div>';
+    html+='<div class="odd-btn '+(m.rec==='负'?'pick':'')+'" onclick="addBet('+m.id+',\'让球负\','+m.hl+')"><span class="label">让球负</span><span class="val">'+m.hl+'</span></div></div>';
+    
+    // 胜平负赔率
+    html+='<div style="font-size:11px;color:var(--dim);margin-bottom:4px;text-align:center">胜平负</div>';
+    html+='<div class="odds-row"><div class="odd-btn '+(m.rec==='胜'?'pick':'')+(m.w<1.5?' hot':'')+'" onclick="addBet('+m.id+',\'主胜\','+m.w+')"><span class="label">主胜</span><span class="val">'+m.w+'</span></div>';
+    html+='<div class="odd-btn" onclick="addBet('+m.id+',\'平局\','+m.d+')"><span class="label">平局</span><span class="val">'+m.d+'</span></div>';
+    html+='<div class="odd-btn '+(m.rec==='负'?'pick':'')+(m.l<1.5?' hot':'')+'" onclick="addBet('+m.id+',\'客胜\','+m.l+')"><span class="label">客胜</span><span class="val">'+m.l+'</span></div></div>';
+    
+    // 大小球
+    html+='<div style="font-size:11px;color:var(--dim);margin-bottom:4px;text-align:center">大小球 (2.5)</div>';
+    html+='<div class="odds-row"><div class="odd-btn" onclick="addBet('+m.id+',\'大2.5球\','+m.big+')"><span class="label">大2.5</span><span class="val">'+m.big+'</span></div>';
+    html+='<div class="odd-btn" onclick="addBet('+m.id+',\'小2.5球\','+m.small+')"><span class="label">小2.5</span><span class="val">'+m.small+'</span></div>';
+    html+='<div class="odd-btn"></div></div>';
+    
+    // 推荐
+    html+='<div class="rec"><div class="title">🎯 AI推荐：'+m.rec+' '+Array(m.star+1).join('★')+'</div><div class="detail">'+m.recD+'</div></div>';
+    
+    html+='</div></div>';
+  });
+  document.getElementById('matchList').innerHTML=html;
+}
+
+function renderSchedule(){
+  var html='<h3 style="color:var(--accent);margin-bottom:12px;font-size:15px">已完赛</h3>';
+  played.forEach(function(p){
+    html+='<div class="schedule-item"><span class="time">'+p.time+'</span><span class="teams-info">'+p.f1+' '+p.t1+' <strong style="color:var(--accent)">'+p.score+'</strong> '+p.t2+' '+p.f2+'</span><span class="status-played">完赛</span></div>';
+  });
+  html+='<h3 style="color:var(--accent);margin:16px 0 12px;font-size:15px">即将开赛</h3>';
+  matches.forEach(function(m){
+    html+='<div class="schedule-item"><span class="time">'+m.time+'</span><span class="teams-info">'+m.f1+' '+m.t1+' vs '+m.t2+' '+m.f2+'</span><span class="status-upcoming">'+m.group+'</span></div>';
+  });
+  document.getElementById('scheduleList').innerHTML=html;
+}
+
+function renderOutrights(){
+  var html='';
+  outrights.forEach(function(o,i){
+    var pct=Math.max(2,Math.round(100/o.o));
+    html+='<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;padding:10px;background:var(--card);border:1px solid var(--border);border-radius:8px;cursor:pointer" onclick="addBet(0,o.n+'+'+o.o,o.o)">';
+    html+='<span style="font-size:20px;min-width:30px;text-align:center">'+(i<3?'🥇🥈🥉'[i]:(i+1))+'</span>';
+    html+='<span style="font-size:22px">'+o.f+'</span>';
+    html+='<span style="flex:1;font-weight:700">'+o.n+'</span>';
+    html+='<span style="color:var(--dim);font-size:12px">'+pct+'%</span>';
+    html+='<span style="color:var(--accent);font-weight:900;font-size:18px;min-width:50px;text-align:right">'+o.o+'</span>';
+    html+='</div>';
+  });
+  document.getElementById('outrightsList').innerHTML=html;
+}
+
+function addBet(id,pick,odds){
+  var exists=slip.find(function(s){return s.id===id});
+  if(exists){exists.pick=pick;exists.odds=odds}
+  else{slip.push({id:id,pick:pick,odds:odds})}
+  updateSlip();
+}
+
+function removeBet(idx){
+  slip.splice(idx,1);
+  updateSlip();
+}
+
+function clearSlip(){
+  slip=[];
+  updateSlip();
+}
+
+function updateSlip(){
+  var slipEl=document.getElementById('betSlip');
+  var countEl=document.getElementById('slipCount');
+  var itemsEl=document.getElementById('slipItems');
+  var totalEl=document.getElementById('totalOdds');
+  var slipContent=document.getElementById('slipContent');
+  
+  if(slip.length===0){
+    slipEl.classList.remove('show');
+    countEl.textContent='0';
+    totalEl.textContent='0.00倍';
+    itemsEl.innerHTML='';
+    slipContent.innerHTML='<div style="text-align:center;padding:40px;color:var(--dim)">投注单为空<br>点击赔率添加</div>';
+    return;
+  }
+  
+  slipEl.classList.add('show');
+  countEl.textContent=slip.length;
+  
+  var total=1;
+  var html='';
+  slip.forEach(function(s,i){
+    total*=s.odds;
+    html+='<div class="bet-item"><span>'+s.pick+'</span><span style="color:var(--accent)">'+s.odds+'</span><span class="remove" onclick="removeBet('+i+')">✕</span></div>';
+  });
+  itemsEl.innerHTML=html;
+  totalEl.textContent=total.toFixed(2)+'倍';
+  
+  // Also render in slip panel
+  slipContent.innerHTML=html+'<div class="bet-total"><span>串关回报</span><span style="color:var(--accent);font-size:18px">'+total.toFixed(2)+'倍</span></div>';
+}
+
+renderMatches();renderSchedule();renderOutrights();updateSlip();
+</script>
+</body>
+</html>
