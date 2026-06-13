@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>期末考试复习系统</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#6366f1',
+                        secondary: '#8b5cf6',
+                        success: '#22c55e',
+                        danger: '#ef4444',
+                        warning: '#f59e0b',
+                        dark: '#0f172a',
+                        darker: '#0b1120',
+                    },
+                },
+            }
+        }
+    </script>
+    <style>
+        .card-hover:hover {
+            transform: translateY(-8px) scale(1.03);
+            box-shadow: 0 25px 50px rgba(99,102,241,0.3);
+        }
+        .bg-animation {
+            background: linear-gradient(-45deg, #0b1120, #1a1040, #0b1120, #1a1040);
+            background-size: 400% 400%;
+            animation: gradientBG 20s ease infinite;
+        }
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .card-bg {
+            background: linear-gradient(145deg, #1e1b4b 0%, #0f172a 100%);
+        }
+        .glow-primary { box-shadow: 0 0 30px rgba(99,102,241,0.3); }
+        .glow-success { box-shadow: 0 0 30px rgba(34,197,94,0.3); }
+        .glow-warning { box-shadow: 0 0 30px rgba(245,158,11,0.3); }
+        .count-badge {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+        }
+        .subject-icon {
+            width: 80px; height: 80px;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 50%;
+            font-size: 36px;
+            margin: 0 auto 16px;
+        }
+    </style>
+</head>
+<body class="bg-animation text-gray-100 min-h-screen font-sans">
+    <div class="container mx-auto px-4 py-12 max-w-7xl">
+        
+        <!-- 顶部标题区 -->
+        <div class="text-center mb-16">
+            <div class="mb-6 inline-block">
+                <span class="text-6xl">🎓</span>
+            </div>
+            <h1 class="text-5xl sm:text-6xl font-black mb-4 tracking-tight">
+                <span class="bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                    期末考试复习系统
+                </span>
+            </h1>
+            <p class="text-gray-400 text-xl sm:text-2xl mb-2">期末冲刺 · 在线答题 · 智能复习</p>
+            <p class="text-gray-500 text-base">选择下方科目卡片，进入对应答题系统进行复习</p>
+            <div class="mt-6 flex justify-center gap-4 flex-wrap">
+                <span class="inline-flex items-center gap-2 bg-white/5 px-4 py-2 rounded-full text-sm text-gray-400">
+                    <i class="fa fa-clock-o text-indigo-400"></i> 随时练习
+                </span>
+                <span class="inline-flex items-center gap-2 bg-white/5 px-4 py-2 rounded-full text-sm text-gray-400">
+                    <i class="fa fa-check-circle text-green-400"></i> 自动判分
+                </span>
+                <span class="inline-flex items-center gap-2 bg-white/5 px-4 py-2 rounded-full text-sm text-gray-400">
+                    <i class="fa fa-bar-chart text-yellow-400"></i> 成绩统计
+                </span>
+            </div>
+        </div>
+
+        <!-- 科目卡片区 -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-10 mb-16">
+            
+            <!-- 数字孪生技术 -->
+            <a href="数字孪生答题(1).html" class="block group">
+                <div class="card-bg rounded-3xl p-10 card-shadow card-hover transition-all duration-500 border border-indigo-500/20 hover:border-indigo-400 glow-primary h-full flex flex-col">
+                    <div class="text-center mb-8">
+                        <div class="subject-icon bg-indigo-500/20 text-indigo-400 group-hover:bg-indigo-500/40 transition-all">
+                            <i class="fa fa-cube"></i>
+                        </div>
+                        <h2 class="text-3xl font-black text-white mb-3 tracking-wide">数字孪生技术</h2>
+                        <div class="w-16 h-1 bg-indigo-500 mx-auto rounded-full mb-4"></div>
+                        <p class="text-indigo-300 text-base font-medium">Digital Twin Technology</p>
+                    </div>
+                    <div class="flex-1 space-y-4 mb-8 text-left">
+                        <div class="flex items-start gap-3">
+                            <i class="fa fa-book text-indigo-400 mt-1"></i>
+                            <p class="text-gray-300 text-sm leading-relaxed">涵盖数字孪生基本概念、建模方法、仿真技术、工业应用等核心知识点，助你全面掌握课程重点。</p>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <i class="fa fa-list-alt text-indigo-400 mt-1"></i>
+                            <p class="text-gray-300 text-sm leading-relaxed">包含单选题、多选题、判断题、填空题等多种题型，覆盖教材各章节内容。</p>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <i class="fa fa-bolt text-indigo-400 mt-1"></i>
+                            <p class="text-gray-300 text-sm leading-relaxed">实时判分、错题回顾、答题进度可视化，让复习更高效。</p>
+                        </div>
+                    </div>
+                    <div class="text-center pt-4 border-t border-white/10">
+                        <span class="inline-flex items-center gap-2 bg-indigo-500/20 text-indigo-300 px-6 py-3 rounded-full text-base font-bold group-hover:bg-indigo-500 group-hover:text-white transition-all">
+                            开始答题 <i class="fa fa-arrow-right"></i>
+                        </span>
+                    </div>
+                </div>
+            </a>
+
+            <!-- 工厂供电技术 -->
+            <a href="工厂供电答题系统.html" class="block group">
+                <div class="card-bg rounded-3xl p-10 card-shadow card-hover transition-all duration-500 border border-green-500/20 hover:border-green-400 glow-success h-full flex flex-col">
+                    <div class="text-center mb-8">
+                        <div class="subject-icon bg-green-500/20 text-green-400 group-hover:bg-green-500/40 transition-all">
+                            <i class="fa fa-industry"></i>
+                        </div>
+                        <h2 class="text-3xl font-black text-white mb-3 tracking-wide">工厂供电技术</h2>
+                        <div class="w-16 h-1 bg-green-500 mx-auto rounded-full mb-4"></div>
+                        <p class="text-green-300 text-base font-medium">Factory Power Supply Technology</p>
+                    </div>
+                    <div class="flex-1 space-y-4 mb-8 text-left">
+                        <div class="flex items-start gap-3">
+                            <i class="fa fa-bolt text-green-400 mt-1"></i>
+                            <p class="text-gray-300 text-sm leading-relaxed">深入讲解工厂供电系统的负荷计算、短路计算、电气设备选择、继电保护等专业知识。</p>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <i class="fa fa-calculator text-green-400 mt-1"></i>
+                            <p class="text-gray-300 text-sm leading-relaxed">强化计算题训练，配有详细解析，帮助你理解供电系统设计的核心思路。</p>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <i class="fa fa-shield text-green-400 mt-1"></i>
+                            <p class="text-gray-300 text-sm leading-relaxed">涵盖安全用电、防雷接地、电气消防等实用知识，考试与实际工作均适用。</p>
+                        </div>
+                    </div>
+                    <div class="text-center pt-4 border-t border-white/10">
+                        <span class="inline-flex items-center gap-2 bg-green-500/20 text-green-300 px-6 py-3 rounded-full text-base font-bold group-hover:bg-green-500 group-hover:text-white transition-all">
+                            开始答题 <i class="fa fa-arrow-right"></i>
+                        </span>
+                    </div>
+                </div>
+            </a>
+
+            <!-- MATLAB编程实战 -->
+            <a href="matlab复习题作弊版.html" class="block group">
+                <div class="card-bg rounded-3xl p-10 card-shadow card-hover transition-all duration-500 border border-yellow-500/20 hover:border-yellow-400 glow-warning h-full flex flex-col">
+                    <div class="text-center mb-8">
+                        <div class="subject-icon bg-yellow-500/20 text-yellow-400 group-hover:bg-yellow-500/40 transition-all">
+                            <i class="fa fa-code"></i>
+                        </div>
+                        <h2 class="text-3xl font-black text-white mb-3 tracking-wide">MATLAB 编程实战</h2>
+                        <div class="w-16 h-1 bg-yellow-500 mx-auto rounded-full mb-4"></div>
+                        <p class="text-yellow-300 text-base font-medium">MATLAB Programming Practice</p>
+                    </div>
+                    <div class="flex-1 space-y-4 mb-8 text-left">
+                        <div class="flex items-start gap-3">
+                            <i class="fa fa-terminal text-yellow-400 mt-1"></i>
+                            <p class="text-gray-300 text-sm leading-relaxed">从基础语法到高级编程，系统梳理 MATLAB 核心知识点，代码实战与理论并重。</p>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <i class="fa fa-signal text-yellow-400 mt-1"></i>
+                            <p class="text-gray-300 text-sm leading-relaxed">包含信号处理、数值计算、绘图可视化、Simulink 仿真等工程应用典型题目。</p>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <i class="fa fa-lightbulb-o text-yellow-400 mt-1"></i>
+                            <p class="text-gray-300 text-sm leading-relaxed">编程题附参考答案与思路解析，边练边学，快速提升 MATLAB 实战能力。</p>
+                        </div>
+                    </div>
+                    <div class="text-center pt-4 border-t border-white/10">
+                        <span class="inline-flex items-center gap-2 bg-yellow-500/20 text-yellow-300 px-6 py-3 rounded-full text-base font-bold group-hover:bg-yellow-500 group-hover:text-white transition-all">
+                            开始答题 <i class="fa fa-arrow-right"></i>
+                        </span>
+                    </div>
+                </div>
+            </a>
+
+        </div>
+
+        <!-- 使用说明 -->
+        <div class="max-w-4xl mx-auto mb-12">
+            <div class="bg-white/5 rounded-2xl p-8 border border-white/10">
+                <h3 class="text-xl font-bold text-white mb-6 text-center"><i class="fa fa-info-circle text-indigo-400"></i> 使用说明</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm text-gray-300">
+                    <div class="flex items-start gap-3">
+                        <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-indigo-500/20 text-indigo-400 font-bold text-sm flex-shrink-0">1</span>
+                        <p>点击上方任意科目卡片，进入对应答题系统。</p>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-green-500/20 text-green-400 font-bold text-sm flex-shrink-0">2</span>
+                        <p>选择答题模式（练习模式/考试模式），开始答题。</p>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-yellow-500/20 text-yellow-400 font-bold text-sm flex-shrink-0">3</span>
+                        <p>答题过程中可随时查看进度，提交后系统自动判分。</p>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-pink-500/20 text-pink-400 font-bold text-sm flex-shrink-0">4</span>
+                        <p>查看成绩与错题解析，针对薄弱环节重点复习。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="text-center text-gray-600 text-sm pb-8">
+            <p class="mb-2">📚 期末考试复习系统 · 助力期末冲刺</p>
+            <p>建议使用 Chrome / Edge 浏览器 · 最佳体验请使用电脑访问</p>
+        </div>
+
+    </div>
+</body>
+</html>
