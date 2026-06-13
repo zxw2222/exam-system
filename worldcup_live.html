@@ -682,8 +682,7 @@ let pred=await predictMatch(m.home,m.away);
 let card=document.getElementById('card_'+m.id);
 if(card){
 let colorMap={'DeepSeek AI':'var(--green)','智谱AI':'var(--accent1)','Football-Data':'var(--gold)','FIFA排名算法':'var(--muted)'};
-let sourceTags=pred.sources?pred.sources.map(function(s){return '<span style=background:rgba(99,102,241,.15);color:'+(colorMap[s]||'var(--accent1)')+';padding:2px 8px;border-radius:10px;font-size:10px;margin-left:4px>'+s+'</span>';}).join(''):'';
-
+let sourceTags=pred.sources?.map(s=>'<span style="background:rgba(99,102,241,.15);color:'+(colorMap[s]||'var(--accent1)')+';padding:2px 8px;border-radius:10px;font-size:10px;margin-left:4px;border:1px solid '+(colorMap[s]||'var(--accent1)').replace('var(','rgba(').replace(')',',0.3)').replace('var(','rgba(')+'">'+s+'</span>').join('')||'';
 let aiHTML='<div class="pred-box">'+
 '<div class="pred-title">🎯 三源融合预测 '+sourceTags+'<span style="font-size:10px;color:var(--gold);margin-left:8px">置信度 '+pred.confidence+'%</span></div>'+
 '<div class="pred-score">'+m.home+' '+pred.homeGoals+' : '+pred.awayGoals+' '+m.away+'</div>'+
@@ -717,7 +716,6 @@ if(infoGrid) infoGrid.insertAdjacentHTML('afterend',oddsHTML);
 return html;
 }
 }
-
 
 function renderTeams(){
 let html='';
@@ -841,6 +839,25 @@ loadEl.textContent=reply;
 loadEl.textContent=reply;
 }
 body.scrollTop=body.scrollHeight;
+}
+
+// ========== 尝试Football-Data API ==========
+async function fetchFootballData(){
+try{
+let resp=await fetch(FOOTBALL_BASE+'/competitions/WC/matches?status=FINISHED',{
+headers:{'X-Auth-Token':FOOTBALL_KEY}
+});
+if(resp.ok){
+document.getElementById('dataStatus').className='status-dot online';
+document.getElementById('dataLabel').textContent='API在线';
+} else {
+throw new Error('API unavailable');
+}
+}catch(e){
+document.getElementById('dataStatus').className='status-dot online';
+document.getElementById('dataStatus').style.background='var(--gold)';
+document.getElementById('dataLabel').textContent='本地模式';
+}
 }
 
 // ========== 启动 ==========
