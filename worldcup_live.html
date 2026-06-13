@@ -1,944 +1,697 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
-    <meta http-equiv="refresh" content="300">
-    <title>2026世界杯·AI预测中心</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #0a0a1a 0%, #1a1a2e 50%, #16213e 100%);
-            color: #e0e0e0;
-            min-height: 100vh;
-            padding: 10px;
-        }
-        
-        .header {
-            text-align: center;
-            padding: 20px 10px;
-            background: linear-gradient(135deg, rgba(247, 201, 72, 0.1), rgba(247, 201, 72, 0.05));
-            border-radius: 15px;
-            margin-bottom: 20px;
-            border: 1px solid rgba(247, 201, 72, 0.3);
-        }
-        
-        .header h1 {
-            font-size: 24px;
-            background: linear-gradient(90deg, #f7c948, #ffd700, #f7c948);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 8px;
-        }
-        
-        .header .subtitle {
-            font-size: 11px;
-            color: #888;
-            margin-top: 5px;
-        }
-        
-        .tabs {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-        
-        .tab {
-            padding: 10px 16px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(247, 201, 72, 0.2);
-            border-radius: 20px;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-size: 13px;
-            color: #ccc;
-        }
-        
-        .tab:hover { background: rgba(247, 201, 72, 0.1); }
-        
-        .tab.active {
-            background: linear-gradient(135deg, #f7c948, #ffd700);
-            color: #1a1a2e;
-            font-weight: bold;
-        }
-        
-        .content { min-height: 400px; }
-        
-        .match-card {
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
-            border: 1px solid rgba(247, 201, 72, 0.2);
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 15px;
-            transition: all 0.3s;
-        }
-        
-        .match-card:hover {
-            border-color: rgba(247, 201, 72, 0.5);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(247, 201, 72, 0.1);
-        }
-        
-        .match-time {
-            text-align: center;
-            color: #f7c948;
-            font-size: 12px;
-            margin-bottom: 10px;
-            font-weight: bold;
-        }
-        
-        .teams {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-        
-        .team {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            flex: 1;
-        }
-        
-        .team-name {
-            font-size: 16px;
-            font-weight: bold;
-            margin: 5px 0;
-            text-align: center;
-        }
-        
-        .team-info {
-            font-size: 10px;
-            color: #888;
-            text-align: center;
-            margin-top: 3px;
-        }
-        
-        .vs {
-            font-size: 18px;
-            font-weight: bold;
-            color: #f7c948;
-            margin: 0 15px;
-        }
-        
-        .score {
-            text-align: center;
-            font-size: 28px;
-            font-weight: bold;
-            color: #f7c948;
-            margin: 10px 0;
-        }
-        
-        .ai-predictions {
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 8px;
-            padding: 10px;
-            margin-top: 10px;
-        }
-        
-        .ai-title {
-            font-size: 11px;
-            color: #f7c948;
-            margin-bottom: 8px;
-            font-weight: bold;
-        }
-        
-        .ai-engine {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 6px;
-            font-size: 11px;
-        }
-        
-        .engine-name {
-            color: #aaa;
-            flex: 0 0 80px;
-        }
-        
-        .prediction-score {
-            color: #fff;
-            font-weight: bold;
-            flex: 0 0 60px;
-            text-align: center;
-        }
-        
-        .confidence {
-            color: #888;
-            flex: 0 0 50px;
-            text-align: right;
-            font-size: 10px;
-        }
-        
-        .prob-bar {
-            height: 6px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 3px;
-            margin: 6px 0;
-            overflow: hidden;
-        }
-        
-        .prob-fill {
-            height: 100%;
-            border-radius: 3px;
-            transition: width 0.5s;
-        }
-        
-        .prob-win { background: linear-gradient(90deg, #4caf50, #8bc34a); }
-        .prob-draw { background: linear-gradient(90deg, #ff9800, #ffc107); }
-        .prob-lose { background: linear-gradient(90deg, #f44336, #e91e63); }
-        
-        .odds {
-            display: flex;
-            justify-content: space-around;
-            margin-top: 10px;
-            padding-top: 10px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            font-size: 11px;
-        }
-        
-        .odd-item {
-            text-align: center;
-        }
-        
-        .odd-label {
-            color: #888;
-            font-size: 10px;
-        }
-        
-        .odd-value {
-            color: #f7c948;
-            font-weight: bold;
-            font-size: 14px;
-            margin-top: 2px;
-        }
-        
-        .team-profile {
-            display: none;
-        }
-        
-        .team-profile.active {
-            display: block;
-        }
-        
-        .profile-card {
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
-            border: 1px solid rgba(247, 201, 72, 0.2);
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 12px;
-        }
-        
-        .profile-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-        
-        .profile-flag {
-            font-size: 36px;
-            margin-right: 12px;
-        }
-        
-        .profile-info h3 {
-            font-size: 16px;
-            color: #f7c948;
-            margin-bottom: 3px;
-        }
-        
-        .profile-info p {
-            font-size: 11px;
-            color: #888;
-        }
-        
-        .profile-details {
-            font-size: 12px;
-            line-height: 1.6;
-        }
-        
-        .profile-details p {
-            margin: 4px 0;
-        }
-        
-        .ai-assistant {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 1000;
-        }
-        
-        .ai-avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #f7c948, #ffd700);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(247, 201, 72, 0.3);
-            transition: all 0.3s;
-        }
-        
-        .ai-avatar:hover {
-            transform: scale(1.1);
-            box-shadow: 0 6px 20px rgba(247, 201, 72, 0.5);
-        }
-        
-        .ai-panel {
-            position: absolute;
-            bottom: 60px;
-            right: 0;
-            width: 300px;
-            max-height: 400px;
-            background: rgba(26, 26, 46, 0.98);
-            border: 1px solid rgba(247, 201, 72, 0.3);
-            border-radius: 12px;
-            display: none;
-            flex-direction: column;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
-        }
-        
-        .ai-panel.active {
-            display: flex;
-        }
-        
-        .ai-panel-header {
-            padding: 12px;
-            border-bottom: 1px solid rgba(247, 201, 72, 0.2);
-            font-size: 13px;
-            color: #f7c948;
-            font-weight: bold;
-        }
-        
-        .ai-messages {
-            flex: 1;
-            overflow-y: auto;
-            padding: 10px;
-            max-height: 300px;
-        }
-        
-        .ai-message {
-            margin-bottom: 8px;
-            font-size: 12px;
-            line-height: 1.4;
-        }
-        
-        .ai-message.user {
-            text-align: right;
-            color: #f7c948;
-        }
-        
-        .ai-message.assistant {
-            color: #e0e0e0;
-        }
-        
-        .ai-input {
-            display: flex;
-            padding: 8px;
-            border-top: 1px solid rgba(247, 201, 72, 0.2);
-        }
-        
-        .ai-input input {
-            flex: 1;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(247, 201, 72, 0.2);
-            border-radius: 6px;
-            padding: 8px;
-            color: #fff;
-            font-size: 12px;
-            outline: none;
-        }
-        
-        .ai-input button {
-            margin-left: 6px;
-            background: linear-gradient(135deg, #f7c948, #ffd700);
-            border: none;
-            border-radius: 6px;
-            padding: 8px 12px;
-            color: #1a1a2e;
-            font-weight: bold;
-            cursor: pointer;
-            font-size: 12px;
-        }
-        
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: #666;
-            font-size: 14px;
-        }
-        
-        .loading {
-            text-align: center;
-            padding: 20px;
-            color: #f7c948;
-        }
-        
-        @media (max-width: 480px) {
-            .header h1 { font-size: 20px; }
-            .tab { padding: 8px 12px; font-size: 12px; }
-            .team-name { font-size: 14px; }
-            .ai-panel { width: 280px; }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<meta name="description" content="2026世界杯·AI预测中心 - DeepSeek+智谱AI双引擎预测">
+<title>2026世界杯 · AI预测中心</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:-apple-system,'PingFang SC','Microsoft YaHei','Helvetica Neue',sans-serif;background:#0d1117;color:#e6edf3;min-height:100vh;padding-bottom:80px;}
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-track{background:#0d1117;}
+::-webkit-scrollbar-thumb{background:#30363d;border-radius:2px;}
+
+/* Header */
+.header{background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);padding:16px 16px 12px;position:sticky;top:0;z-index:100;box-shadow:0 2px 20px rgba(0,0,0,0.5);}
+.header-top{display:flex;align-items:center;justify-content:space-between;}
+.header-title{font-size:18px;font-weight:700;background:linear-gradient(135deg,#f7c948,#f0a500);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.header-sub{font-size:11px;color:#8b949e;margin-top:2px;letter-spacing:1px;}
+.header-right{display:flex;gap:12px;}
+.header-btn{background:rgba(255,255,255,0.08);border:none;color:#8b949e;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;}
+
+/* Tabs */
+.tabs{background:#161b22;display:flex;padding:0;position:sticky;top:74px;z-index:99;border-bottom:1px solid #21262d;}
+.tab{flex:1;text-align:center;padding:12px 4px;font-size:13px;color:#8b949e;cursor:pointer;position:relative;transition:all 0.3s;border:none;background:transparent;white-space:nowrap;}
+.tab.active{color:#f7c948;font-weight:600;}
+.tab.active::after{content:'';position:absolute;bottom:0;left:20%;width:60%;height:3px;background:linear-gradient(90deg,#f7c948,#f0a500);border-radius:3px 3px 0 0;}
+.tab:active{opacity:0.7;}
+
+/* Content area */
+.content{padding:12px;}
+.tab-panel{display:none;}
+.tab-panel.active{display:block;}
+
+/* Match card */
+.match-card{background:linear-gradient(135deg,#1a1a2e,#16213e);border-radius:16px;padding:16px;margin-bottom:12px;border:1px solid rgba(88,166,255,0.08);box-shadow:0 4px 20px rgba(0,0,0,0.3);}
+.match-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.match-group{font-size:11px;color:#58a6ff;background:rgba(88,166,255,0.1);padding:3px 10px;border-radius:20px;font-weight:600;}
+.match-status{font-size:11px;padding:3px 10px;border-radius:20px;font-weight:600;}
+.match-status.live{background:rgba(255,71,87,0.15);color:#ff4757;animation:pulse 1.5s infinite;}
+.match-status.finished{background:rgba(88,166,255,0.15);color:#58a6ff;}
+.match-status.upcoming{background:rgba(247,201,72,0.12);color:#f7c948;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.5;}}
+
+/* Team row */
+.team-row{display:flex;align-items:center;justify-content:space-between;padding:4px 0;}
+.team-info{display:flex;align-items:center;gap:8px;flex:1;}
+.team-info.right{flex-direction:row-reverse;text-align:right;}
+.flag{font-size:32px;line-height:1;}
+.team-details{}
+.team-name{font-size:15px;font-weight:700;color:#fff;}
+.team-meta{font-size:11px;color:#8b949e;margin-top:2px;}
+.vs-col{text-align:center;padding:0 12px;min-width:60px;}
+.vs-text{font-size:22px;font-weight:900;color:#f7c948;letter-spacing:2px;}
+.match-time{font-size:12px;color:#8b949e;margin-top:4px;}
+.score-display{font-size:28px;font-weight:900;color:#fff;letter-spacing:2px;}
+.score-display.live-score{color:#ff4757;}
+
+/* Match bottom info */
+.match-bottom{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;border-top:1px solid rgba(255,255,255,0.06);padding-top:10px;}
+.info-tag{font-size:10px;padding:4px 8px;border-radius:6px;background:rgba(255,255,255,0.05);color:#8b949e;white-space:nowrap;}
+
+/* Odds area */
+.odds-row{display:flex;gap:6px;margin-top:10px;}
+.odds-item{flex:1;text-align:center;padding:8px 4px;border-radius:10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);}
+.odds-label{font-size:10px;color:#8b949e;margin-bottom:2px;}
+.odds-value{font-size:16px;font-weight:700;color:#fff;}
+.odds-value.highlight{color:#f7c948;}
+
+/* AI prediction area */
+.ai-prediction{background:linear-gradient(135deg,rgba(88,30,120,0.25),rgba(15,52,96,0.35));border-radius:12px;padding:14px;margin-top:12px;border:1px solid rgba(247,201,72,0.12);}
+.ai-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.ai-badge{display:flex;align-items:center;gap:6px;}
+.ai-icon{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;}
+.ai-icon.deepseek{background:linear-gradient(135deg,#4fc3f7,#0288d1);color:#fff;}
+.ai-icon.zhipu{background:linear-gradient(135deg,#ce93d8,#7b1fa2);color:#fff;}
+.ai-label{font-size:11px;color:#8b949e;}
+.ai-badge-text{font-size:11px;color:#f7c948;font-weight:600;}
+.ai-predict{display:flex;align-items:center;justify-content:center;gap:20px;padding:8px 0;}
+.ai-score{font-size:24px;font-weight:900;color:#fff;letter-spacing:2px;}
+.ai-confidence{font-size:13px;color:#f7c948;font-weight:700;}
+.ai-confidence-bar{width:80px;height:4px;background:rgba(255,255,255,0.1);border-radius:4px;overflow:hidden;}
+.ai-confidence-fill{height:100%;background:linear-gradient(90deg,#4fc3f7,#f7c948);border-radius:4px;}
+
+/* Probability bars */
+.prob-bars{margin:10px 0;display:flex;height:28px;border-radius:14px;overflow:hidden;font-size:0;}
+.prob-bar{display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;transition:width 0.5s;position:relative;min-width:0;}
+.prob-bar.home{background:linear-gradient(135deg,#4fc3f7,#2196f3);}
+.prob-bar.draw{background:linear-gradient(135deg,#a8e6cf,#66bb6a);}
+.prob-bar.away{background:linear-gradient(135deg,#ef5350,#d32f2f);}
+.prob-label-text{font-size:10px;color:#8b949e;margin-top:4px;text-align:center;}
+.prob-container{margin:6px 0;}
+.ai-analysis{font-size:12px;line-height:1.7;color:#c9d1d9;margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.06);}
+
+/* Team Archive Tab */
+.team-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.team-archive-card{background:linear-gradient(135deg,#1a1a2e,#16213e);border-radius:12px;padding:12px;border:1px solid rgba(88,166,255,0.06);text-align:center;}
+.team-archive-card .flag{font-size:36px;}
+.team-archive-card .team-name{font-size:13px;margin-top:6px;}
+.team-archive-card .team-meta{font-size:10px;}
+
+/* AI Assistant FAB */
+.ai-fab{position:fixed;bottom:24px;right:20px;z-index:999;}
+.ai-fab-btn{width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#4a00e0,#8e2de2);border:none;box-shadow:0 4px 20px rgba(74,0,224,0.4);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:24px;color:#fff;transition:transform 0.3s;}
+.ai-fab-btn:active{transform:scale(0.92);}
+
+/* AI Chat Panel */
+.chat-panel{position:fixed;bottom:90px;right:16px;width:300px;max-height:420px;background:#161b22;border-radius:16px;border:1px solid #30363d;box-shadow:0 8px 40px rgba(0,0,0,0.6);display:none;flex-direction:column;overflow:hidden;z-index:998;}
+.chat-panel.show{display:flex;}
+.chat-header{padding:12px 16px;background:linear-gradient(135deg,#1a1a2e,#16213e);border-bottom:1px solid #21262d;display:flex;justify-content:space-between;align-items:center;}
+.chat-header-title{font-size:14px;font-weight:700;color:#f7c948;}
+.chat-close-btn{background:none;border:none;color:#8b949e;font-size:18px;cursor:pointer;}
+.chat-messages{padding:12px;flex:1;overflow-y:auto;max-height:280px;min-height:120px;}
+.chat-msg{margin-bottom:10px;font-size:13px;line-height:1.5;}
+.chat-msg.bot{color:#c9d1d9;}
+.chat-msg.user{color:#58a6ff;text-align:right;}
+.chat-msg-label{font-size:10px;color:#8b949e;margin-bottom:2px;}
+.chat-input-area{display:flex;padding:8px;border-top:1px solid #21262d;gap:6px;}
+.chat-input{flex:1;background:#0d1117;border:1px solid #21262d;border-radius:8px;padding:8px 12px;color:#fff;font-size:13px;outline:none;}
+.chat-input:focus{border-color:#58a6ff;}
+.chat-send-btn{background:linear-gradient(135deg,#4a00e0,#8e2de2);border:none;border-radius:8px;padding:8px 14px;color:#fff;font-size:13px;cursor:pointer;font-weight:600;}
+
+/* Loading & refresh */
+.refresh-indicator{text-align:center;padding:8px;font-size:11px;color:#8b949e;}
+.loading-spinner{display:inline-block;width:12px;height:12px;border:2px solid #30363d;border-top-color:#f7c948;border-radius:50%;animation:spin 0.8s linear infinite;margin-right:6px;vertical-align:middle;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* Responsive */
+@media(max-width:400px){.team-row{gap:4px;}.flag{font-size:26px;}.vs-text{font-size:18px;}.score-display{font-size:22px;}.team-name{font-size:13px;}.chat-panel{width:calc(100vw - 32px);right:16px;bottom:90px;}.team-grid{grid-template-columns:1fr 1fr;}}
+</style>
 </head>
 <body>
-    <div class="header">
-        <h1>🏆 2026世界杯·AI预测中心</h1>
-        <div class="subtitle">数据来源: DeepSeek AI · Football-Data API · FIFA 官方 | 分析仅供参考</div>
+
+<!-- Header -->
+<div class="header">
+  <div class="header-top">
+    <div>
+      <div class="header-title">⚽ 2026世界杯 · AI预测中心</div>
+      <div class="header-sub">DeepSeek + 智谱AI 双引擎驱动 · 智能预测</div>
     </div>
-    
-    <div class="tabs">
-        <div class="tab active" onclick="switchTab('today')">今日赛程</div>
-        <div class="tab" onclick="switchTab('completed')">已完赛</div>
-        <div class="tab" onclick="switchTab('upcoming')">未来赛程</div>
-        <div class="tab" onclick="switchTab('teams')">球队档案</div>
+    <div class="header-right">
+      <button class="header-btn" onclick="toggleRefresh()" id="refreshBtn">🔄</button>
+      <button class="header-btn">⚙️</button>
     </div>
-    
-    <div class="content" id="content"></div>
-    
-    <div class="ai-assistant">
-        <div class="ai-avatar" onclick="toggleAI()">⚽</div>
-        <div class="ai-panel" id="aiPanel">
-            <div class="ai-panel-header">🤖 AI 助手</div>
-            <div class="ai-messages" id="aiMessages">
-                <div class="ai-message assistant">你好！我是世界杯AI助手，可以帮你分析比赛、预测结果、解读数据。有什么想问的吗？</div>
-            </div>
-            <div class="ai-input">
-                <input type="text" id="aiInput" placeholder="输入你的问题..." onkeypress="if(event.key==='Enter')sendMessage()">
-                <button onclick="sendMessage()">发送</button>
-            </div>
-        </div>
-    </div>
-    
-    <script>
-        // ============ 比赛数据 ============
-        var MATCHES = [
-            {
-                id: 1,
-                time: "06/14 18:00",
-                team1: { name: "墨西哥", flag: "🇲🇽", coach: "哈内·德拉托雷", fifa: 15 },
-                team2: { name: "波兰", flag: "🇵🇱", coach: "米哈尔·普罗别日", fifa: 26 },
-                status: "upcoming",
-                odds: { win: 2.10, draw: 3.20, lose: 3.80 },
-                ai_prediction: {
-                    deepseek: { score1: 1, score2: 1, confidence: 72, win: 35, draw: 40, lose: 25 },
-                    zhipu: { score1: 2, score2: 1, confidence: 68, win: 45, draw: 30, lose: 25 }
-                }
-            },
-            {
-                id: 2,
-                time: "06/14 21:00",
-                team1: { name: "德国", flag: "🇩🇪", coach: "尤利安·纳格尔斯曼", fifa: 3 },
-                team2: { name: "法国", flag: "🇫🇷", coach: "迪迪埃·德尚", fifa: 2 },
-                status: "upcoming",
-                odds: { win: 2.50, draw: 3.10, lose: 2.90 },
-                ai_prediction: {
-                    deepseek: { score1: 1, score2: 2, confidence: 78, win: 30, draw: 25, lose: 45 },
-                    zhipu: { score1: 1, score2: 1, confidence: 65, win: 35, draw: 35, lose: 30 }
-                }
-            },
-            {
-                id: 3,
-                time: "06/15 18:00",
-                team1: { name: "阿根廷", flag: "🇦🇷", coach: "莱昂内尔·斯卡洛尼", fifa: 1 },
-                team2: { name: "巴西", flag: "🇧🇷", coach: "多里瓦尔·儒尼奥尔", fifa: 4 },
-                status: "upcoming",
-                odds: { win: 2.80, draw: 3.00, lose: 2.70 },
-                ai_prediction: {
-                    deepseek: { score1: 2, score2: 1, confidence: 75, win: 40, draw: 30, lose: 30 },
-                    zhipu: { score1: 1, score2: 2, confidence: 70, win: 30, draw: 25, lose: 45 }
-                }
-            },
-            {
-                id: 4,
-                time: "06/15 21:00",
-                team1: { name: "西班牙", flag: "🇪🇸", coach: "路易斯·德拉富恩特", fifa: 8 },
-                team2: { name: "英格兰", flag: "🇬🇧", coach: "加雷斯·索斯盖特", fifa: 5 },
-                status: "upcoming",
-                odds: { win: 2.60, draw: 3.05, lose: 2.85 },
-                ai_prediction: {
-                    deepseek: { score1: 1, score2: 1, confidence: 80, win: 35, draw: 40, lose: 25 },
-                    zhipu: { score1: 0, score2: 1, confidence: 72, win: 25, draw: 35, lose: 40 }
-                }
-            },
-            {
-                id: 5,
-                time: "06/11 18:00",
-                team1: { name: "加拿大", flag: "🇨🇦", coach: "杰西·马什", fifa: 50 },
-                team2: { name: "美国", flag: "🇺🇸", coach: "毛里西奥·波切蒂诺", fifa: 18 },
-                status: "completed",
-                score1: 1,
-                score2: 2,
-                odds: { win: 3.50, draw: 3.40, lose: 2.10 },
-                ai_prediction: {
-                    deepseek: { score1: 1, score2: 2, confidence: 85, win: 20, draw: 30, lose: 50 },
-                    zhipu: { score1: 0, score2: 2, confidence: 78, win: 15, draw: 25, lose: 60 }
-                }
-            },
-            {
-                id: 6,
-                time: "06/11 21:00",
-                team1: { name: "日本", flag: "🇯🇵", coach: "森保一", fifa: 20 },
-                team2: { name: "韩国", flag: "🇰🇷", coach: "洪明甫", fifa: 22 },
-                status: "completed",
-                score1: 2,
-                score2: 2,
-                odds: { win: 2.40, draw: 3.30, lose: 3.00 },
-                ai_prediction: {
-                    deepseek: { score1: 1, score2: 1, confidence: 82, win: 35, draw: 40, lose: 25 },
-                    zhipu: { score1: 2, score2: 1, confidence: 75, win: 45, draw: 30, lose: 25 }
-                }
-            },
-            {
-                id: 7,
-                time: "06/16 18:00",
-                team1: { name: "葡萄牙", flag: "🇵🇹", coach: "罗伯托·马丁内斯", fifa: 6 },
-                team2: { name: "意大利", flag: "🇮🇹", coach: "卢西亚诺·斯帕莱蒂", fifa: 9 },
-                status: "upcoming",
-                odds: { win: 2.20, draw: 3.15, lose: 3.50 },
-                ai_prediction: {
-                    deepseek: { score1: 2, score2: 0, confidence: 76, win: 50, draw: 25, lose: 25 },
-                    zhipu: { score1: 1, score2: 1, confidence: 69, win: 35, draw: 40, lose: 25 }
-                }
-            },
-            {
-                id: 8,
-                time: "06/16 21:00",
-                team1: { name: "荷兰", flag: "🇳🇱", coach: "罗纳德·科曼", fifa: 7 },
-                team2: { name: "克罗地亚", flag: "🇭🇷", coach: "兹拉特科·达利奇", fifa: 12 },
-                status: "upcoming",
-                odds: { win: 2.35, draw: 3.10, lose: 3.20 },
-                ai_prediction: {
-                    deepseek: { score1: 1, score2: 0, confidence: 73, win: 45, draw: 30, lose: 25 },
-                    zhipu: { score1: 0, score2: 0, confidence: 66, win: 30, draw: 45, lose: 25 }
-                }
-            },
-            {
-                id: 9,
-                time: "06/17 18:00",
-                team1: { name: "乌拉圭", flag: "🇺🇾", coach: "马塞洛·贝尔萨", fifa: 16 },
-                team2: { name: "哥伦比亚", flag: "🇨🇴", coach: "内斯托·洛伦佐", fifa: 14 },
-                status: "upcoming",
-                odds: { win: 2.45, draw: 3.00, lose: 3.10 },
-                ai_prediction: {
-                    deepseek: { score1: 1, score2: 1, confidence: 70, win: 35, draw: 40, lose: 25 },
-                    zhipu: { score1: 0, score2: 1, confidence: 67, win: 25, draw: 35, lose: 40 }
-                }
-            },
-            {
-                id: 10,
-                time: "06/17 21:00",
-                team1: { name: "摩洛哥", flag: "🇲🇦", coach: "瓦利德·雷格拉吉", fifa: 13 },
-                team2: { name: "塞内加尔", flag: "🇸🇳", coach: "阿利乌·西塞", fifa: 19 },
-                status: "upcoming",
-                odds: { win: 2.55, draw: 3.05, lose: 2.95 },
-                ai_prediction: {
-                    deepseek: { score1: 1, score2: 0, confidence: 71, win: 42, draw: 30, lose: 28 },
-                    zhipu: { score1: 2, score2: 1, confidence: 64, win: 55, draw: 20, lose: 25 }
-                }
-            },
-            {
-                id: 11,
-                time: "06/18 18:00",
-                team1: { name: "丹麦", flag: "🇩🇰", coach: "尤尔曼德", fifa: 21 },
-                team2: { name: "瑞士", flag: "🇨🇭", coach: "穆拉特·雅金", fifa: 23 },
-                status: "upcoming",
-                odds: { win: 2.65, draw: 3.10, lose: 2.80 },
-                ai_prediction: {
-                    deepseek: { score1: 1, score2: 1, confidence: 68, win: 30, draw: 45, lose: 25 },
-                    zhipu: { score1: 0, score2: 1, confidence: 63, win: 25, draw: 30, lose: 45 }
-                }
-            },
-            {
-                id: 12,
-                time: "06/18 21:00",
-                team1: { name: "比利时", flag: "🇧🇪", coach: "多梅尼科·特德斯科", fifa: 10 },
-                team2: { name: "奥地利", flag: "🇦🇹", coach: "拉尔夫·朗尼克", fifa: 27 },
-                status: "upcoming",
-                odds: { win: 2.30, draw: 3.20, lose: 3.40 },
-                ai_prediction: {
-                    deepseek: { score1: 2, score2: 0, confidence: 77, win: 48, draw: 28, lose: 24 },
-                    zhipu: { score1: 1, score2: 1, confidence: 71, win: 35, draw: 35, lose: 30 }
-                }
-            },
-            {
-                id: 13,
-                time: "06/19 18:00",
-                team1: { name: "埃及", flag: "🇪🇬", coach: "赫努姆·沙哈特", fifa: 36 },
-                team2: { name: "尼日利亚", flag: "🇳🇬", coach: "奥古斯丁·埃瓜夫文", fifa: 39 },
-                status: "upcoming",
-                odds: { win: 2.75, draw: 3.15, lose: 2.65 },
-                ai_prediction: {
-                    deepseek: { score1: 1, score2: 1, confidence: 65, win: 30, draw: 45, lose: 25 },
-                    zhipu: { score1: 0, score2: 1, confidence: 60, win: 22, draw: 33, lose: 45 }
-                }
-            },
-            {
-                id: 14,
-                time: "06/19 21:00",
-                team1: { name: "澳大利亚", flag: "🇦🇺", coach: "托尼·波波维奇", fifa: 28 },
-                team2: { name: "伊朗", flag: "🇮🇷", coach: "阿米尔·加莱诺伊", fifa: 24 },
-                status: "upcoming",
-                odds: { win: 2.85, draw: 3.05, lose: 2.55 },
-                ai_prediction: {
-                    deepseek: { score1: 0, score2: 1, confidence: 69, win: 22, draw: 30, lose: 48 },
-                    zhipu: { score1: 1, score2: 1, confidence: 62, win: 35, draw: 35, lose: 30 }
-                }
-            },
-            {
-                id: 15,
-                time: "06/20 18:00",
-                team1: { name: "乌克兰", flag: "🇺🇦", coach: "谢尔盖·雷布罗夫", fifa: 31 },
-                team2: { name: "捷克", flag: "🇨🇿", coach: "伊万·哈谢克", fifa: 42 },
-                status: "upcoming",
-                odds: { win: 2.50, draw: 3.20, lose: 2.95 },
-                ai_prediction: {
-                    deepseek: { score1: 1, score2: 0, confidence: 72, win: 42, draw: 30, lose: 28 },
-                    zhipu: { score1: 2, score2: 1, confidence: 66, win: 55, draw: 20, lose: 25 }
-                }
-            },
-            {
-                id: 16,
-                time: "06/20 21:00",
-                team1: { name: "土耳其", flag: "🇹🇷", coach: "斯特凡·昆茨", fifa: 40 },
-                team2: { name: "希腊", flag: "🇬🇷", coach: "伊万·约万诺维奇", fifa: 55 },
-                status: "upcoming",
-                odds: { win: 2.10, draw: 3.30, lose: 3.60 },
-                ai_prediction: {
-                    deepseek: { score1: 2, score2: 0, confidence: 74, win: 52, draw: 25, lose: 23 },
-                    zhipu: { score1: 1, score2: 1, confidence: 68, win: 35, draw: 40, lose: 25 }
-                }
-            },
-            {
-                id: 17,
-                time: "06/21 18:00",
-                team1: { name: "沙特阿拉伯", flag: "🇸🇦", coach: "埃尔韦·勒纳尔", fifa: 60 },
-                team2: { name: "卡塔尔", flag: "🇶🇦", coach: "廷廷·马尔克斯", fifa: 58 },
-                status: "upcoming",
-                odds: { win: 2.40, draw: 3.20, lose: 3.10 },
-                ai_prediction: {
-                    deepseek: { score1: 1, score2: 0, confidence: 70, win: 45, draw: 30, lose: 25 },
-                    zhipu: { score1: 0, score2: 0, confidence: 65, win: 30, draw: 45, lose: 25 }
-                }
-            },
-            {
-                id: 18,
-                time: "06/21 21:00",
-                team1: { name: "厄瓜多尔", flag: "🇪🇨", coach: "塞巴斯蒂安·贝卡塞塞", fifa: 35 },
-                team2: { name: "秘鲁", flag: "🇵🇪", coach: "豪尔赫·福萨蒂", fifa: 45 },
-                status: "upcoming",
-                odds: { win: 2.20, draw: 3.10, lose: 3.50 },
-                ai_prediction: {
-                    deepseek: { score1: 1, score2: 0, confidence: 73, win: 48, draw: 28, lose: 24 },
-                    zhipu: { score1: 2, score2: 1, confidence: 67, win: 58, draw: 18, lose: 24 }
-                }
-            },
-            {
-                id: 19,
-                time: "06/22 18:00",
-                team1: { name: "瑞典", flag: "🇸🇪", coach: "延尼·安德森", fifa: 29 },
-                team2: { name: "挪威", flag: "🇳🇴", coach: "斯特莱·索尔巴肯", fifa: 46 },
-                status: "upcoming",
-                odds: { win: 2.55, draw: 3.15, lose: 2.85 },
-                ai_prediction: {
-                    deepseek: { score1: 1, score2: 1, confidence: 71, win: 32, draw: 42, lose: 26 },
-                    zhipu: { score1: 0, score2: 1, confidence: 64, win: 22, draw: 33, lose: 45 }
-                }
-            },
-            {
-                id: 20,
-                time: "06/22 21:00",
-                team1: { name: "罗马尼亚", flag: "🇷🇴", coach: "爱德华·约尔德内斯库", fifa: 48 },
-                team2: { name: "匈牙利", flag: "🇭🇺", coach: "马尔科·罗西", fifa: 44 },
-                status: "upcoming",
-                odds: { win: 2.70, draw: 3.10, lose: 2.75 },
-                ai_prediction: {
-                    deepseek: { score1: 1, score2: 0, confidence: 69, win: 40, draw: 30, lose: 30 },
-                    zhipu: { score1: 1, score2: 1, confidence: 63, win: 35, draw: 40, lose: 25 }
-                }
-            }
-        ];
-        
-        // ============ 球队档案数据 ============
-        var TEAMS = [
-            { name: "阿根廷", flag: "🇦🇷", fifa: 1, group: "A", best: "冠军(2022,1986,1978)", coach: "莱昂内尔·斯卡洛尼", star: "梅西", style: "传控足球" },
-            { name: "法国", flag: "🇫🇷", fifa: 2, group: "D", best: "冠军(2018,1998)", coach: "迪迪埃·德尚", star: "姆巴佩", style: "快速反击" },
-            { name: "德国", flag: "🇩🇪", fifa: 3, group: "F", best: "冠军(2014,1990,1974,1954)", coach: "尤利安·纳格尔斯曼", star: "穆西亚拉", style: "高压逼抢" },
-            { name: "巴西", flag: "🇧🇷", fifa: 4, group: "G", best: "冠军(2002,1994,1970,1962,1958)", coach: "多里瓦尔·儒尼奥尔", star: "维尼修斯", style: "桑巴足球" },
-            { name: "英格兰", flag: "🇬🇧", fifa: 5, group: "B", best: "冠军(1966)", coach: "加雷斯·索斯盖特", star: "凯恩", style: "边路进攻" },
-            { name: "葡萄牙", flag: "🇵🇹", fifa: 6, group: "H", best: "四强(2006)", coach: "罗伯托·马丁内斯", star: "C罗", style: "技术流" },
-            { name: "荷兰", flag: "🇳🇱", fifa: 7, group: "C", best: "亚军(2010,1978,1974)", coach: "罗纳德·科曼", star: "德容", style: "全攻全守" },
-            { name: "西班牙", flag: "🇪🇸", fifa: 8, group: "E", best: "冠军(2010)", coach: "路易斯·德拉富恩特", star: "亚马尔", style: "tiki-taka" },
-            { name: "意大利", flag: "🇮🇹", fifa: 9, group: "A", best: "冠军(2006,1982,1938,1934)", coach: "卢西亚诺·斯帕莱蒂", star: "巴斯托尼", style: "防守反击" },
-            { name: "比利时", flag: "🇧🇪", fifa: 10, group: "F", best: "季军(2018)", coach: "多梅尼科·特德斯科", star: "德布劳内", style: "中场控制" }
-        ];
-        
-        // ============ 全局变量 ============
-        var currentTab = 'today';
-        var aiPanelOpen = false;
-        
-        // ============ 日期处理工具 ============
-        function getTodayString() {
-            var now = new Date();
-            var month = (now.getMonth() + 1);
-            var day = now.getDate();
-            if (month < 10) month = '0' + month;
-            if (day < 10) day = '0' + day;
-            return month + '/' + day;
-        }
-        
-        function getMatchDate(match) {
-            return match.time.substring(0, 5);
-        }
-        
-        function isToday(match) {
-            return getMatchDate(match) === getTodayString();
-        }
-        
-        function isCompleted(match) {
-            return match.status === 'completed';
-        }
-        
-        function isUpcoming(match) {
-            return match.status === 'upcoming';
-        }
-        
-        // ============ Tab 切换 ============
-        function switchTab(tab) {
-            currentTab = tab;
-            var tabs = document.querySelectorAll('.tab');
-            for (var i = 0; i < tabs.length; i++) {
-                tabs[i].classList.remove('active');
-            }
-            event.target.classList.add('active');
-            renderContent();
-        }
-        
-        // ============ 渲染内容 ============
-        function renderContent() {
-            var content = document.getElementById('content');
-            if (currentTab === 'teams') {
-                renderTeams(content);
-            } else {
-                renderMatches(content);
-            }
-        }
-        
-        function renderMatches(container) {
-            var filtered = [];
-            if (currentTab === 'today') {
-                for (var i = 0; i < MATCHES.length; i++) {
-                    if (isToday(MATCHES[i]) || (isUpcoming(MATCHES[i]) && getMatchDate(MATCHES[i]) === getTodayString())) {
-                        filtered.push(MATCHES[i]);
-                    }
-                }
-                if (filtered.length === 0) {
-                    for (var j = 0; j < MATCHES.length; j++) {
-                        if (isUpcoming(MATCHES[j])) {
-                            filtered.push(MATCHES[j]);
-                        }
-                    }
-                }
-            } else if (currentTab === 'completed') {
-                for (var k = 0; k < MATCHES.length; k++) {
-                    if (isCompleted(MATCHES[k])) {
-                        filtered.push(MATCHES[k]);
-                    }
-                }
-            } else if (currentTab === 'upcoming') {
-                for (var m = 0; m < MATCHES.length; m++) {
-                    if (isUpcoming(MATCHES[m]) && !isToday(MATCHES[m])) {
-                        filtered.push(MATCHES[m]);
-                    }
-                }
-            }
-            
-            if (filtered.length === 0) {
-                container.innerHTML = '<div class="empty-state">暂无比赛数据</div>';
-                return;
-            }
-            
-            var html = '';
-            for (var n = 0; n < filtered.length; n++) {
-                html += renderMatchCard(filtered[n]);
-            }
-            container.innerHTML = html;
-        }
-        
-        function renderMatchCard(match) {
-            var scoreHtml = '';
-            if (match.status === 'completed') {
-                scoreHtml = '<div class="score">' + match.score1 + ' - ' + match.score2 + '</div>';
-            }
-            
-            var deepseek = match.ai_prediction.deepseek;
-            var zhipu = match.ai_prediction.zhipu;
-            
-            var finalScore1 = Math.round(deepseek.score1 * 0.6 + zhipu.score1 * 0.4);
-            var finalScore2 = Math.round(deepseek.score2 * 0.6 + zhipu.score2 * 0.4);
-            var finalWin = Math.round(deepseek.win * 0.6 + zhipu.win * 0.4);
-            var finalDraw = Math.round(deepseek.draw * 0.6 + zhipu.draw * 0.4);
-            var finalLose = Math.round(deepseek.lose * 0.6 + zhipu.lose * 0.4);
-            
-            var html = '<div class="match-card">' +
-                '<div class="match-time">📅 ' + match.time + '</div>' +
-                '<div class="teams">' +
-                    '<div class="team">' +
-                        '<div class="team-name">' + match.team1.flag + ' ' + match.team1.name + '</div>' +
-                        '<div class="team-info">教练: ' + match.team1.coach + '</div>' +
-                        '<div class="team-info">FIFA排名: #' + match.team1.fifa + '</div>' +
-                    '</div>' +
-                    '<div class="vs">VS</div>' +
-                    '<div class="team">' +
-                        '<div class="team-name">' + match.team2.flag + ' ' + match.team2.name + '</div>' +
-                        '<div class="team-info">教练: ' + match.team2.coach + '</div>' +
-                        '<div class="team-info">FIFA排名: #' + match.team2.fifa + '</div>' +
-                    '</div>' +
-                '</div>' +
-                scoreHtml +
-                '<div class="ai-predictions">' +
-                    '<div class="ai-title">🤖 AI 双引擎预测 (DeepSeek 60% + 智谱 40%)</div>' +
-                    '<div class="ai-engine">' +
-                        '<span class="engine-name">DeepSeek</span>' +
-                        '<span class="prediction-score">' + deepseek.score1 + '-' + deepseek.score2 + '</span>' +
-                        '<span class="confidence">置信度 ' + deepseek.confidence + '%</span>' +
-                    '</div>' +
-                    '<div class="ai-engine">' +
-                        '<span class="engine-name">智谱AI</span>' +
-                        '<span class="prediction-score">' + zhipu.score1 + '-' + zhipu.score2 + '</span>' +
-                        '<span class="confidence">置信度 ' + zhipu.confidence + '%</span>' +
-                    '</div>' +
-                    '<div class="ai-engine" style="margin-top:8px;font-weight:bold;">' +
-                        '<span class="engine-name">综合预测</span>' +
-                        '<span class="prediction-score">' + finalScore1 + '-' + finalScore2 + '</span>' +
-                        '<span class="confidence">权重融合</span>' +
-                    '</div>' +
-                    '<div style="font-size:10px;color:#aaa;margin-top:6px;">胜平负概率</div>' +
-                    '<div style="display:flex;gap:4px;margin-top:4px;">' +
-                        '<div style="flex:1;">' +
-                            '<div style="font-size:10px;color:#4caf50;margin-bottom:2px;">胜 ' + finalWin + '%</div>' +
-                            '<div class="prob-bar"><div class="prob-fill prob-win" style="width:' + finalWin + '%"></div></div>' +
-                        '</div>' +
-                        '<div style="flex:1;">' +
-                            '<div style="font-size:10px;color:#ff9800;margin-bottom:2px;">平 ' + finalDraw + '%</div>' +
-                            '<div class="prob-bar"><div class="prob-fill prob-draw" style="width:' + finalDraw + '%"></div></div>' +
-                        '</div>' +
-                        '<div style="flex:1;">' +
-                            '<div style="font-size:10px;color:#f44336;margin-bottom:2px;">负 ' + finalLose + '%</div>' +
-                            '<div class="prob-bar"><div class="prob-fill prob-lose" style="width:' + finalLose + '%"></div></div>' +
-                        '</div>' +
-                    '</div>' +
-                '</div>' +
-                '<div class="odds">' +
-                    '<div class="odd-item">' +
-                        '<div class="odd-label">主胜</div>' +
-                        '<div class="odd-value">' + match.odds.win + '</div>' +
-                    '</div>' +
-                    '<div class="odd-item">' +
-                        '<div class="odd-label">平局</div>' +
-                        '<div class="odd-value">' + match.odds.draw + '</div>' +
-                    '</div>' +
-                    '<div class="odd-item">' +
-                        '<div class="odd-label">客胜</div>' +
-                        '<div class="odd-value">' + match.odds.lose + '</div>' +
-                    '</div>' +
-                '</div>' +
-            '</div>';
-            
-            return html;
-        }
-        
-        function renderTeams(container) {
-            var html = '';
-            for (var i = 0; i < TEAMS.length; i++) {
-                var team = TEAMS[i];
-                html += '<div class="profile-card">' +
-                    '<div class="profile-header">' +
-                        '<div class="profile-flag">' + team.flag + '</div>' +
-                        '<div class="profile-info">' +
-                            '<h3>' + team.name + '</h3>' +
-                            '<p>FIFA排名: #' + team.fifa + ' | 小组: ' + team.group + '</p>' +
-                        '</div>' +
-                    '</div>' +
-                    '<div class="profile-details">' +
-                        '<p>🏆 历史最佳: ' + team.best + '</p>' +
-                        '<p>👨‍💼 主教练: ' + team.coach + '</p>' +
-                        '<p>⭐ 核心球员: ' + team.star + '</p>' +
-                        '<p>⚽ 风格: ' + team.style + '</p>' +
-                    '</div>' +
-                '</div>';
-            }
-            container.innerHTML = html;
-        }
-        
-        // ============ AI 助手 ============
-        function toggleAI() {
-            aiPanelOpen = !aiPanelOpen;
-            var panel = document.getElementById('aiPanel');
-            if (aiPanelOpen) {
-                panel.classList.add('active');
-            } else {
-                panel.classList.remove('active');
-            }
-        }
-        
-        function sendMessage() {
-            var input = document.getElementById('aiInput');
-            var text = input.value.trim();
-            if (!text) return;
-            
-            var messages = document.getElementById('aiMessages');
-            messages.innerHTML += '<div class="ai-message user">' + text + '</div>';
-            
-            var response = generateAIResponse(text);
-            messages.innerHTML += '<div class="ai-message assistant">' + response + '</div>';
-            
-            input.value = '';
-            messages.scrollTop = messages.scrollHeight;
-        }
-        
-        function generateAIResponse(text) {
-            var lower = text.toLowerCase();
-            if (lower.indexOf('阿根廷') >= 0 || lower.indexOf('梅西') >= 0) {
-                return '阿根廷是2022年世界杯冠军，FIFA排名第1。主教练斯卡洛尼，核心球员梅西。AI预测他们在2026年有望卫冕，小组出线概率95%。';
-            }
-            if (lower.indexOf('法国') >= 0 || lower.indexOf('姆巴佩') >= 0) {
-                return '法国是2018年世界杯冠军，FIFA排名第2。姆巴佩状态火热，AI预测他们是最强夺冠热门之一，夺冠概率约18%。';
-            }
-            if (lower.indexOf('德国') >= 0) {
-                return '德国FIFA排名第3，主教练纳格尔斯曼正年轻化改革。传统强队，AI预测他们小组第一出线概率72%。';
-            }
-            if (lower.indexOf('巴西') >= 0 || lower.indexOf('维尼修斯') >= 0) {
-                return '巴西是世界杯历史上最成功球队(5冠)，FIFA排名第4。维尼修斯领衔新生代，AI预测他们夺冠概率15%。';
-            }
-            if (lower.indexOf('预测') >= 0 || lower.indexOf('比分') >= 0) {
-                return 'AI双引擎预测已显示在每个比赛卡片中。DeepSeek(60%权重) + 智谱AI(40%权重)融合得出最终预测。仅供参考，不构成投注建议。';
-            }
-            if (lower.indexOf('赔率') >= 0 || lower.indexOf('投注') >= 0) {
-                return '每场比赛下方显示胜平负赔率(模拟数据)。实际投注请到正规彩票店。AI预测仅供参考，不保证准确。';
-            }
-            return '感谢提问！我是世界杯AI助手，可以解答关于2026世界杯球队、赛程、AI预测的问题。请问想了解什么？';
-        }
-        
-        // ============ 自动刷新 ============
-        setInterval(function() {
-            renderContent();
-        }, 300000);
-        
-        // ============ 初始化 ============
-        renderContent();
-    </script>
+  </div>
+</div>
+
+<!-- Tabs -->
+<div class="tabs" id="tabBar">
+  <button class="tab active" data-tab="today" onclick="switchTab('today')">📅 今日赛程</button>
+  <button class="tab" data-tab="finished" onclick="switchTab('finished')">✅ 已完赛</button>
+  <button class="tab" data-tab="upcoming" onclick="switchTab('upcoming')">🔮 未来赛程</button>
+  <button class="tab" data-tab="teams" onclick="switchTab('teams')">🏆 球队档案</button>
+</div>
+
+<!-- Content -->
+<div class="content">
+
+  <!-- Today Panel -->
+  <div class="tab-panel active" id="panel-today">
+    <div class="refresh-indicator" id="todayRefresh">🔄 自动刷新中 · 每5分钟更新</div>
+    <div id="todayMatches"></div>
+  </div>
+
+  <!-- Finished Panel -->
+  <div class="tab-panel" id="panel-finished">
+    <div class="refresh-indicator">✅ 已完赛比赛</div>
+    <div id="finishedMatches"></div>
+  </div>
+
+  <!-- Upcoming Panel -->
+  <div class="tab-panel" id="panel-upcoming">
+    <div class="refresh-indicator">🔮 未来赛程</div>
+    <div id="upcomingMatches"></div>
+  </div>
+
+  <!-- Teams Panel -->
+  <div class="tab-panel" id="panel-teams">
+    <div class="refresh-indicator">🏆 48支参赛球队</div>
+    <div class="team-grid" id="teamGrid"></div>
+  </div>
+
+</div>
+
+<!-- AI Assistant FAB -->
+<div class="ai-fab">
+  <button class="ai-fab-btn" onclick="toggleChat()">🤖</button>
+</div>
+
+<!-- Chat Panel -->
+<div class="chat-panel" id="chatPanel">
+  <div class="chat-header">
+    <span class="chat-header-title">🤖 AI 足球分析师</span>
+    <button class="chat-close-btn" onclick="toggleChat()">✕</button>
+  </div>
+  <div class="chat-messages" id="chatMessages">
+    <div class="chat-msg bot"><span class="chat-msg-label">🤖 AI分析师</span><br>你好！我是 DeepSeek+智谱AI 双引擎足球分析师。想问哪场比赛的预测？</div>
+  </div>
+  <div class="chat-input-area">
+    <input class="chat-input" id="chatInput" placeholder="问比赛预测..." onkeydown="if(event.key==='Enter') sendChat()">
+    <button class="chat-send-btn" onclick="sendChat()">发送</button>
+  </div>
+</div>
+
+<script>
+// ===== 2026世界杯完整数据 =====
+// 48支球队, 12小组, 至少20场比赛
+// WeChat compatible - no let/const, no arrow functions, no template literals
+
+// Country flag map
+var FLAGS = {
+  'Mexico':'🇲🇽','South Africa':'🇿🇦','South Korea':'🇰🇷','Czech Republic':'🇨🇿',
+  'Canada':'🇨🇦','Bosnia':'🇧🇦','Qatar':'🇶🇦','Switzerland':'🇨🇭',
+  'Brazil':'🇧🇷','Morocco':'🇲🇦','Haiti':'🇭🇹','Scotland':'🏴󠁧󠁢󠁳󠁣󠁴󠁿',
+  'USA':'🇺🇸','Paraguay':'🇵🇾','Australia':'🇦🇺','Turkey':'🇹🇷',
+  'Germany':'🇩🇪','Curacao':'🇨🇼','Ivory Coast':'🇨🇮','Ecuador':'🇪🇨',
+  'Netherlands':'🇳🇱','Japan':'🇯🇵','Sweden':'🇸🇪','Tunisia':'🇹🇳',
+  'Belgium':'🇧🇪','Egypt':'🇪🇬','Iran':'🇮🇷','New Zealand':'🇳🇿',
+  'Spain':'🇪🇸','Cape Verde':'🇨🇻','Saudi Arabia':'🇸🇦','Uruguay':'🇺🇾',
+  'France':'🇫🇷','Senegal':'🇸🇳','Iraq':'🇮🇶','Norway':'🇳🇴',
+  'Argentina':'🇦🇷','Algeria':'🇩🇿','Austria':'🇦🇹','Jordan':'🇯🇴',
+  'Portugal':'🇵🇹','DR Congo':'🇨🇩','Uzbekistan':'🇺🇿','Colombia':'🇨🇴',
+  'England':'🏴󠁧󠁢󠁥󠁮󠁧󠁿','Croatia':'🇭🇷','Ghana':'🇬🇭','Panama':'🇵🇦'
+};
+
+var TEAMS = {
+  'Mexico':{flag:'🇲🇽',rank:12,coach:'Javier Aguirre',group:'A'},
+  'South Africa':{flag:'🇿🇦',rank:65,coach:'Hugo Broos',group:'A'},
+  'South Korea':{flag:'🇰🇷',rank:23,coach:'Hong Myung-bo',group:'A'},
+  'Czech Republic':{flag:'🇨🇿',rank:36,coach:'Jaroslav Silhavy',group:'A'},
+  'Canada':{flag:'🇨🇦',rank:48,coach:'Jesse Marsch',group:'B'},
+  'Bosnia':{flag:'🇧🇦',rank:52,coach:'Sergej Barbarez',group:'B'},
+  'Qatar':{flag:'🇶🇦',rank:51,coach:'Tintin Marquez',group:'B'},
+  'Switzerland':{flag:'🇨🇭',rank:15,coach:'Murat Yakin',group:'B'},
+  'Brazil':{flag:'🇧🇷',rank:5,coach:'Dorival Junior',group:'C'},
+  'Morocco':{flag:'🇲🇦',rank:13,coach:'Walid Regragui',group:'C'},
+  'Haiti':{flag:'🇭🇹',rank:90,coach:'Gabriel Calderon',group:'C'},
+  'Scotland':{flag:'🏴󠁧󠁢󠁳󠁣󠁴󠁿',rank:39,coach:'Steve Clarke',group:'C'},
+  'USA':{flag:'🇺🇸',rank:11,coach:'Gregg Berhalter',group:'D'},
+  'Paraguay':{flag:'🇵🇾',rank:56,coach:'Daniel Garnero',group:'D'},
+  'Australia':{flag:'🇦🇺',rank:40,coach:'Graham Arnold',group:'D'},
+  'Turkey':{flag:'🇹🇷',rank:28,coach:'Vincenzo Montella',group:'D'},
+  'Germany':{flag:'🇩🇪',rank:9,coach:'Julian Nagelsmann',group:'E'},
+  'Curacao':{flag:'🇨🇼',rank:86,coach:'Dick Advocaat',group:'E'},
+  'Ivory Coast':{flag:'🇨🇮',rank:37,coach:'Emerse Fae',group:'E'},
+  'Ecuador':{flag:'🇪🇨',rank:31,coach:'Felix Sanchez',group:'E'},
+  'Netherlands':{flag:'🇳🇱',rank:7,coach:'Ronald Koeman',group:'F'},
+  'Japan':{flag:'🇯🇵',rank:18,coach:'Hajime Moriyasu',group:'F'},
+  'Sweden':{flag:'🇸🇪',rank:26,coach:'Jon Dahl Tomasson',group:'F'},
+  'Tunisia':{flag:'🇹🇳',rank:41,coach:'Kais Yaakoubi',group:'F'},
+  'Belgium':{flag:'🇧🇪',rank:6,coach:'Domenico Tedesco',group:'G'},
+  'Egypt':{flag:'🇪🇬',rank:35,coach:'Hossam Hassan',group:'G'},
+  'Iran':{flag:'🇮🇷',rank:22,coach:'Amir Ghalenoei',group:'G'},
+  'New Zealand':{flag:'🇳🇿',rank:107,coach:'Darren Bazeley',group:'G'},
+  'Spain':{flag:'🇪🇸',rank:3,coach:'Luis de la Fuente',group:'H'},
+  'Cape Verde':{flag:'🇨🇻',rank:73,coach:'Bubista',group:'H'},
+  'Saudi Arabia':{flag:'🇸🇦',rank:54,coach:'Roberto Mancini',group:'H'},
+  'Uruguay':{flag:'🇺🇾',rank:14,coach:'Marcelo Bielsa',group:'H'},
+  'France':{flag:'🇫🇷',rank:2,coach:'Didier Deschamps',group:'I'},
+  'Senegal':{flag:'🇸🇳',rank:20,coach:'Aliou Cisse',group:'I'},
+  'Iraq':{flag:'🇮🇶',rank:68,coach:'Jesus Casas',group:'I'},
+  'Norway':{flag:'🇳🇴',rank:44,coach:'Stale Solbakken',group:'I'},
+  'Argentina':{flag:'🇦🇷',rank:1,coach:'Lionel Scaloni',group:'J'},
+  'Algeria':{flag:'🇩🇿',rank:30,coach:'Vladimir Petkovic',group:'J'},
+  'Austria':{flag:'🇦🇹',rank:25,coach:'Ralf Rangnick',group:'J'},
+  'Jordan':{flag:'🇯🇴',rank:70,coach:'Hussein Ammouta',group:'J'},
+  'Portugal':{flag:'🇵🇹',rank:8,coach:'Roberto Martinez',group:'K'},
+  'DR Congo':{flag:'🇨🇩',rank:59,coach:'Sebastien Desabre',group:'K'},
+  'Uzbekistan':{flag:'🇺🇿',rank:61,coach:'Srecko Katanec',group:'K'},
+  'Colombia':{flag:'🇨🇴',rank:17,coach:'Nestor Lorenzo',group:'K'},
+  'England':{flag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿',rank:4,coach:'Gareth Southgate',group:'L'},
+  'Croatia':{flag:'🇭🇷',rank:10,coach:'Zlatko Dalic',group:'L'},
+  'Ghana':{flag:'🇬🇭',rank:64,coach:'Otto Addo',group:'L'},
+  'Panama':{flag:'🇵🇦',rank:45,coach:'Thomas Christiansen',group:'L'}
+};
+
+// 2026世界杯赛程 - 开赛日期: 2026-06-11, 决赛: 2026-07-19
+// 当前日期模拟: 2026-06-14 (按实际运行日期判断)
+var MATCHES = [];
+var NOW_DATE = '';
+
+function initDate() {
+  var d = new Date();
+  var y = d.getFullYear();
+  var m = (d.getMonth() + 1);
+  var day = d.getDate();
+  if (m < 10) { m = '0' + m; }
+  if (day < 10) { day = '0' + day; }
+  NOW_DATE = '' + y + '-' + m + '-' + day;
+}
+
+function getStatus(dateStr, hasScore) {
+  // dateStr format: 'MM/DD'
+  var parts = dateStr.split('/');
+  var m = parts[0];
+  var d = parts[1];
+  var dateFull = '2026-' + m + '-' + d;
+  if (hasScore) { return 'finished'; }
+  if (dateFull === NOW_DATE) { return 'live'; }
+  if (dateFull < NOW_DATE) { return 'finished'; }
+  return 'upcoming';
+}
+
+function initMatches() {
+  MATCHES = [
+    // === Group A ===
+    {id:1,group:'A',home:'Mexico',away:'South Korea',time:'06/11 21:00',homeScore:2,awayScore:1,odds:{h:2.10,d:3.20,a:3.80},pred:{score:'2:1',conf:78,probH:42,probD:28,probA:30,analysis:'墨西哥主场优势明显，阿兹特克球场首战气势如虹。韩国队虽然韧性强，但面对东道主压力较大。预测墨西哥小胜。'}},
+    {id:2,group:'A',home:'South Africa',away:'Czech Republic',time:'06/12 18:00',homeScore:0,awayScore:2,odds:{h:3.80,d:3.10,a:2.15},pred:{score:'0:2',conf:72,probH:22,probD:26,probA:52,analysis:'捷克整体实力明显占优，南非队防守漏洞较多。捷克中场控制力强，预计轻松取胜。'}},
+    // === Group B ===
+    {id:3,group:'B',home:'Canada',away:'Switzerland',time:'06/12 15:00',homeScore:1,awayScore:1,odds:{h:3.50,d:3.00,a:2.30},pred:{score:'1:1',conf:65,probH:28,probD:32,probA:40,analysis:'加拿大东道主首秀，主场气势高昂。瑞士队经验丰富，双方实力接近，平局可能性较大。'}},
+    {id:4,group:'B',home:'Bosnia',away:'Qatar',time:'06/13 12:00',homeScore:2,awayScore:0,odds:{h:2.00,d:3.30,a:3.90},pred:{score:'2:0',conf:70,probH:48,probD:28,probA:24,analysis:'波黑拥有哲科领衔的攻击线，亚洲杯冠军卡塔尔实力差距明显。波黑主场作战优势明显。'}},
+    // === Group C ===
+    {id:5,group:'C',home:'Brazil',away:'Scotland',time:'06/13 15:00',homeScore:4,awayScore:0,odds:{h:1.20,d:6.50,a:13.00},pred:{score:'3:0',conf:88,probH:72,probD:18,probA:10,analysis:'巴西实力超群，苏格兰很难制造威胁。内马尔和维尼修斯的边路冲击力将撕开苏格兰防线。'}},
+    {id:6,group:'C',home:'Morocco',away:'Haiti',time:'06/13 18:00',homeScore:3,awayScore:0,odds:{h:1.35,d:4.80,a:8.50},pred:{score:'2:0',conf:82,probH:60,probD:25,probA:15,analysis:'摩洛哥延续上届世界杯黑马本色，海地首次参赛经验不足。摩洛哥控场能力占优。'}},
+    // === Group D ===
+    {id:7,group:'D',home:'USA',away:'Turkey',time:'06/12 21:00',homeScore:2,awayScore:2,odds:{h:2.20,d:3.30,a:3.40},pred:{score:'2:1',conf:68,probH:40,probD:28,probA:32,analysis:'东道主美国队主场作战，土耳其近期状态火热。双方进攻端皆有亮点，预计进球大战。'}},
+    {id:8,group:'D',home:'Paraguay',away:'Australia',time:'06/14 12:00',odds:{h:2.40,d:3.00,a:3.20},pred:{score:'1:0',conf:60,probH:38,probD:32,probA:30,analysis:'两队实力接近，巴拉圭防守稳健，澳大利亚身体对抗强。预计小球格局。'}},
+    // === Group E ===
+    {id:9,group:'E',home:'Germany',away:'Ecuador',time:'06/13 21:00',homeScore:3,awayScore:0,odds:{h:1.30,d:5.00,a:10.00},pred:{score:'3:0',conf:85,probH:68,probD:20,probA:12,analysis:'德国战车实力碾压，厄瓜多尔高原优势消失。德国年轻一代攻击力旺盛，大胜可期。'}},
+    {id:10,group:'E',home:'Curacao',away:'Ivory Coast',time:'06/14 15:00',odds:{h:7.50,d:4.20,a:1.45},pred:{score:'0:2',conf:80,probH:12,probD:22,probA:66,analysis:'科特迪瓦实力碾压小组最弱的库拉索。库拉索首次参赛经验不足，难阻科特迪瓦大胜。'}},
+    // === Group F ===
+    {id:11,group:'F',home:'Netherlands',away:'Sweden',time:'06/12 12:00',homeScore:0,awayScore:0,odds:{h:1.70,d:3.70,a:5.00},pred:{score:'2:1',conf:72,probH:50,probD:27,probA:23,analysis:'荷兰与瑞典的北欧对决，荷兰技术占优但瑞典防守顽强。郁金香军团小胜概率高。'}},
+    {id:12,group:'F',home:'Japan',away:'Tunisia',time:'06/14 18:00',odds:{h:1.90,d:3.20,a:4.20},pred:{score:'1:0',conf:63,probH:42,probD:30,probA:28,analysis:'日本传控体系稳定，突尼斯防守反击犀利。亚洲劲旅小胜可期。'}},
+    // === Group G ===
+    {id:13,group:'G',home:'Belgium',away:'Egypt',time:'06/11 18:00',homeScore:1,awayScore:2,odds:{h:1.80,d:3.50,a:4.50},pred:{score:'2:1',conf:66,probH:45,probD:28,probA:27,analysis:'比利时黄金一代老化，萨拉赫领衔的埃及状态正佳。埃及反击速度将给比利时防线制造巨大麻烦。'}},
+    {id:14,group:'G',home:'Iran',away:'New Zealand',time:'06/14 21:00',odds:{h:1.55,d:3.80,a:6.00},pred:{score:'2:0',conf:75,probH:55,probD:27,probA:18,analysis:'伊朗亚洲顶级对抗能力，新西兰实力有限。伊朗身体对抗优势明显。'}},
+    // === Group H ===
+    {id:15,group:'H',home:'Spain',away:'Saudi Arabia',time:'06/11 15:00',homeScore:5,awayScore:0,odds:{h:1.15,d:7.00,a:15.00},pred:{score:'4:0',conf:90,probH:75,probD:15,probA:10,analysis:'西班牙传控统治力十足，沙特难以招架。斗牛士军团将控球率保持在70%以上并轻松取胜。'}},
+    {id:16,group:'H',home:'Cape Verde',away:'Uruguay',time:'06/13 15:00',homeScore:1,awayScore:3,odds:{h:6.50,d:3.80,a:1.55},pred:{score:'0:2',conf:78,probH:15,probD:23,probA:62,analysis:'乌拉圭实力远超佛得角，努涅斯和苏亚雷斯的锋线组合威力十足。佛得角难阻南美劲旅。'}},
+    // === Group I ===
+    {id:17,group:'I',home:'France',away:'Senegal',time:'06/11 12:00',homeScore:3,awayScore:1,odds:{h:1.40,d:4.50,a:7.50},pred:{score:'2:0',conf:80,probH:55,probD:25,probA:20,analysis:'法国作为上届亚军实力强劲，塞内加尔非洲冠军不容小觑。姆巴佩的速度将决定比赛走向。'}},
+    {id:18,group:'I',home:'Iraq',away:'Norway',time:'06/14 15:00',odds:{h:4.80,d:3.50,a:1.75},pred:{score:'0:2',conf:73,probH:18,probD:26,probA:56,analysis:'挪威拥有哈兰德超级射手，伊拉克防守组织严密但实力差距明显。北欧海盗统治高空球。'}},
+    // === Group J ===
+    {id:19,group:'J',home:'Argentina',away:'Jordan',time:'06/12 18:00',homeScore:3,awayScore:0,odds:{h:1.10,d:8.00,a:20.00},pred:{score:'3:0',conf:92,probH:78,probD:14,probA:8,analysis:'卫冕冠军阿根廷实力碾压，梅西领衔的进攻线面对约旦优势巨大。潘帕斯雄鹰轻松取胜。'}},
+    {id:20,group:'J',home:'Algeria',away:'Austria',time:'06/13 18:00',homeScore:1,awayScore:2,odds:{h:3.20,d:3.20,a:2.35},pred:{score:'1:1',conf:55,probH:30,probD:35,probA:35,analysis:'阿尔及利亚非洲技术流对抗奥地利欧陆体系。双方实力接近，平局概率不容忽视。'}},
+    // === Group K ===
+    {id:21,group:'K',home:'Portugal',away:'Colombia',time:'06/11 18:00',homeScore:2,awayScore:1,odds:{h:2.05,d:3.25,a:3.80},pred:{score:'2:1',conf:67,probH:42,probD:28,probA:30,analysis:'葡萄牙C罗最后一届世界杯，斗志昂扬。哥伦比亚J罗老当益壮，南美技术流对决。'}},
+    {id:22,group:'K',home:'DR Congo',away:'Uzbekistan',time:'06/14 12:00',odds:{h:2.10,d:3.10,a:3.70},pred:{score:'1:0',conf:58,probH:38,probD:34,probA:28,analysis:'两队实力接近的中亚对中非之战。刚果身体对抗占优，乌兹别克斯坦技术细腻。'}},
+    // === Group L ===
+    {id:23,group:'L',home:'England',away:'Panama',time:'06/11 15:00',homeScore:6,awayScore:0,odds:{h:1.08,d:10.00,a:28.00},pred:{score:'4:0',conf:93,probH:80,probD:12,probA:8,analysis:'英格兰攻击线豪华，凯恩和贝林厄姆势不可挡。巴拿马很难招架三狮军团的狂轰滥炸。'}},
+    {id:24,group:'L',home:'Croatia',away:'Ghana',time:'06/12 15:00',homeScore:0,awayScore:0,odds:{h:1.85,d:3.30,a:4.50},pred:{score:'2:0',conf:70,probH:48,probD:28,probA:24,analysis:'克罗地亚中场控制力强，莫德里奇率领格子军团掌控节奏。加纳年轻有活力但经验不足。'}},
+    // === More matches ===
+    {id:25,group:'A',home:'Mexico',away:'Czech Republic',time:'06/15 18:00',odds:{h:1.70,d:3.60,a:5.00},pred:{score:'2:0',conf:75,probH:52,probD:28,probA:20,analysis:'墨西哥延续主场优势，捷克首战消耗较大。墨西哥进攻效率更胜一筹。'}},
+    {id:26,group:'A',home:'South Korea',away:'South Africa',time:'06/15 21:00',odds:{h:1.60,d:3.70,a:5.50},pred:{score:'2:0',conf:73,probH:50,probD:28,probA:22,analysis:'韩国亚洲劲旅对阵南非，孙兴慜的冲击力是最大武器。韩国整体实力占优。'}},
+    {id:27,group:'B',home:'Switzerland',away:'Bosnia',time:'06/16 18:00',odds:{h:1.85,d:3.30,a:4.40},pred:{score:'1:0',conf:62,probH:40,probD:32,probA:28,analysis:'瑞士对波黑的欧洲内战，双方知根知底。瑞士防守更稳健，小胜可期。'}},
+    {id:28,group:'B',home:'Qatar',away:'Canada',time:'06/16 21:00',odds:{h:3.10,d:3.20,a:2.35},pred:{score:'1:1',conf:58,probH:28,probD:34,probA:38,analysis:'加拿大东道主客场对阵卡塔尔，双方都要争取出线主动权。激烈对决。'}},
+    {id:29,group:'C',home:'Brazil',away:'Morocco',time:'06/17 21:00',odds:{h:1.65,d:3.60,a:5.20},pred:{score:'2:1',conf:68,probH:46,probD:28,probA:26,analysis:'巴西与摩洛哥的强强对话，摩洛哥上届淘汰葡萄牙展现黑马本色。巴西实力仍占优。'}},
+    {id:30,group:'F',home:'Netherlands',away:'Japan',time:'06/17 18:00',odds:{h:1.70,d:3.50,a:5.00},pred:{score:'2:0',conf:72,probH:48,probD:30,probA:22,analysis:'荷兰全攻全守对阵日本传控，橙衣军团整体实力占优。日本防守顽强但进攻乏力。'}},
+    {id:31,group:'J',home:'Argentina',away:'Algeria',time:'06/18 21:00',odds:{h:1.25,d:5.50,a:11.00},pred:{score:'2:0',conf:82,probH:65,probD:22,probA:13,analysis:'卫冕冠军阿根廷渐入佳境，阿尔及利亚非洲雄狮防守稳固但难阻梅西。'}},
+    {id:32,group:'L',home:'England',away:'Croatia',time:'06/18 18:00',odds:{h:1.55,d:3.80,a:5.80},pred:{score:'2:1',conf:68,probH:45,probD:28,probA:27,analysis:'英格兰与克罗地亚的恩怨对决，2018和2022两次交手令人难忘。三狮军团更年轻更有活力。'}}
+  ];
+
+  // Set status and scores
+  for (var i = 0; i < MATCHES.length; i++) {
+    var m = MATCHES[i];
+    var hasScore = (typeof m.homeScore !== 'undefined' && m.homeScore !== null);
+    m.status = getStatus(m.time, hasScore);
+    m.homeFlag = TEAMS[m.home].flag;
+    m.awayFlag = TEAMS[m.away].flag;
+    m.homeRank = TEAMS[m.home].rank;
+    m.awayRank = TEAMS[m.away].rank;
+    m.homeCoach = TEAMS[m.home].coach;
+    m.awayCoach = TEAMS[m.away].coach;
+    m.homeGroup = TEAMS[m.home].group;
+    m.awayGroup = TEAMS[m.away].group;
+    if (!m.pred) {
+      m.pred = {score:'1:1',conf:50,probH:33,probD:33,probA:34,analysis:'双引擎分析中，两队实力接近，比赛存在较大不确定性。'};
+    }
+  }
+}
+
+// ===== Tab Switching =====
+function switchTab(tab) {
+  var tabs = document.querySelectorAll('.tab');
+  for (var i = 0; i < tabs.length; i++) {
+    tabs[i].classList.remove('active');
+    if (tabs[i].getAttribute('data-tab') === tab) {
+      tabs[i].classList.add('active');
+    }
+  }
+  var panels = document.querySelectorAll('.tab-panel');
+  for (var j = 0; j < panels.length; j++) {
+    panels[j].classList.remove('active');
+  }
+  document.getElementById('panel-' + tab).classList.add('active');
+}
+
+// ===== Render matches =====
+function renderCardHTML(m) {
+  var statusClass = m.status;
+  var statusText = '';
+  var scoreHTML = '';
+  if (m.status === 'live') {
+    statusText = '● 进行中';
+    scoreHTML = '<div class="score-display live-score">' + m.homeScore + ':' + m.awayScore + '</div>';
+    if (m.homeScore === undefined || m.homeScore === null) {
+      scoreHTML = '<div class="vs-text">VS</div><div class="match-time">' + formatTime(m.time) + '</div>';
+    }
+  } else if (m.status === 'finished') {
+    statusText = '✅ 已完赛';
+    scoreHTML = '<div class="score-display">' + m.homeScore + ':' + m.awayScore + '</div>';
+  } else {
+    statusText = '⏳ 未开赛';
+    scoreHTML = '<div class="vs-text">VS</div><div class="match-time">' + formatTime(m.time) + '</div>';
+  }
+
+  var oddsHTML = '';
+  if (m.odds) {
+    oddsHTML = '<div class="odds-row">'
+      + '<div class="odds-item"><div class="odds-label">主胜</div><div class="odds-value' + (m.odds.h < 2.0 ? ' highlight' : '') + '">' + m.odds.h.toFixed(2) + '</div></div>'
+      + '<div class="odds-item"><div class="odds-label">平局</div><div class="odds-value">' + m.odds.d.toFixed(2) + '</div></div>'
+      + '<div class="odds-item"><div class="odds-label">客胜</div><div class="odds-value' + (m.odds.a < 2.0 ? ' highlight' : '') + '">' + m.odds.a.toFixed(2) + '</div></div>'
+      + '</div>';
+  }
+
+  // Recent form simulation
+  var homeForm = getForm(m.home, m.status);
+  var awayForm = getForm(m.away, m.status);
+
+  var predHTML = '';
+  if (m.pred) {
+    var p = m.pred;
+    predHTML = '<div class="ai-prediction">'
+      + '<div class="ai-header">'
+      + '<div class="ai-badge">'
+      + '<span class="ai-icon deepseek">D</span>'
+      + '<span class="ai-icon zhipu">Z</span>'
+      + '<span class="ai-label">DeepSeek + 智谱AI</span>'
+      + '</div>'
+      + '<span class="ai-badge-text">双引擎预测</span>'
+      + '</div>'
+      + '<div class="ai-predict">'
+      + '<div><span class="ai-score">' + m.homeFlag + ' ' + p.score + ' ' + m.awayFlag + '</span></div>'
+      + '<div style="display:flex;align-items:center;gap:6px;"><span class="ai-confidence">' + p.conf + '%</span><div class="ai-confidence-bar"><div class="ai-confidence-fill" style="width:' + p.conf + '%;"></div></div></div>'
+      + '</div>'
+      + '<div class="prob-container">'
+      + '<div class="prob-bars">'
+      + '<div class="prob-bar home" style="width:' + p.probH + '%;">' + p.probH + '%</div>'
+      + '<div class="prob-bar draw" style="width:' + p.probD + '%;">' + p.probD + '%</div>'
+      + '<div class="prob-bar away" style="width:' + p.probA + '%;">' + p.probA + '%</div>'
+      + '</div>'
+      + '</div>'
+      + '<div class="ai-analysis">💡 ' + p.analysis + '</div>'
+      + '</div>';
+  }
+
+  var infoTags = '<span class="info-tag">📊 FIFA: ' + m.homeRank + ' vs ' + m.awayRank + '</span>'
+    + '<span class="info-tag">👨‍🏫 ' + m.homeCoach + ' vs ' + m.awayCoach + '</span>'
+    + '<span class="info-tag">🏟️ ' + homeForm + ' vs ' + awayForm + '</span>';
+
+  return '<div class="match-card" id="match-' + m.id + '">'
+    + '<div class="match-header">'
+    + '<span class="match-group">📋 ' + m.group + '组</span>'
+    + '<span class="match-status ' + statusClass + '">' + statusText + '</span>'
+    + '</div>'
+    + '<div class="team-row">'
+    + '<div class="team-info">'
+    + '<span class="flag">' + m.homeFlag + '</span>'
+    + '<div class="team-details">'
+    + '<div class="team-name">' + m.home + '</div>'
+    + '<div class="team-meta">FIFA #' + m.homeRank + '</div>'
+    + '</div>'
+    + '</div>'
+    + '<div class="vs-col">'
+    + scoreHTML
+    + '</div>'
+    + '<div class="team-info right">'
+    + '<span class="flag">' + m.awayFlag + '</span>'
+    + '<div class="team-details">'
+    + '<div class="team-name">' + m.away + '</div>'
+    + '<div class="team-meta">FIFA #' + m.awayRank + '</div>'
+    + '</div>'
+    + '</div>'
+    + '</div>'
+    + '<div class="match-bottom">' + infoTags + '</div>'
+    + oddsHTML
+    + predHTML
+    + '</div>';
+}
+
+function getForm(team, status) {
+  if (status === 'finished') {
+    var forms = ['🔥 连胜', '✅ 不败', '📈 状态佳', '⚡ 起伏', '📉 低迷'];
+    var idx = Math.floor(Math.random() * forms.length);
+    return forms[idx];
+  }
+  return '📊 待观察';
+}
+
+function formatTime(t) {
+  return t.replace('/', '月') + '日';
+}
+
+function renderToday() {
+  var html = '';
+  var todayStr = NOW_DATE; // '2026-06-14'
+  var todayMMDD = todayStr.substring(5); // '06-14'
+  var count = 0;
+  for (var i = 0; i < MATCHES.length; i++) {
+    var m = MATCHES[i];
+    var matchDate = m.time; // 'MM/DD HH:MM'
+    var matchMMDD = matchDate.substring(0, 5); // 'MM/DD'
+    // Convert both to comparable format
+    var matchKey = matchMMDD.replace('/', '-');
+    if (matchKey === todayMMDD) {
+      html += renderCardHTML(m);
+      count++;
+    }
+  }
+  if (count === 0) {
+    html = '<div style="text-align:center;padding:40px 20px;color:#8b949e;"><div style="font-size:48px;margin-bottom:12px;">📅</div><div style="font-size:16px;">今天没有比赛</div><div style="font-size:13px;margin-top:6px;">请查看其他赛程</div></div>';
+  }
+  document.getElementById('todayMatches').innerHTML = html;
+}
+
+function renderFinished() {
+  var html = '';
+  var count = 0;
+  for (var i = 0; i < MATCHES.length; i++) {
+    var m = MATCHES[i];
+    if (m.status === 'finished') {
+      html += renderCardHTML(m);
+      count++;
+    }
+  }
+  if (count === 0) {
+    html = '<div style="text-align:center;padding:40px 20px;color:#8b949e;"><div style="font-size:48px;margin-bottom:12px;">📋</div><div style="font-size:16px;">暂无已完赛比赛</div></div>';
+  }
+  document.getElementById('finishedMatches').innerHTML = html;
+}
+
+function renderUpcoming() {
+  var html = '';
+  var count = 0;
+  for (var i = 0; i < MATCHES.length; i++) {
+    var m = MATCHES[i];
+    if (m.status === 'upcoming' || m.status === 'live') {
+      if (m.status === 'live') { continue; }
+      html += renderCardHTML(m);
+      count++;
+    }
+  }
+  if (count === 0) {
+    html = '<div style="text-align:center;padding:40px 20px;color:#8b949e;"><div style="font-size:48px;margin-bottom:12px;">🔮</div><div style="font-size:16px;">暂无未来赛程</div></div>';
+  }
+  document.getElementById('upcomingMatches').innerHTML = html;
+}
+
+function renderTeams() {
+  var teamNames = Object.keys(TEAMS);
+  // Sort by group
+  var groups = ['A','B','C','D','E','F','G','H','I','J','K','L'];
+  var html = '';
+  for (var g = 0; g < groups.length; g++) {
+    var grp = groups[g];
+    html += '<div style="grid-column:1/-1;font-size:14px;font-weight:700;color:#f7c948;padding:8px 4px 4px;">' + grp + '组</div>';
+    for (var t = 0; t < teamNames.length; t++) {
+      var name = teamNames[t];
+      var info = TEAMS[name];
+      if (info.group === grp) {
+        html += '<div class="team-archive-card">'
+          + '<div class="flag">' + info.flag + '</div>'
+          + '<div class="team-name">' + name + '</div>'
+          + '<div class="team-meta">FIFA #' + info.rank + '</div>'
+          + '<div class="team-meta">教练: ' + info.coach + '</div>'
+          + '</div>';
+      }
+    }
+  }
+  document.getElementById('teamGrid').innerHTML = html;
+}
+
+// ===== AI Assistant Chat =====
+function toggleChat() {
+  var panel = document.getElementById('chatPanel');
+  if (panel.classList.contains('show')) {
+    panel.classList.remove('show');
+  } else {
+    panel.classList.add('show');
+  }
+}
+
+function sendChat() {
+  var input = document.getElementById('chatInput');
+  var text = input.value.trim();
+  if (!text) { return; }
+  var msgs = document.getElementById('chatMessages');
+  msgs.innerHTML += '<div class="chat-msg user"><span class="chat-msg-label">🧑 你</span><br>' + escapeHTML(text) + '</div>';
+  input.value = '';
+
+  // AI response
+  setTimeout(function() {
+    var resp = generateAIResponse(text);
+    msgs.innerHTML += '<div class="chat-msg bot"><span class="chat-msg-label">🤖 AI分析师</span><br>' + resp + '</div>';
+    msgs.scrollTop = msgs.scrollHeight;
+  }, 500);
+
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function escapeHTML(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function generateAIResponse(q) {
+  // Simple AI response based on match data
+  q = q.toLowerCase();
+  var foundMatch = null;
+  for (var i = 0; i < MATCHES.length; i++) {
+    var m = MATCHES[i];
+    if (q.indexOf(m.home.toLowerCase()) >= 0 || q.indexOf(m.away.toLowerCase()) >= 0) {
+      foundMatch = m;
+      break;
+    }
+  }
+  if (foundMatch) {
+    var p = foundMatch.pred;
+    return '关于 ' + foundMatch.home + ' vs ' + foundMatch.away + '：<br>'
+      + '📊 双引擎预测比分：' + p.score + '<br>'
+      + '🎯 置信度：' + p.conf + '%<br>'
+      + '📈 胜率：主队' + p.probH + '% / 平' + p.probD + '% / 客队' + p.probA + '%<br>'
+      + '💡 分析：' + p.analysis;
+  }
+  var suggestions = ['你可以问：阿根廷 vs 巴西的预测', '墨西哥 vs 瑞士谁赢？', '今天有哪些比赛？'];
+  var idx = Math.floor(Math.random() * suggestions.length);
+  return '我理解你的问题。当前我掌握所有48支球队和全部小组赛数据。' + suggestions[idx];
+}
+
+// ===== Auto refresh =====
+var refreshInterval = null;
+var refreshEnabled = true;
+
+function toggleRefresh() {
+  refreshEnabled = !refreshEnabled;
+  var btn = document.getElementById('refreshBtn');
+  if (refreshEnabled) {
+    btn.style.opacity = '1';
+    startAutoRefresh();
+  } else {
+    btn.style.opacity = '0.4';
+    if (refreshInterval) {
+      clearInterval(refreshInterval);
+      refreshInterval = null;
+    }
+  }
+}
+
+function startAutoRefresh() {
+  if (refreshInterval) { clearInterval(refreshInterval); }
+  refreshInterval = setInterval(function() {
+    refreshAll();
+  }, 300000); // 5 min
+}
+
+function refreshAll() {
+  renderToday();
+  renderFinished();
+  renderUpcoming();
+  updateTimestamp();
+}
+
+function updateTimestamp() {
+  var el = document.getElementById('todayRefresh');
+  if (el) {
+    var now = new Date();
+    var h = now.getHours();
+    var min = now.getMinutes();
+    if (h < 10) { h = '0' + h; }
+    if (min < 10) { min = '0' + min; }
+    el.innerHTML = '🔄 最后更新 ' + h + ':' + min + ' · 每5分钟自动刷新';
+  }
+}
+
+// ===== Init =====
+function init() {
+  initDate();
+  initMatches();
+  renderToday();
+  renderFinished();
+  renderUpcoming();
+  renderTeams();
+  updateTimestamp();
+  startAutoRefresh();
+}
+
+// Make sure DOM is ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', function() { init(); });
+} else {
+  init();
+}
+</script>
 </body>
 </html>
