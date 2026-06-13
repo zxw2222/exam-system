@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数字孪生技术答题系统</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#6366f1',
+                        secondary: '#8b5cf6',
+                        success: '#22c55e',
+                        danger: '#ef4444',
+                        warning: '#f59e0b',
+                        dark: '#0f172a',
+                        darker: '#0b1120',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                },
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .gradient-header {
+                background: linear-gradient(90deg, #4f46e5 0%, #8b5cf6 100%);
+            }
+            .card-shadow {
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            }
+            .option-hover:hover {
+                background-color: rgba(99, 102, 241, 0.1);
+                border-color: #6366f1;
+            }
+            .taunt-animation {
+                animation: shake 0.5s ease-in-out;
+            }
+            @keyframes shake {
+                0%, 100% { transform: translateX(0); }
+                10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+                20%, 40%, 60%, 80% { transform: translateX(5px); }
+            }
+            .taunt-modal {
+                animation: fadeIn 0.3s ease-in-out;
+            }
+            @keyframes fadeIn {
+                from { opacity: 0; transform: scale(0.9); }
+                to { opacity: 1; transform: scale(1); }
+            }
+        }
+    </style>
+</head>
+<body class="bg-darker text-gray-100 min-h-screen font-sans">
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+        <!-- 头部标题 -->
+        <div class="gradient-header rounded-xl p-6 mb-8 text-center card-shadow">
+            <h1 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold mb-2 flex items-center justify-center gap-3">
+                <i class="fa fa-globe"></i>
+                数字孪生技术答题系统
+            </h1>
+            <p class="text-white/80 text-[clamp(0.9rem,1.5vw,1.1rem)]">
+                单选·判断·填空·简答 | 点击即判分 | 答错自动抽象嘲讽
+            </p>
+        </div>
+
+        <!-- 功能按钮区 -->
+        <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-6">
+            <button id="answer-mode" class="bg-success hover:bg-success/90 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-all">
+                <i class="fa fa-file-text-o"></i>
+                <span>答题模式</span>
+            </button>
+            <button id="review-mode" class="bg-gray-700 hover:bg-gray-600 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-all">
+                <i class="fa fa-book"></i>
+                <span>背题模式</span>
+            </button>
+            <button id="random-mode" class="bg-gray-700 hover:bg-gray-600 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-all">
+                <i class="fa fa-random"></i>
+                <span>随机出题</span>
+            </button>
+            <button id="wrong-book" class="bg-gray-700 hover:bg-gray-600 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-all">
+                <i class="fa fa-times"></i>
+                <span>错题本</span>
+            </button>
+            <button id="reset-data" class="bg-gray-700 hover:bg-gray-600 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-all">
+                <i class="fa fa-refresh"></i>
+                <span>重置数据</span>
+            </button>
+        </div>
+
+        <!-- 统计数据区 -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+            <div class="bg-dark rounded-lg p-4 text-center card-shadow">
+                <div id="correct-count" class="text-2xl font-bold text-success mb-1">0</div>
+                <div class="text-gray-400 text-sm flex items-center justify-center gap-1">
+                    <i class="fa fa-check"></i> 正确
+                </div>
+            </div>
+            <div class="bg-dark rounded-lg p-4 text-center card-shadow">
+                <div id="wrong-count" class="text-2xl font-bold text-danger mb-1">0</div>
+                <div class="text-gray-400 text-sm flex items-center justify-center gap-1">
+                    <i class="fa fa-times"></i> 错误
+                </div>
+            </div>
+            <div class="bg-dark rounded-lg p-4 text-center card-shadow">
+                <div id="total-count" class="text-2xl font-bold text-white mb-1">0</div>
+                <div class="text-gray-400 text-sm flex items-center justify-center gap-1">
+                    <i class="fa fa-file-o"></i> 总计
+                </div>
+            </div>
+            <div class="bg-dark rounded-lg p-4 text-center card-shadow">
+                <div id="accuracy" class="text-2xl font-bold text-primary mb-1">0%</div>
+                <div class="text-gray-400 text-sm flex items-center justify-center gap-1">
+                    <i class="fa fa-dashboard"></i> 正确率
+                </div>
+            </div>
+        </div>
+
+        <!-- 进度条 -->
+        <div class="w-full bg-gray-700 rounded-full h-2.5 mb-8">
+            <div id="progress-bar" class="bg-primary h-2.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+        </div>
+
+        <!-- 题目区域 -->
+        <div class="bg-dark rounded-xl p-6 mb-8 card-shadow">
+            <div class="flex justify-between items-center mb-6">
+                <span id="question-type" class="bg-green-500/20 text-green-400 px-3 py-1 rounded-full text-sm font-medium">单选题</span>
+                <span id="question-number" class="text-gray-400">第 1 / 55 题</span>
+            </div>
+            
+            <h2 id="question-text" class="text-xl font-medium mb-8 leading-relaxed">
+                数字孪生技术的核心思想是（）。
+            </h2>
+            
+            <div id="options-container" class="space-y-4 mb-8">
+                <!-- 选项将通过JS动态生成 -->
+            </div>
+            
+            <div id="explanation-container" class="hidden bg-blue-900/20 border border-blue-500/30 rounded-lg p-4 mb-8">
+                <h3 class="text-blue-400 font-medium mb-2 flex items-center gap-2">
+                    <i class="fa fa-info-circle"></i> 答案解析
+                </h3>
+                <p id="explanation-text" class="text-gray-300"></p>
+            </div>
+            
+            <!-- 填空题输入框 -->
+            <div id="fill-blank-container" class="hidden mb-8">
+                <input type="text" id="fill-blank-input" placeholder="请输入答案，按回车确认" class="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary transition-all">
+            </div>
+            
+            <!-- 简答题输入框 -->
+            <div id="essay-container" class="hidden mb-8">
+                <textarea id="essay-input" rows="4" placeholder="请输入答案，按Ctrl+回车确认" class="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary transition-all resize-none"></textarea>
+            </div>
+        </div>
+
+        <!-- 导航按钮 -->
+        <div class="flex justify-between">
+            <button id="prev-btn" class="bg-gray-700 hover:bg-gray-600 text-white font-medium py-3 px-6 rounded-lg flex items-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                <i class="fa fa-chevron-left"></i>
+                上一题
+            </button>
+            <button id="next-btn" class="bg-primary hover:bg-primary/90 text-white font-medium py-3 px-8 rounded-lg flex items-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                下一题
+                <i class="fa fa-chevron-right"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- 嘲讽弹窗 -->
+    <div id="taunt-modal" class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 hidden">
+        <div class="bg-dark rounded-xl p-6 max-w-md mx-4 card-shadow taunt-modal">
+            <div class="text-center">
+                <div class="text-5xl mb-4">🤡</div>
+                <h3 id="taunt-text" class="text-xl font-bold text-danger mb-4">这都能错？你是真的菜！</h3>
+                <button id="close-taunt" class="bg-primary hover:bg-primary/90 text-white font-medium py-2 px-6 rounded-lg transition-all">
+                    我知道了
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 孙笑川吧经典嘲讽语录库
+        const tauntTexts = [
+            "这都能错？你是真的菜！",
+            "不会吧不会吧，这题都有人做错？",
+            "你这脑子还学什么数字孪生啊，进厂打螺丝吧",
+            "纯纯的five，鉴定完毕",
+            "建议回炉重造",
+            "你是怎么做到这么简单的题都能错的？",
+            "这题我奶奶用脚都能做对",
+            "别学了，浪费时间",
+            "你这水平也就这样了",
+            "笑了，这都能错",
+            "但凡上课听了一分钟都不会错",
+            "你是来凑数的吧？",
+            "这都能选错，你眼睛长哪了？",
+            "真的服了你这个老六",
+            "建议直接放弃考试",
+            "你这智商基本告别自行车了",
+            "错得这么离谱也是个人才",
+            "我都替你感到丢人",
+            "你是不是故意的？",
+            "再错我就要叫你狗粉丝了"
+        ];
+
+        // 题目数据
+        const questions = [
+            // 单选题
+            {
+                type: 'single',
+                question: '数字孪生技术最早的主要应用领域是()',
+                options: ['医疗影像诊断', '航空航天与装备运维', '建筑工程设计', '金融风险管理'],
+                answer: 1,
+                explanation: '数字孪生技术最早起源于航空航天领域，主要用于飞行器的设计、制造和运维管理。'
+            },
+            {
+                type: 'single',
+                question: '数字孪生最核心的特征是()',
+                options: ['三维可视化', '数据采集与远程控制', '物理实体与虚拟模型的双向映射与协同', '替代物理实验'],
+                answer: 2,
+                explanation: '数字孪生的核心是物理实体与虚拟模型之间的实时双向映射和协同交互。'
+            },
+            {
+                type: 'single',
+                question: '在智能制造中，数字孪生的主要价值体现在()',
+                options: ['替代所有人工操作', '实现产品外观的数字化展示', '覆盖产品设计、制造、运维的全生命周期管控', '仅用于设备状态监测'],
+                answer: 2,
+                explanation: '数字孪生技术能够覆盖产品从设计、制造到运维的整个生命周期，提供全方位的数字化支持。'
+            },
+            {
+                type: 'single',
+                question: '以下哪款软件主要用于产线物流、产能与生产系统仿真?()',
+                options: ['NX CAD', 'Plant Simulation', 'Process Simulate', 'Teamcenter'],
+                answer: 1,
+                explanation: 'Plant Simulation是西门子的产线物流和生产系统仿真软件，主要用于产能分析和物流优化。'
+            },
+            {
+                type: 'single',
+                question: '在自动化立体仓库中，实现巷道内货物存取的核心设备是()',
+                options: ['堆垛机', 'AGV', '传送带', '提升机'],
+                answer: 0,
+                explanation: '堆垛机是自动化立体仓库中负责在巷道内进行货物存取的核心设备。'
+            },
+            {
+                type: 'single',
+                question: '工业机器人系统中，用于手动编程与操作交互的设备是()',
+                options: ['控制柜', '示教器', '伺服电机', '机械臂本体'],
+                answer: 1,
+                explanation: '示教器是工业机器人的人机交互设备，用于手动编程和操作机器人。'
+            },
+            {
+                type: 'single',
+                question: '以下哪一项是自动化立体仓库相比传统仓库最突出的优势?()',
+                options: ['投资成本更低', '对建筑高度利用更充分', '操作更简单', '维护成本更低'],
+                answer: 1,
+                explanation: '自动化立体仓库通过高层货架可以充分利用建筑的垂直空间，大大提高空间利用率。'
+            },
+            {
+                type: 'single',
+                question: '在NX软件中，用于机电一体化概念设计与虚拟调试的模块是()',
+                options: ['MCD', 'CAD', 'CAE', 'CAM'],
+                answer: 0,
+                explanation: 'NX MCD(Mechanical Concept Design)是用于机电一体化概念设计和虚拟调试的模块。'
+            },
+            {
+                type: 'single',
+                question: 'MES系统在企业信息化架构中处于()',
+                options: ['设备控制层', '生产执行层', '经营计划层', '供应链协同层'],
+                answer: 1,
+                explanation: 'MES(制造执行系统)位于企业信息化架构的生产执行层，连接计划层和控制层。'
+            },
+            {
+                type: 'single',
+                question: 'APS系统的核心任务是()',
+                options: ['产品质量检验', '设备故障诊断', '生产排程与资源调度优化', '原材料采购计划'],
+                answer: 2,
+                explanation: 'APS(高级计划与排程系统)的核心任务是进行生产排程和资源调度优化。'
+            },
+            {
+                type: 'single',
+                question: '数字孪生中"CPS"指的是()',
+                options: ['计算机辅助生产系统', '信息物理系统', '中央计划系统', '控制与保护系统'],
+                answer: 1,
+                explanation: 'CPS(Cyber-Physical System)即信息物理系统，是数字孪生的核心技术基础。'
+            },
+            {
+                type: 'single',
+                question: '以下哪一项不属于西门子数字孪生体系的核心内容?()',
+                options: ['产品数字孪生', '生产数字孪生', '财务数字孪生', '性能数字孪生'],
+                answer: 2,
+                explanation: '西门子数字孪生体系包括产品数字孪生、生产数字孪生和性能数字孪生三个核心部分。'
+            },
+            {
+                type: 'single',
+                question: '在智能产线中，实现物料自动搬运的常见设备是()',
+                options: ['工业机器人', 'AGV小车', '码垛机', '输送机'],
+                answer: 1,
+                explanation: 'AGV(自动导引车)是智能产线中用于物料自动搬运的常见设备。'
+            },
+            {
+                type: 'single',
+                question: '主要用于产品三维数字化建模的软件是()',
+                options: ['NX CAD', 'Plant Simulation', 'Process Simulate', 'WMS'],
+                answer: 0,
+                explanation: 'NX CAD是西门子的三维数字化建模软件，用于产品的几何设计。'
+            },
+            {
+                type: 'single',
+                question: '虚拟调试的主要对象是()',
+                options: ['产品外观', 'PLC控制程序', '操作人员培训', '财务系统'],
+                answer: 1,
+                explanation: '虚拟调试主要用于验证和调试PLC控制程序的逻辑正确性。'
+            },
+            {
+                type: 'single',
+                question: '机器视觉系统的正确组成是()',
+                options: ['光源、镜头、图像处理算法', 'PLC、传感器、气动元件', '伺服电机、减速器、控制器', 'RFID、条码、触摸屏'],
+                answer: 0,
+                explanation: '机器视觉系统主要由光源、镜头和图像处理算法三个核心部分组成。'
+            },
+            {
+                type: 'single',
+                question: '以下关于数字样机的描述，正确的是()',
+                options: ['仅用于外观展示', '无法进行性能仿真', '可在物理样机制作前验证产品功能', '必须与物理产品完全同步运行'],
+                answer: 2,
+                explanation: '数字样机可以在物理样机制作之前进行产品功能验证和性能仿真。'
+            },
+            {
+                type: 'single',
+                question: '巷道码垛机主要应用于()',
+                options: ['自动化立体仓库', '数控机床', 'AGV调度', '机器人焊接'],
+                answer: 0,
+                explanation: '巷道码垛机是自动化立体仓库的核心设备，用于货物的存取和码垛。'
+            },
+            {
+                type: 'single',
+                question: '以下哪项是RFID技术的典型特征?()',
+                options: ['必须接触式读写', '只能存储少量数据', '可实现非接触式识别与追踪', '不适用于工业环境'],
+                answer: 2,
+                explanation: 'RFID(射频识别)技术可以实现非接触式的自动识别和追踪。'
+            },
+            {
+                type: 'single',
+                question: '高级计划与排程系统主要解决的是()',
+                options: ['质量问题', '排产与资源冲突', '设备故障', '人员考勤'],
+                answer: 1,
+                explanation: '高级计划与排程系统主要解决生产排程和资源冲突问题。'
+            },
+            
+            // 判断题
+            {
+                type: 'judge',
+                question: '数字孪生体是技术，数字孪生是模型。',
+                answer: false,
+                explanation: '数字孪生是技术，数字孪生体是基于该技术创建的虚拟模型。'
+            },
+            {
+                type: 'judge',
+                question: 'Plant Simulation适用于机器人轨迹规划与离线编程。',
+                answer: false,
+                explanation: 'Plant Simulation主要用于产线物流和产能仿真，Process Simulate才用于机器人轨迹规划与离线编程。'
+            },
+            {
+                type: 'judge',
+                question: '虚拟调试可以在物理设备安装前发现PLC程序中的逻辑错误。',
+                answer: true,
+                explanation: '虚拟调试能够在物理设备安装之前，在虚拟环境中验证和调试PLC控制程序。'
+            },
+            {
+                type: 'judge',
+                question: '无源RFID标签不需要外部电源即可工作。',
+                answer: true,
+                explanation: '无源RFID标签通过接收阅读器发出的射频能量来供电，不需要外部电源。'
+            },
+            {
+                type: 'judge',
+                question: '数字孪生要求物理实体与虚拟模型保持实时或准实时数据同步。',
+                answer: true,
+                explanation: '实时数据同步是数字孪生技术的核心要求之一，确保虚拟模型能够准确反映物理实体的状态。'
+            },
+            {
+                type: 'judge',
+                question: 'MES系统可以直接控制机器人运动轨迹。',
+                answer: false,
+                explanation: 'MES系统负责生产过程的管理和调度，不直接控制机器人的运动轨迹，这是由PLC或机器人控制器完成的。'
+            },
+            {
+                type: 'judge',
+                question: '自动化立体仓库必须依赖WMS系统进行库存管理。',
+                answer: true,
+                explanation: 'WMS(仓储管理系统)是自动化立体仓库的核心管理系统，负责库存管理和设备调度。'
+            },
+            {
+                type: 'judge',
+                question: '卡扣式U盘相比锁螺钉式U盘装配更简便。',
+                answer: true,
+                explanation: '卡扣式结构不需要使用螺钉，装配过程更加简便快捷。'
+            },
+            {
+                type: 'judge',
+                question: '产线规划只需要关注设备投资成本。',
+                answer: false,
+                explanation: '产线规划需要综合考虑人员、设备、物料、时间、面积等多个因素，实现成本最优平衡。'
+            },
+            {
+                type: 'judge',
+                question: '天问一号火星探测任务中使用了数字孪生技术进行仿真与监测。',
+                answer: true,
+                explanation: '天问一号火星探测任务中确实使用了数字孪生技术进行任务仿真和状态监测。'
+            },
+            
+            // 填空题
+            {
+                type: 'fill',
+                question: '数字孪生是连接____世界与____世界的桥梁技术。',
+                answer: ['物理', '信息(或数字)'],
+                explanation: '数字孪生技术连接了物理世界和信息(数字)世界，实现了虚实融合。'
+            },
+            {
+                type: 'fill',
+                question: '在智能产线中，____技术常用于物料自动存取与搬运，例如AGV或堆垛机。',
+                answer: ['自动存取与搬运'],
+                explanation: '自动存取与搬运技术是智能产线的重要组成部分，包括AGV、堆垛机等设备。'
+            },
+            {
+                type: 'fill',
+                question: '____是一种集成多个电磁阀、电气接口和控制元件的电-气一体化装置，常用于气动系统的集中控制。',
+                answer: ['电磁阀岛'],
+                explanation: '电磁阀岛是集成化的气动控制装置，能够实现气动系统的集中控制。'
+            },
+            {
+                type: 'fill',
+                question: 'NX软件中用于虚拟调试的模块缩写是____。',
+                answer: ['MCD'],
+                explanation: 'NX MCD(Mechanical Concept Design)是用于虚拟调试的模块。'
+            },
+            {
+                type: 'fill',
+                question: '生产线规划的目标是在____、____、____三者之间实现成本最优平衡。',
+                answer: ['人员', '库存', '面积(或设备、物料、时间)'],
+                explanation: '生产线规划需要在人员、库存和面积(或设备、物料、时间)之间找到最佳平衡点。'
+            },
+            {
+                type: 'fill',
+                question: '工业机器人末端执行器常见类型包括夹持式、____、____。',
+                answer: ['吸附式', '非接触式(或吸盘式、磁力式)'],
+                explanation: '工业机器人末端执行器主要有夹持式、吸附式和非接触式等类型。'
+            },
+            {
+                type: 'fill',
+                question: '机器视觉系统的三大核心组成部分是光源、镜头和____。',
+                answer: ['图像处理单元'],
+                explanation: '机器视觉系统由光源、镜头和图像处理单元三个核心部分组成。'
+            },
+            {
+                type: 'fill',
+                question: '仓储管理系统的英文缩写是____，制造执行系统的英文缩写是____。',
+                answer: ['WMS', 'MES'],
+                explanation: 'WMS(Warehouse Management System)是仓储管理系统，MES(Manufacturing Execution System)是制造执行系统。'
+            },
+            {
+                type: 'fill',
+                question: 'APS系统的全称是____。',
+                answer: ['高级计划与排程系统'],
+                explanation: 'APS是Advanced Planning and Scheduling的缩写，即高级计划与排程系统。'
+            },
+            {
+                type: 'fill',
+                question: '自动化立体仓库中，____系统负责库存管理，____负责物料存取。',
+                answer: ['WMS', '堆垛机'],
+                explanation: 'WMS系统负责库存管理，堆垛机负责具体的物料存取操作。'
+            },
+            
+            // 简答题
+            {
+                type: 'essay',
+                question: '什么是数字孪生技术？在智能制造中的典型应用场景。',
+                answer: '数字孪生是融合三维建模、物联网、仿真、AI等技术，对物理实体进行全要素、全生命周期数字化映射，实现虚实交互与融合的复合技术。典型应用：产品设计、产品制造、医学分析、工程建设等领域。',
+                explanation: '数字孪生技术通过创建物理实体的虚拟镜像，实现对物理实体的实时监控、分析和优化。'
+            },
+            {
+                type: 'essay',
+                question: '说明虚拟调试的基本流程及其对产线建设周期的意义。',
+                answer: '流程：①建立产线三维模型(如NX MCD)②编写PLC控制逻辑③连接虚拟模型与PLC④仿真运行并调试⑤输出调试结果用于现场部署。意义：①缩短现场调试时间②降低物理故障风险③减少项目成本与周期。',
+                explanation: '虚拟调试能够在物理设备安装之前完成大部分调试工作，大大缩短产线建设周期。'
+            },
+            {
+                type: 'essay',
+                question: '产品数字化设计的含义及其目的。',
+                answer: '产品的数字化设计是指利用计算机软硬件、数据库及网络技术，对产品的几何结构、功能、制造过程等进行建模、仿真、分析与优化的全过程。其核心作用包括：缩短开发周期、降低成本、提升产品质量与性能、支持创成式设计、支撑产品全生命周期管理等。',
+                explanation: '产品数字化设计是智能制造的基础，能够显著提高产品开发效率和质量。'
+            },
+            {
+                type: 'essay',
+                question: '比较自动化立体仓库与传统仓库在空间利用、存取效率和信息管理方面的差异。',
+                answer: '空间利用：传统仓库低，自动化立体仓库极高(高层货架)；存取效率：传统仓库低(人工)，自动化立体仓库高(堆垛机自动)；信息管理：传统仓库人工/简单系统，自动化立体仓库WMS系统自动化。',
+                explanation: '自动化立体仓库在空间利用率、存取效率和信息管理方面都显著优于传统仓库。'
+            },
+            {
+                type: 'essay',
+                question: '数字孪生智能制造产线中，物理智能产线主要包含哪些单元？',
+                answer: '立体仓库系统、机器人上下料数控加工系统、智能组装工作站、个性化定制加工工作站、检测包装工作站、移动机器人等。',
+                explanation: '物理智能产线由多个功能单元组成，协同完成产品的加工、装配、检测和包装等工序。'
+            },
+            {
+                type: 'essay',
+                question: '什么是MES？它与APS在功能上如何协同？',
+                answer: 'APS负责生产排程与资源优化(计划层)；MES负责执行排产任务、采集现场数据(执行层)。协同：APS生成可执行计划→MES执行并反馈→APS动态调整排产。',
+                explanation: 'APS和MES分别位于计划层和执行层，通过数据交互实现生产过程的闭环管理。'
+            },
+            {
+                type: 'essay',
+                question: '某企业计划建设一条U盘智能装配产线，要求实现以下功能：物料自动存取与搬运；机器视觉检测；机器人自动装配；虚拟调试；MES与WMS集成。请结合数字孪生技术，提出该产线的技术实现方案。',
+                answer: '(1)主要软件与硬件设备：软件包括NX MCD(虚拟调试)、Plant Simulation(产线仿真)、MES+WMS、Process Simulate(机器人仿真)；硬件包括AGV/堆垛机(自动搬运)、工业机器人(装配)、机器视觉系统(检测)、PLC(控制)、RFID(物料追溯)。(2)虚拟调试实施步骤：a.在NX MCD中建立U盘装配线模型；b.编写PLC控制程序；c.连接虚拟模型与PLC；d.模拟物料搬运、装配、检测流程；e.调试与优化逻辑；f.导出程序部署到现场设备。(3)数字孪生预期价值：a.缩短产线调试周期30%~50%；b.提前发现设计或逻辑错误；c.支持远程监控与故障诊断；d.实现柔性生产与快速换型；e.为MES/APS提供真实数据反馈。',
+                explanation: '该方案通过数字孪生技术实现了U盘智能装配产线的全流程数字化管理和优化。'
+            },
+            {
+                type: 'essay',
+                question: '结合教材内容，阐述数字孪生技术在U盘智能制造产线中的全流程应用。',
+                answer: '(1)产品设计阶段：采用NX CAD完成U盘零部件、装配工站、产线设备的三维建模与装配设计，形成数字样机；通过热分析、动力学分析优化产品性能。(2)工艺规划阶段：利用Process Designer完成装配工艺规划、MBOM管理、工艺路线设计；通过Plant Simulation进行产线布局、物流路径、产能仿真优化。(3)虚拟仿真阶段：使用Process Simulate完成机器人运动仿真、路径规划、干涉检查，实现装配流程虚拟仿真。(4)虚拟调试阶段：基于NX MCD与Process Simulate搭建虚拟平台，通过OPC UA与PLC通信，完成机器人程序、逻辑控制、IO信号的虚拟联调，验证控制逻辑正确性。(5)生产执行阶段：WMS系统管理立体仓库出入库、库存监控、物料追溯；MES系统实现生产过程管控、数据采集、质量监控、生产报表；APS系统完成订单排产、紧急插单、生产资源优化调度；物理产线AGV、工业机器人、数控机床、视觉系统协同作业，完成加工、装配、打标、检测、包装全流程。(6)整体实现物理产线与虚拟产线实时数据同步，形成全流程数字孪生闭环，提升生产效率、柔性与智能化水平。',
+                explanation: '数字孪生技术贯穿了U盘智能制造产线的产品设计、工艺规划、虚拟仿真、虚拟调试和生产执行等各个阶段。'
+            }
+        ];
+
+        // 全局变量
+        let currentQuestionIndex = 0;
+        let correctCount = 0;
+        let wrongCount = 0;
+        let answeredQuestions = new Set();
+        let wrongQuestions = new Set();
+        let currentMode = 'answer'; // answer, review, random, wrong
+        let questionOrder = [...Array(questions.length).keys()];
+
+        // DOM元素
+        const answerModeBtn = document.getElementById('answer-mode');
+        const reviewModeBtn = document.getElementById('review-mode');
+        const randomModeBtn = document.getElementById('random-mode');
+        const wrongBookBtn = document.getElementById('wrong-book');
+        const resetDataBtn = document.getElementById('reset-data');
+        const correctCountEl = document.getElementById('correct-count');
+        const wrongCountEl = document.getElementById('wrong-count');
+        const totalCountEl = document.getElementById('total-count');
+        const accuracyEl = document.getElementById('accuracy');
+        const progressBar = document.getElementById('progress-bar');
+        const questionTypeEl = document.getElementById('question-type');
+        const questionNumberEl = document.getElementById('question-number');
+        const questionTextEl = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const explanationContainer = document.getElementById('explanation-container');
+        const explanationTextEl = document.getElementById('explanation-text');
+        const fillBlankContainer = document.getElementById('fill-blank-container');
+        const fillBlankInput = document.getElementById('fill-blank-input');
+        const essayContainer = document.getElementById('essay-container');
+        const essayInput = document.getElementById('essay-input');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const tauntModal = document.getElementById('taunt-modal');
+        const tauntTextEl = document.getElementById('taunt-text');
+        const closeTauntBtn = document.getElementById('close-taunt');
+
+        // 初始化
+        function init() {
+            updateStats();
+            loadQuestion(currentQuestionIndex);
+            
+            // 事件监听
+            answerModeBtn.addEventListener('click', () => switchMode('answer'));
+            reviewModeBtn.addEventListener('click', () => switchMode('review'));
+            randomModeBtn.addEventListener('click', () => switchMode('random'));
+            wrongBookBtn.addEventListener('click', () => switchMode('wrong'));
+            resetDataBtn.addEventListener('click', resetData);
+            prevBtn.addEventListener('click', prevQuestion);
+            nextBtn.addEventListener('click', nextQuestion);
+            closeTauntBtn.addEventListener('click', closeTaunt);
+            
+            // 填空题回车提交
+            fillBlankInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    checkFillAnswer();
+                }
+            });
+            
+            // 简答题Ctrl+回车提交
+            essayInput.addEventListener('keydown', (e) => {
+                if (e.ctrlKey && e.key === 'Enter') {
+                    checkEssayAnswer();
+                }
+            });
+        }
+
+        // 切换模式
+        function switchMode(mode) {
+            currentMode = mode;
+            
+            // 更新按钮样式
+            [answerModeBtn, reviewModeBtn, randomModeBtn, wrongBookBtn].forEach(btn => {
+                btn.classList.remove('bg-success', 'hover:bg-success/90');
+                btn.classList.add('bg-gray-700', 'hover:bg-gray-600');
+            });
+            
+            switch(mode) {
+                case 'answer':
+                    answerModeBtn.classList.remove('bg-gray-700', 'hover:bg-gray-600');
+                    answerModeBtn.classList.add('bg-success', 'hover:bg-success/90');
+                    questionOrder = [...Array(questions.length).keys()];
+                    break;
+                case 'review':
+                    reviewModeBtn.classList.remove('bg-gray-700', 'hover:bg-gray-600');
+                    reviewModeBtn.classList.add('bg-success', 'hover:bg-success/90');
+                    questionOrder = [...Array(questions.length).keys()];
+                    break;
+                case 'random':
+                    randomModeBtn.classList.remove('bg-gray-700', 'hover:bg-gray-600');
+                    randomModeBtn.classList.add('bg-success', 'hover:bg-success/90');
+                    questionOrder = [...Array(questions.length).keys()].sort(() => Math.random() - 0.5);
+                    break;
+                case 'wrong':
+                    wrongBookBtn.classList.remove('bg-gray-700', 'hover:bg-gray-600');
+                    wrongBookBtn.classList.add('bg-success', 'hover:bg-success/90');
+                    questionOrder = [...wrongQuestions];
+                    if (questionOrder.length === 0) {
+                        alert('暂无错题！');
+                        switchMode('answer');
+                        return;
+                    }
+                    break;
+            }
+            
+            currentQuestionIndex = 0;
+            loadQuestion(currentQuestionIndex);
+        }
+
+        // 加载题目
+        function loadQuestion(index) {
+            if (index < 0 || index >= questionOrder.length) return;
+            
+            const questionIndex = questionOrder[index];
+            const question = questions[questionIndex];
+            
+            // 更新题目信息
+            questionNumberEl.textContent = `第 ${index + 1} / ${questionOrder.length} 题`;
+            questionTextEl.textContent = question.question;
+            
+            // 隐藏所有输入区域
+            optionsContainer.classList.add('hidden');
+            fillBlankContainer.classList.add('hidden');
+            essayContainer.classList.add('hidden');
+            explanationContainer.classList.add('hidden');
+            
+            // 根据题目类型显示对应区域
+            switch(question.type) {
+                case 'single':
+                    questionTypeEl.textContent = '单选题';
+                    questionTypeEl.className = 'bg-green-500/20 text-green-400 px-3 py-1 rounded-full text-sm font-medium';
+                    optionsContainer.classList.remove('hidden');
+                    renderSingleOptions(question, questionIndex);
+                    break;
+                case 'judge':
+                    questionTypeEl.textContent = '判断题';
+                    questionTypeEl.className = 'bg-blue-500/20 text-blue-400 px-3 py-1 rounded-full text-sm font-medium';
+                    optionsContainer.classList.remove('hidden');
+                    renderJudgeOptions(question, questionIndex);
+                    break;
+                case 'fill':
+                    questionTypeEl.textContent = '填空题';
+                    questionTypeEl.className = 'bg-yellow-500/20 text-yellow-400 px-3 py-1 rounded-full text-sm font-medium';
+                    fillBlankContainer.classList.remove('hidden');
+                    fillBlankInput.value = '';
+                    fillBlankInput.disabled = false;
+                    break;
+                case 'essay':
+                    questionTypeEl.textContent = '简答题';
+                    questionTypeEl.className = 'bg-purple-500/20 text-purple-400 px-3 py-1 rounded-full text-sm font-medium';
+                    essayContainer.classList.remove('hidden');
+                    essayInput.value = '';
+                    essayInput.disabled = false;
+                    // 移除之前添加的参考答案
+                    const oldAnswerDiv = essayContainer.querySelector('.reference-answer');
+                    if (oldAnswerDiv) {
+                        oldAnswerDiv.remove();
+                    }
+                    break;
+            }
+            
+            // 更新导航按钮状态
+            prevBtn.disabled = index === 0;
+            nextBtn.disabled = index === questionOrder.length - 1;
+            
+            // 如果是背题模式，直接显示答案
+            if (currentMode === 'review') {
+                showAnswer(questionIndex);
+            }
+            
+            // 如果已经答过题，显示结果
+            if (answeredQuestions.has(questionIndex)) {
+                showAnswer(questionIndex);
+            }
+        }
+
+        // 渲染单选题选项
+        function renderSingleOptions(question, questionIndex) {
+            optionsContainer.innerHTML = '';
+            
+            question.options.forEach((option, i) => {
+                const optionEl = document.createElement('div');
+                optionEl.className = 'flex items-center p-4 border border-gray-600 rounded-lg cursor-pointer option-hover transition-all';
+                optionEl.innerHTML = `
+                    <div class="w-6 h-6 rounded-full border-2 border-gray-400 flex items-center justify-center mr-4 flex-shrink-0">
+                        <span class="text-sm font-medium">${String.fromCharCode(65 + i)}</span>
+                    </div>
+                    <span>${option}</span>
+                `;
+                
+                // 如果已经答过题，禁用点击
+                if (answeredQuestions.has(questionIndex)) {
+                    optionEl.style.pointerEvents = 'none';
+                } else {
+                    optionEl.addEventListener('click', () => {
+                        checkSingleAnswer(questionIndex, i);
+                    });
+                }
+                
+                optionsContainer.appendChild(optionEl);
+            });
+        }
+
+        // 渲染判断题选项
+        function renderJudgeOptions(question, questionIndex) {
+            optionsContainer.innerHTML = '';
+            
+            const options = ['正确', '错误'];
+            
+            options.forEach((option, i) => {
+                const optionEl = document.createElement('div');
+                optionEl.className = 'flex items-center p-4 border border-gray-600 rounded-lg cursor-pointer option-hover transition-all';
+                optionEl.innerHTML = `
+                    <div class="w-6 h-6 rounded-full border-2 border-gray-400 flex items-center justify-center mr-4 flex-shrink-0">
+                        <span class="text-sm font-medium">${String.fromCharCode(65 + i)}</span>
+                    </div>
+                    <span>${option}</span>
+                `;
+                
+                // 如果已经答过题，禁用点击
+                if (answeredQuestions.has(questionIndex)) {
+                    optionEl.style.pointerEvents = 'none';
+                } else {
+                    optionEl.addEventListener('click', () => {
+                        checkJudgeAnswer(questionIndex, i);
+                    });
+                }
+                
+                optionsContainer.appendChild(optionEl);
+            });
+        }
+
+        // 检查单选题答案
+        function checkSingleAnswer(questionIndex, selectedIndex) {
+            if (answeredQuestions.has(questionIndex)) return;
+            
+            const question = questions[questionIndex];
+            const isCorrect = selectedIndex === question.answer;
+            
+            // 更新统计
+            answeredQuestions.add(questionIndex);
+            if (isCorrect) {
+                correctCount++;
+            } else {
+                wrongCount++;
+                wrongQuestions.add(questionIndex);
+                showTaunt(); // 答错自动显示嘲讽
+            }
+            
+            updateStats();
+            showAnswer(questionIndex);
+        }
+
+        // 检查判断题答案
+        function checkJudgeAnswer(questionIndex, selectedIndex) {
+            if (answeredQuestions.has(questionIndex)) return;
+            
+            const question = questions[questionIndex];
+            const isCorrect = (selectedIndex === 0 && question.answer) || (selectedIndex === 1 && !question.answer);
+            
+            // 更新统计
+            answeredQuestions.add(questionIndex);
+            if (isCorrect) {
+                correctCount++;
+            } else {
+                wrongCount++;
+                wrongQuestions.add(questionIndex);
+                showTaunt(); // 答错自动显示嘲讽
+            }
+            
+            updateStats();
+            showAnswer(questionIndex);
+        }
+
+        // 检查填空题答案
+        function checkFillAnswer() {
+            const questionIndex = questionOrder[currentQuestionIndex];
+            if (answeredQuestions.has(questionIndex)) return;
+            
+            const question = questions[questionIndex];
+            const fillAnswer = fillBlankInput.value.trim();
+            
+            if (!fillAnswer) {
+                alert('请输入答案！');
+                return;
+            }
+            
+            // 简单的模糊匹配
+            const isCorrect = question.answer.some(ans => 
+                fillAnswer.includes(ans.replace(/[()（）]/g, '').split('或')[0].trim())
+            );
+            
+            // 更新统计
+            answeredQuestions.add(questionIndex);
+            if (isCorrect) {
+                correctCount++;
+            } else {
+                wrongCount++;
+                wrongQuestions.add(questionIndex);
+                showTaunt(); // 答错自动显示嘲讽
+            }
+            
+            updateStats();
+            showAnswer(questionIndex);
+        }
+
+        // 检查简答题答案
+        function checkEssayAnswer() {
+            const questionIndex = questionOrder[currentQuestionIndex];
+            if (answeredQuestions.has(questionIndex)) return;
+            
+            const essayAnswer = essayInput.value.trim();
+            
+            if (!essayAnswer) {
+                alert('请输入答案！');
+                return;
+            }
+            
+            // 简答题默认标记为正确，用户自行判断
+            answeredQuestions.add(questionIndex);
+            correctCount++;
+            
+            updateStats();
+            showAnswer(questionIndex);
+            alert('简答题已提交，请自行对照参考答案进行评分。');
+        }
+
+        // 显示答案
+        function showAnswer(questionIndex) {
+            const question = questions[questionIndex];
+            
+            explanationContainer.classList.remove('hidden');
+            explanationTextEl.textContent = question.explanation;
+            
+            switch(question.type) {
+                case 'single':
+                    const options = document.querySelectorAll('#options-container > div');
+                    options.forEach((option, i) => {
+                        option.style.pointerEvents = 'none';
+                        if (i === question.answer) {
+                            option.classList.add('border-success', 'bg-success/10');
+                            option.querySelector('div').classList.add('border-success', 'bg-success', 'text-white');
+                        } else if (option.dataset.selected === 'true') {
+                            option.classList.add('border-danger', 'bg-danger/10');
+                            option.querySelector('div').classList.add('border-danger', 'bg-danger', 'text-white');
+                        }
+                    });
+                    break;
+                    
+                case 'judge':
+                    const judgeOptions = document.querySelectorAll('#options-container > div');
+                    judgeOptions.forEach((option, i) => {
+                        option.style.pointerEvents = 'none';
+                        if ((i === 0 && question.answer) || (i === 1 && !question.answer)) {
+                            option.classList.add('border-success', 'bg-success/10');
+                            option.querySelector('div').classList.add('border-success', 'bg-success', 'text-white');
+                        } else if (option.dataset.selected === 'true') {
+                            option.classList.add('border-danger', 'bg-danger/10');
+                            option.querySelector('div').classList.add('border-danger', 'bg-danger', 'text-white');
+                        }
+                    });
+                    break;
+                    
+                case 'fill':
+                    fillBlankInput.disabled = true;
+                    fillBlankInput.placeholder = `正确答案：${question.answer.join('；')}`;
+                    break;
+                    
+                case 'essay':
+                    essayInput.disabled = true;
+                    const answerDiv = document.createElement('div');
+                    answerDiv.className = 'mt-4 p-4 bg-gray-800 rounded-lg reference-answer';
+                    answerDiv.innerHTML = `<h4 class="text-success font-medium mb-2">参考答案：</h4><p class="text-gray-300 whitespace-pre-line">${question.answer}</p>`;
+                    essayContainer.appendChild(answerDiv);
+                    break;
+            }
+        }
+
+        // 显示嘲讽
+        function showTaunt() {
+            const randomTaunt = tauntTexts[Math.floor(Math.random() * tauntTexts.length)];
+            tauntTextEl.textContent = randomTaunt;
+            tauntModal.classList.remove('hidden');
+            // 添加抖动动画
+            tauntModal.querySelector('.taunt-modal').classList.add('taunt-animation');
+            setTimeout(() => {
+                tauntModal.querySelector('.taunt-modal').classList.remove('taunt-animation');
+            }, 500);
+        }
+
+        // 关闭嘲讽
+        function closeTaunt() {
+            tauntModal.classList.add('hidden');
+        }
+
+        // 上一题
+        function prevQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                loadQuestion(currentQuestionIndex);
+            }
+        }
+
+        // 下一题
+        function nextQuestion() {
+            if (currentQuestionIndex < questionOrder.length - 1) {
+                currentQuestionIndex++;
+                loadQuestion(currentQuestionIndex);
+            }
+        }
+
+        // 更新统计数据
+        function updateStats() {
+            correctCountEl.textContent = correctCount;
+            wrongCountEl.textContent = wrongCount;
+            totalCountEl.textContent = answeredQuestions.size;
+            
+            const accuracy = answeredQuestions.size > 0 ? Math.round((correctCount / answeredQuestions.size) * 100) : 0;
+            accuracyEl.textContent = `${accuracy}%`;
+            
+            const progress = answeredQuestions.size > 0 ? Math.round((answeredQuestions.size / questions.length) * 100) : 0;
+            progressBar.style.width = `${progress}%`;
+        }
+
+        // 重置数据
+        function resetData() {
+            if (confirm('确定要重置所有答题数据吗？此操作不可恢复！')) {
+                correctCount = 0;
+                wrongCount = 0;
+                answeredQuestions.clear();
+                wrongQuestions.clear();
+                currentQuestionIndex = 0;
+                updateStats();
+                switchMode('answer');
+            }
+        }
+
+        // 启动应用
+        init();
+    </script>
+</body>
+</html>
