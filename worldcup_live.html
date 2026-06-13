@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
@@ -123,6 +123,8 @@ body::before{content:"";position:fixed;inset:0;background:radial-gradient(ellips
 .chat-input-row input{flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:10px 16px;color:var(--text);font-size:13px;outline:none}
 .chat-input-row input::placeholder{color:var(--muted)}
 .chat-input-row button{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--accent1),var(--accent2));border:none;color:#fff;font-size:16px;cursor:pointer;flex-shrink:0}
+.chat-input-row .upload-btn{width:32px;height:32px;font-size:14px;margin-right:6px;background:rgba(255,255,255,.1);flex-shrink:0}
+.chat-input-row .upload-btn{width:32px;height:32px;font-size:14px;margin-right:6px;background:rgba(255,255,255,.1);flex-shrink:0}
 
 .footer-msg{text-align:center;padding:20px;font-size:10px;color:var(--muted)}
 
@@ -175,8 +177,14 @@ body::before{content:"";position:fixed;inset:0;background:radial-gradient(ellips
 <div class="chat-msg ai">嗨~我是蔡徐坤AI 🏀💫<br>专注世界杯分析两年半！问我任意球队、球员、比分预测，或者直接问"今天比赛怎么看"~</div>
 </div>
 <div class="chat-input-row">
-<input type="text" id="chatInput" placeholder="问世界杯..." onkeydown="if(event.key==='Enter')sendChat()">
+<input type="text" id="chatInput" placeholder="问世界杯或上传截图..." onkeydown="if(event.key==='Enter')sendChat()">
+<button class="upload-btn" onclick="document.getElementById('imgInput').click()" title="上传图片">📷</button>
+<input type="file" id="imgInput" accept="image/*" style="display:none" onchange="previewImage(this)">
 <button onclick="sendChat()">➤</button>
+</div>
+<div id="imgPreview" style="display:none;padding:8px 12px;border-top:1px solid rgba(255,255,255,.06);position:relative">
+<img id="previewImg" style="max-width:100%;max-height:120px;border-radius:8px">
+<button onclick="clearImage()" style="position:absolute;top:10px;right:15px;background:rgba(0,0,0,.6);border:none;color:#fff;border-radius:50%;width:22px;height:22px;cursor:pointer;font-size:12px">×</button>
 </div>
 </div>
 
@@ -621,65 +629,119 @@ chatOpen=false;
 document.getElementById('chatPanel').classList.remove('open');
 });
 
+let uploadedImage = null;
+
+function previewImage(input) {
+    if (!input.files || !input.files[0]) return;
+    let file = input.files[0];
+    if (file.size > 5 * 1024 * 1024) { alert('图片不能超过5MB'); return; }
+    let reader = new FileReader();
+    reader.onload = function(e) {
+        document.getElementById('previewImg').src = e.target.result;
+        document.getElementById('imgPreview').style.display = 'block';
+        uploadedImage = e.target.result;
+    };
+    reader.readAsDataURL(file);
+}
+
+function clearImage() {
+    document.getElementById('imgPreview').style.display = 'none';
+    document.getElementById('previewImg').src = '';
+    document.getElementById('imgInput').value = '';
+    uploadedImage = null;
+}
+
 async function sendChat(){
-let input=document.getElementById('chatInput');
-let msg=input.value.trim();
-if(!msg) return;
+    let input = document.getElementById('chatInput');
+    let msg = input.value.trim();
+    if (!msg && !uploadedImage) return;
 
-let body=document.getElementById('chatBody');
-body.innerHTML+='<div class="chat-msg user">'+msg+'</div>';
-input.value='';
-body.scrollTop=body.scrollHeight;
+    let body = document.getElementById('chatBody');
+    let userMsg = '<div class="chat-msg user">';
+    if (uploadedImage) {
+        userMsg += '<img src="' + uploadedImage + '" style="max-width:200px;max-height:150px;border-radius:8px;display:block;margin-bottom:6px"><br>';
+    }
+    userMsg += (msg || '请分析这张图片');
+    userMsg += '</div>';
+    body.innerHTML += userMsg;
+    input.value = '';
+    let hasImage = uploadedImage;
+    let imageData = uploadedImage;
+    clearImage();
+    body.scrollTop = body.scrollHeight;
 
-let loadEl=document.createElement('div');
-loadEl.className='chat-msg ai';
-loadEl.textContent='思考中...';
-body.appendChild(loadEl);
-body.scrollTop=body.scrollHeight;
+    let loadEl = document.createElement('div');
+    loadEl.className = 'chat-msg ai';
+    loadEl.textContent = hasImage ? '正在分析图片...' : '思考中...';
+    body.appendChild(loadEl);
+    body.scrollTop = body.scrollHeight;
 
-let reply = null;
-// 先尝试DeepSeek
-try{
-let resp=await fetch(DEEPSEEK_URL,{
-method:'POST',
-headers:{'Content-Type':'application/json','Authorization':'Bearer '+DEEPSEEK_KEY},
-body:JSON.stringify({
-model:'deepseek-chat',
-messages:[
-{role:'system',content:'你是蔡徐坤，2026世界杯AI预测助手。说话风格：轻松幽默+专业分析，自称"练习时长两年半的世界杯研究员"。可以用篮球梗（只因、两年半、铁山靠），但要适度。回答简洁，适合手机查看。熟知2026世界杯48队、12组、教练球员信息。'},
-{role:'user',content:msg}
-],
-max_tokens:400
-})
-});
-let data=await resp.json();
-reply=data.choices?.[0]?.message?.content;
-} catch(e) {}
+    let reply = null;
 
-// DeepSeek失败，尝试智谱AI
-if(!reply) {
-try{
-let resp=await fetch(ZHIPU_URL,{
-method:'POST',
-headers:{'Content-Type':'application/json','Authorization':'Bearer '+ZHIPU_KEY},
-body:JSON.stringify({
-model: ZHIPU_MODEL,
-messages:[
-{role:'system',content:'你是蔡徐坤，2026世界杯AI预测助手。说话风格：轻松幽默+专业分析，自称"练习时长两年半的世界杯研究员"。回答简洁，适合手机查看。熟知2026世界杯48队、12组、教练球员信息。'},
-{role:'user',content:msg}
-],
-max_tokens:400
-})
-});
-let data=await resp.json();
-reply=data.choices?.[0]?.message?.content;
-} catch(e) {}
+    // Use vision model if image uploaded
+    if (hasImage) {
+        try {
+            let userContent = [{type: 'image_url', image_url: {url: imageData}}];
+            userContent.push({type: 'text', text: msg || '请分析这张比赛相关图片，给出专业的比分预测和赛事分析'});
+            let resp = await fetch(ZHIPU_URL, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + ZHIPU_KEY},
+                body: JSON.stringify({
+                    model: 'glm-4v-plus',
+                    messages: [
+                        {role: 'system', content: '你是蔡徐坤，2026世界杯AI预测助手。用户会发送比赛截图、赔率图、积分榜等图片，请分析图片内容，给出专业的比分预测和赛事分析。说话风格：轻松幽默+专业分析，自称"练习时长两年半的世界杯研究员"，可以适当用篮球梗。'},
+                        {role: 'user', content: userContent}
+                    ],
+                    max_tokens: 600
+                })
+            });
+            let data = await resp.json();
+            reply = data.choices?.[0]?.message?.content;
+        } catch(e) { console.error('Vision API error:', e); }
+    }
+
+    // Fallback to text-only AI
+    if (!reply) {
+        try {
+            let resp = await fetch(DEEPSEEK_URL, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + DEEPSEEK_KEY},
+                body: JSON.stringify({
+                    model: 'deepseek-chat',
+                    messages: [
+                        {role: 'system', content: '你是蔡徐坤，2026世界杯AI预测助手。说话风格：轻松幽默+专业分析，自称"练习时长两年半的世界杯研究员"。可以用篮球梗（只因、两年半、铁山靠），但要适度。回答简洁，适合手机查看。熟知2026世界杯48队、12组、教练球员信息。'},
+                        {role: 'user', content: msg || '你好'}
+                    ],
+                    max_tokens: 400
+                })
+            });
+            let data = await resp.json();
+            reply = data.choices?.[0]?.message?.content;
+        } catch(e) {}
+
+        if (!reply) {
+            try {
+                let resp = await fetch(ZHIPU_URL, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + ZHIPU_KEY},
+                    body: JSON.stringify({
+                        model: ZHIPU_MODEL,
+                        messages: [
+                            {role: 'system', content: '你是蔡徐坤，2026世界杯AI预测助手。说话风格：轻松幽默+专业分析，自称"练习时长两年半的世界杯研究员"。回答简洁，适合手机查看。熟知2026世界杯48队、12组、教练球员信息。'},
+                            {role: 'user', content: msg || '你好'}
+                        ],
+                        max_tokens: 400
+                    })
+                });
+                let data = await resp.json();
+                reply = data.choices?.[0]?.message?.content;
+            } catch(e) {}
+        }
+    }
+
+    loadEl.textContent = reply || '网络波动~稍后再试试吧 🏀';
+    body.scrollTop = body.scrollHeight;
 }
-
-loadEl.textContent=reply || '网络波动~稍后再试试吧 🏀';
-body.scrollTop=body.scrollHeight;
-}
-
 
 // ========== 异步AI预测更新 ==========
 async function updateAIPredictions(matches) {
@@ -742,4 +804,5 @@ fetchFootballData();
 </script>
 </body>
 </html>
+
 
