@@ -576,15 +576,17 @@ async function render(){
 let el=document.getElementById('mainContent');
 let matches;
 
+try{
 switch(currentTab){
 case 'today':
-matches=MATCHES.filter(m=>m.status!=='finished' && new Date('2026-06-'+m.time.split('/')[1].split(' ')[0]).getTime()<=Date.now()+36e5*12);
+// 今日赛程：未完赛 + 未来12小时内的比赛
+matches=MATCHES.filter(m=>m.status!=='finished');
 if(matches.length===0) matches=MATCHES.filter(m=>m.status==='upcoming').slice(0,4);
 el.innerHTML=await renderMatches(matches);
 break;
 case 'finished':
 matches=MATCHES.filter(m=>m.status==='finished');
-el.innerHTML=matches.length?await renderMatches(matches):'<div class="loading-spin">加载已完赛数据</div>';
+el.innerHTML=matches.length?await renderMatches(matches):'<div class="loading-spin">暂无已完赛数据</div>';
 break;
 case 'upcoming':
 matches=MATCHES.filter(m=>m.status==='upcoming');
@@ -597,12 +599,17 @@ case 'odds':
 el.innerHTML=renderChampion();
 break;
 }
+}catch(e){
+el.innerHTML='<div style="text-align:center;padding:40px;color:var(--red)">⚠️ 加载出错，请刷新重试</div>';
+console.error('Render error:', e);
+}
 updateTime();
 }
 
 async function renderMatches(matches){
 if(!matches.length) return '<div style="text-align:center;padding:40px;color:var(--muted)">暂无比赛数据</div>';
 
+try{
 // 收集所有需要预测的比赛
 let cardsHTML=matches.map(m=>{
 let pred=localPredict(m.home,m.away);
@@ -708,62 +715,6 @@ if(infoGrid) infoGrid.insertAdjacentHTML('afterend',oddsHTML);
 
 return html;
 }
-let pred=m.status==='upcoming'?predictMatch(m.home,m.away):null;
-let ht=findTeam(m.home), at=findTeam(m.away);
-let cls=m.status;
-
-let predHTML='';
-if(pred && m.status==='upcoming'){
-let sourceTags=pred.sources?.map(s=>'<span style="background:rgba(99,102,241,.2);color:var(--accent1);padding:2px 8px;border-radius:10px;font-size:10px;margin-left:4px">'+s+'</span>').join('')||'';
-predHTML='<div class="pred-box">'+
-'<div class="pred-title">🤖 AI 双引擎融合预测 '+sourceTags+'<span style="font-size:10px;color:var(--gold);margin-left:8px">置信度 '+pred.confidence+'%</span></div>'+
-'<div class="pred-score">'+m.home+' '+pred.homeGoals+' : '+pred.awayGoals+' '+m.away+'</div>'+
-'<div class="pred-bars">'+
-'<div class="pred-bar"><span class="pred-bar-label">主胜</span><div class="pred-bar-track"><div class="pred-bar-fill home" style="width:'+pred.homePct+'%"></div></div><span class="pred-bar-val">'+pred.homePct+'%</span></div>'+
-'<div class="pred-bar"><span class="pred-bar-label">平局</span><div class="pred-bar-track"><div class="pred-bar-fill draw" style="width:'+pred.drawPct+'%"></div></div><span class="pred-bar-val">'+pred.drawPct+'%</span></div>'+
-'<div class="pred-bar"><span class="pred-bar-label">客胜</span><div class="pred-bar-track"><div class="pred-bar-fill away" style="width:'+pred.awayPct+'%"></div></div><span class="pred-bar-val">'+pred.awayPct+'%</span></div>'+
-'</div>'+
-'<div class="pred-reason">📊 '+(pred.reason||generateReason(m,pred))+'</div></div>';
-}
-
-let infoHTML='';
-if(ht || at){
-infoHTML='<div class="section-label">📋 球队情报</div><div class="info-grid">';
-if(ht){
-infoHTML+='<div class="info-item"><div class="info-label">👤 主教练</div><div class="info-value">'+ht.c+'</div></div>';
-infoHTML+='<div class="info-item"><div class="info-label">⭐ 核心球员</div><div class="info-value">'+ht.p.slice(0,3).join(' · ')+'</div></div>';
-infoHTML+='<div class="info-item"><div class="info-label">📊 FIFA排名</div><div class="info-value">第'+ht.r+'位</div></div>';
-infoHTML+='<div class="info-item"><div class="info-label">🏟 历史战绩</div><div class="info-value">'+ht.hs+'</div></div>';
-}
-if(at){
-infoHTML+='<div class="info-item"><div class="info-label">👤 主教练</div><div class="info-value">'+at.c+'</div></div>';
-infoHTML+='<div class="info-item"><div class="info-label">⭐ 核心球员</div><div class="info-value">'+at.p.slice(0,3).join(' · ')+'</div></div>';
-infoHTML+='<div class="info-item"><div class="info-label">📊 FIFA排名</div><div class="info-value">第'+at.r+'位</div></div>';
-infoHTML+='<div class="info-item"><div class="info-label">🏟 历史战绩</div><div class="info-value">'+at.hs+'</div></div>';
-}
-infoHTML+='</div>';
-}
-
-let oddsHTML='';
-if(m.status==='upcoming' && pred){
-oddsHTML='<div class="section-label">💰 赔率参考</div><div class="odds-row">'+
-'<div class="odds-btn"><div class="tag">主胜</div><div class="val">'+pred.oddsHome+'</div></div>'+
-'<div class="odds-btn"><div class="tag">平局</div><div class="val">'+pred.oddsDraw+'</div></div>'+
-'<div class="odds-btn"><div class="tag">客胜</div><div class="val">'+pred.oddsAway+'</div></div></div>';
-}
-
-return '<div class="match-card '+cls+'">'+
-'<div class="card-header"><span class="card-group">'+m.group+' · '+m.time+'</span><span class="card-time '+cls+'">'+(cls==='finished'?'已结束':cls==='live'?'进行中':'未开始')+'</span></div>'+
-'<div class="teams-row">'+
-'<div class="team-col"><div class="team-flag">'+m.hf+'</div><div class="team-name">'+m.home+'</div><div class="team-meta">FIFA #'+(ht?ht.r:'?')+'</div></div>'+
-'<div class="vs-col"><div class="vs-score">'+(m.score||'VS')+'</div><div class="vs-label">'+(m.score?'完赛':'')+'</div></div>'+
-'<div class="team-col"><div class="team-flag">'+m.af+'</div><div class="team-name">'+m.away+'</div><div class="team-meta">FIFA #'+(at?at.r:'?')+'</div></div>'+
-'</div>'+
-infoHTML+
-predHTML+
-oddsHTML+
-'</div>';
-}).join('');
 }
 
 function renderTeams(){
