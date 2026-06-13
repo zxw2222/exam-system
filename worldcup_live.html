@@ -30,8 +30,8 @@ body {
     border-radius: 8px;
     display: inline-block;
 }
-.api-status.live { background: rgba(0,212,170,0.2); color: #00d4aa; }
-.api-status.local { background: rgba(255,165,0,0.2); color: #ffa500; }
+.api-status.deepseek { background: rgba(76,130,255,0.2); color: #4c82ff; }
+.api-status.fallback { background: rgba(255,165,0,0.2); color: #ffa500; }
 
 .container { padding: 16px; max-width: 480px; margin: 0 auto; }
 
@@ -51,16 +51,6 @@ body {
     display: flex;
     justify-content: space-between;
 }
-.live-badge {
-    background: #ff4757;
-    color: #fff;
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-size: 10px;
-    font-weight: 700;
-    animation: blink 1s infinite;
-}
-@keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
 
 .match-main { padding: 16px; }
 
@@ -71,12 +61,9 @@ body {
     margin-bottom: 14px;
 }
 .team { text-align: center; flex: 1; }
-.team .crest { width: 48px; height: 48px; margin: 0 auto; }
-.team .crest img { width: 100%; height: 100%; object-fit: contain; }
 .team .flag { font-size: 36px; }
 .team .name { font-size: 14px; font-weight: 600; margin-top: 4px; }
 .team .rank { font-size: 11px; color: #666; }
-.team .score { font-size: 28px; font-weight: 900; color: #6bcb77; }
 
 .vs-time {
     text-align: center;
@@ -84,19 +71,26 @@ body {
 }
 .vs-time .vs { font-size: 14px; color: #00d4aa; font-weight: 700; }
 .vs-time .time { font-size: 11px; color: #666; margin-top: 2px; }
-.vs-time .status-live { color: #ff4757; font-weight: 700; font-size: 12px; }
-.vs-time .status-done { color: #6bcb77; font-size: 12px; }
 
 .prediction {
-    background: linear-gradient(135deg, rgba(0,212,170,0.15), rgba(0,150,200,0.1));
+    background: linear-gradient(135deg, rgba(76,130,255,0.15), rgba(0,212,170,0.1));
     border-radius: 10px;
     padding: 14px;
     text-align: center;
     margin-bottom: 14px;
+    border: 1px solid rgba(76,130,255,0.2);
 }
-.pred-label { font-size: 12px; color: #00d4aa; }
-.pred-score { font-size: 32px; font-weight: 900; color: #00d4aa; margin: 4px 0; }
+.pred-label { font-size: 12px; color: #4c82ff; }
+.pred-score { font-size: 32px; font-weight: 900; color: #4c82ff; margin: 4px 0; }
 .confidence { font-size: 11px; color: #888; }
+.ai-analysis {
+    font-size: 11px;
+    color: #aaa;
+    margin-top: 6px;
+    padding: 6px;
+    background: rgba(76,130,255,0.05);
+    border-radius: 6px;
+}
 
 .prob-row {
     display: flex;
@@ -178,7 +172,9 @@ body {
     text-align: right;
     padding: 4px 0;
 }
+.data-source .ai { color: #4c82ff; }
 
+/* 已完赛 */
 .finished-card {
     background: #1a2a3a;
     border-radius: 12px;
@@ -199,6 +195,7 @@ body {
     color: #6bcb77;
 }
 
+/* Tab */
 .tabs {
     display: flex;
     background: #1a2a3a;
@@ -224,6 +221,7 @@ body {
 .panel { display: none; }
 .panel.active { display: block; }
 
+/* 投注单 */
 .bet-slip {
     position: fixed;
     bottom: 0;
@@ -291,7 +289,7 @@ body {
     width: 36px;
     height: 36px;
     border: 3px solid rgba(255,255,255,0.1);
-    border-top-color: #00d4aa;
+    border-top-color: #4c82ff;
     border-radius: 50%;
     animation: spin 1s linear infinite;
     margin: 0 auto 12px;
@@ -303,9 +301,9 @@ footer { text-align: center; padding: 20px; color: #444; font-size: 11px; }
 </head>
 <body>
 <div class="header">
-    <h1>🏆 <span>AI比分预测</span></h1>
+    <h1>🏆 <span>DeepSeek AI</span> 比分预测</h1>
     <div class="update-time" id="updateTime">--:-- 更新</div>
-    <div class="api-status local" id="apiStatus">⏳ 连接中...</div>
+    <div class="api-status deepseek" id="apiStatus">⏳ 连接中...</div>
 </div>
 
 <div class="container">
@@ -316,7 +314,7 @@ footer { text-align: center; padding: 20px; color: #444; font-size: 11px; }
     </div>
 
     <div class="panel active" id="live-panel">
-        <div class="loading"><div class="spinner"></div>加载数据中...</div>
+        <div class="loading"><div class="spinner"></div>DeepSeek AI 分析中...</div>
     </div>
     <div class="panel" id="finished-panel"></div>
     <div class="panel" id="schedule-panel"></div>
@@ -339,116 +337,129 @@ footer { text-align: center; padding: 20px; color: #444; font-size: 11px; }
 
 <script>
 // ========== 配置 ==========
-const FOOTBALL_DATA_KEY = '5cc56f6f57f8419bbe4718c27513fd1f';
-const API_BASE = 'https://api.football-data.org/v4';
+const DEEPSEEK_KEY = 'sk-81d53acb8f62446098143011ebfcc7df';
+const DEEPSEEK_URL = 'https://api.deepseek.com/v1/chat/completions';
 
 // 国旗映射
 const FLAG_MAP = {
     'Qatar': '🇶🇦', 'Switzerland': '🇨🇭', 'Brazil': '🇧🇷', 'Morocco': '🇲🇦',
     'Haiti': '🇭🇹', 'Scotland': '🏴󠁧󠁢󠁳󠁣󠁴󠁿', 'Australia': '🇦🇺', 'Turkey': '🇹🇷',
-    'Mexico': '🇲🇽', 'South Africa': '🇿🇦', 'Korea Republic': '🇰🇷', 'Korea DPR': '🇰🇵',
+    'Mexico': '🇲🇽', 'South Africa': '🇿🇦', 'Korea Republic': '🇰🇷',
     'Czech Republic': '🇨🇿', 'Czechia': '🇨🇿', 'Canada': '🇨🇦',
     'Bosnia and Herzegovina': '🇧🇦', 'USA': '🇺🇸', 'United States': '🇺🇸',
     'Paraguay': '🇵🇾', 'France': '🇫🇷', 'Argentina': '🇦🇷', 'England': '🏴󠁧󠁢󠁥󠁮󠁧󠁿',
     'Germany': '🇩🇪', 'Spain': '🇪🇸', 'Portugal': '🇵🇹', 'Netherlands': '🇳🇱',
-    'Italy': '🇮🇹', 'Belgium': '🇧🇪', 'Japan': '🇯🇵', 'China PR': '🇨🇳',
+    'Italy': '🇮🇹', 'Belgium': '🇧🇪', 'Japan': '🇯🇵',
     'Saudi Arabia': '🇸🇦', 'Iran': '🇮🇷', 'Colombia': '🇨🇴', 'Uruguay': '🇺🇾',
     'Chile': '🇨🇱', 'Ecuador': '🇪🇨', 'Peru': '🇵🇪', 'Nigeria': '🇳🇬',
     'Cameroon': '🇨🇲', 'Senegal': '🇸🇳', 'Ghana': '🇬🇭', 'Egypt': '🇪🇬',
     'Tunisia': '🇹🇳', 'Algeria': '🇩🇿', 'Croatia': '🇭🇷', 'Serbia': '🇷🇸',
     'Poland': '🇵🇱', 'Sweden': '🇸🇪', 'Denmark': '🇩🇰', 'Norway': '🇳🇴',
-    'Ukraine': '🇺🇦', 'Austria': '🇦🇹', 'Switzerland': '🇨🇭', 'Wales': '🏴󠁧󠁢󠁷󠁬󠁳󠁿',
+    'Ukraine': '🇺🇦', 'Austria': '🇦🇹', 'Wales': '🏴󠁧󠁢󠁷󠁬󠁳󠁿',
     'Ireland': '🇮🇪', 'Romania': '🇷🇴', 'Greece': '🇬🇷', 'Costa Rica': '🇨🇷',
     'Jamaica': '🇯🇲', 'Honduras': '🇭🇳', 'Panama': '🇵🇦', 'New Zealand': '🇳🇿',
-    'Iceland': '🇮🇸', 'Finland': '🇫🇮', 'Russia': '🇷🇺'
+    'Iceland': '🇮🇸', 'Finland': '🇫🇮', 'Russia': '🇷🇺',
+    'Korea DPR': '🇰🇵', 'Bosnia': '🇧🇦', 'IR Iran': '🇮🇷'
 };
 
-// FIFA排名（简化版）
+// FIFA排名
 const FIFA_RANK = {
-    'Argentina': 1, 'France': 2, 'Brazil': 5, 'England': 4, 'Belgium': 3,
+    'Argentina': 1, 'France': 2, 'Belgium': 3, 'England': 4, 'Brazil': 5,
     'Netherlands': 6, 'Portugal': 7, 'Spain': 8, 'Italy': 9, 'Croatia': 10,
     'Germany': 11, 'USA': 13, 'Switzerland': 14, 'Morocco': 15, 'Mexico': 16,
-    'Japan': 18, 'Colombia': 17, 'Uruguay': 19, 'Korea Republic': 23,
-    'Australia': 25, 'Canada': 30, 'Turkey': 28, 'Scotland': 35,
-    'Qatar': 50, 'Haiti': 60, 'South Africa': 55, 'Czech Republic': 32,
-    'Czechia': 32, 'Bosnia and Herzegovina': 45, 'Paraguay': 40, 'China PR': 75,
-    'Saudi Arabia': 53, 'Iran': 22, 'Senegal': 20, 'Ghana': 48,
-    'Nigeria': 33, 'Cameroon': 38, 'Egypt': 36, 'Tunisia': 29,
-    'Algeria': 34, 'Croatia': 10, 'Serbia': 27, 'Poland': 26,
-    'Sweden': 21, 'Denmark': 24, 'Norway': 37, 'Ukraine': 31,
-    'Austria': 39, 'Wales': 41, 'Ireland': 42, 'Romania': 43,
-    'Greece': 44, 'Costa Rica': 46, 'Jamaica': 47, 'New Zealand': 52,
-    'Iceland': 54, 'Finland': 56, 'Russia': 57, 'Ecuador': 49,
-    'Peru': 51, 'Chile': 58, 'Honduras': 62, 'Panama': 63,
-    'Netherlands': 6, 'Portugal': 7
+    'Colombia': 17, 'Japan': 18, 'Uruguay': 19, 'Senegal': 20, 'Sweden': 21,
+    'Iran': 22, 'Korea Republic': 23, 'Denmark': 24, 'Australia': 25,
+    'Poland': 26, 'Serbia': 27, 'Turkey': 28, 'Tunisia': 29, 'Canada': 30,
+    'Ukraine': 31, 'Czech Republic': 32, 'Czechia': 32, 'Nigeria': 33,
+    'Algeria': 34, 'Scotland': 35, 'Egypt': 36, 'Cameroon': 38,
+    'Paraguay': 40, 'Wales': 41, 'Ireland': 42, 'Bosnia and Herzegovina': 45,
+    'Ecuador': 49, 'Qatar': 50, 'South Africa': 55, 'Haiti': 60
 };
 
 let slip = [];
-let apiConnected = false;
+let deepseekOk = false;
 
-// ========== API请求 ==========
-async function apiFetch(path) {
+// 本地比赛数据
+const LOCAL_DATA = {
+    upcoming: [
+        { home: '卡塔尔', away: '瑞士', homeEn: 'Qatar', awayEn: 'Switzerland', homeRank: 50, awayRank: 14, group: 'B', time: '6/14 03:00', loc: '旧金山' },
+        { home: '巴西', away: '摩洛哥', homeEn: 'Brazil', awayEn: 'Morocco', homeRank: 5, awayRank: 15, group: 'C', time: '6/14 06:00', loc: '纽约' },
+        { home: '海地', away: '苏格兰', homeEn: 'Haiti', awayEn: 'Scotland', homeRank: 60, awayRank: 35, group: 'C', time: '6/14 09:00', loc: '纽约' },
+        { home: '澳大利亚', away: '土耳其', homeEn: 'Australia', awayEn: 'Turkey', homeRank: 25, awayRank: 28, group: 'D', time: '6/14 09:00', loc: '洛杉矶' }
+    ],
+    finished: [
+        { home: '墨西哥', away: '南非', homeFlag: '🇲🇽', awayFlag: '🇿🇦', score: '2-0', group: 'A' },
+        { home: '韩国', away: '捷克', homeFlag: '🇰🇷', awayFlag: '🇨🇿', score: '2-1', group: 'A' },
+        { home: '加拿大', away: '波黑', homeFlag: '🇨🇦', awayFlag: '🇧🇦', score: '1-1', group: 'B' },
+        { home: '美国', away: '巴拉圭', homeFlag: '🇺🇸', awayFlag: '🇵🇾', score: '4-1', group: 'D' }
+    ],
+    schedule: [
+        { home: '捷克', away: '南非', homeFlag: '🇨🇿', awayFlag: '🇿🇦', time: '6/19 03:00', group: 'A' },
+        { home: '墨西哥', away: '韩国', homeFlag: '🇲🇽', awayFlag: '🇰🇷', time: '6/19 06:00', group: 'A' },
+        { home: '瑞士', away: '波黑', homeFlag: '🇨🇭', awayFlag: '🇧🇦', time: '6/19 09:00', group: 'B' },
+        { home: '加拿大', away: '卡塔尔', homeFlag: '🇨🇦', awayFlag: '🇶🇦', time: '6/19 12:00', group: 'B' },
+        { home: '巴西', away: '海地', homeFlag: '🇧🇷', awayFlag: '🇭🇹', time: '6/20 03:00', group: 'C' },
+        { home: '苏格兰', away: '摩洛哥', homeFlag: '🏴󠁧󠁢󠁳󠁣󠁴󠁿', awayFlag: '🇲🇦', time: '6/20 06:00', group: 'C' },
+        { home: '美国', away: '土耳其', homeFlag: '🇺🇸', awayFlag: '🇹🇷', time: '6/20 09:00', group: 'D' },
+        { home: '澳大利亚', away: '巴拉圭', homeFlag: '🇦🇺', awayFlag: '🇵🇾', time: '6/20 12:00', group: 'D' }
+    ]
+};
+
+// ========== DeepSeek AI预测 ==========
+async function predictWithDeepSeek(home, away, homeRank, awayRank) {
+    const prompt = `你是一个专业足球分析师。分析以下2026世界杯比赛：
+
+主队：${home}（FIFA排名第${homeRank}）
+客队：${away}（FIFA排名第${awayRank}）
+
+请分析并返回严格JSON格式（不要任何其他文字）：
+{
+  "homeGoals": 预测主队进球数（0-5整数）,
+  "awayGoals": 预测客队进球数（0-5整数）,
+  "homeWinPercent": 主胜概率（0-100整数）,
+  "drawPercent": 平局概率（0-100整数）,
+  "awayWinPercent": 客胜概率（0-100整数）,
+  "confidence": 你对这个预测的自信程度（60-99）,
+  "analysis": "一句话中文分析原因（不超过30字）"
+}`;
+
     try {
-        const res = await fetch(API_BASE + path, {
-            headers: { 'X-Auth-Token': FOOTBALL_DATA_KEY }
+        const res = await fetch(DEEPSEEK_URL, {
+            method: 'POST',
+            headers: {
+                'Authorization': 'Bearer ' + DEEPSEEK_KEY,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                model: 'deepseek-chat',
+                messages: [{ role: 'user', content: prompt }],
+                temperature: 0.3,
+                max_tokens: 300
+            })
         });
-        if (!res.ok) throw new Error('API ' + res.status);
-        return await res.json();
+        if (!res.ok) throw new Error('DeepSeek ' + res.status);
+        const data = await res.json();
+        const text = data.choices[0].message.content;
+        
+        // 提取JSON
+        const json = JSON.parse(text.match(/\{[\s\S]*\}/)[0]);
+        
+        return {
+            score: json.homeGoals + '-' + json.awayGoals,
+            homeWin: json.homeWinPercent,
+            draw: json.drawPercent,
+            awayWin: json.awayWinPercent,
+            confidence: json.confidence,
+            analysis: json.analysis
+        };
     } catch (e) {
-        console.log('API failed:', e);
+        console.log('DeepSeek error:', e);
         return null;
     }
 }
 
-// ========== 获取真实比赛数据 ==========
-async function fetchLiveMatches() {
-    // 尝试获取当前比赛
-    const data = await apiFetch('/matches');
-    if (data && data.matches && data.matches.length > 0) {
-        apiConnected = true;
-        return data.matches;
-    }
-    
-    // 尝试获取世界杯相关
-    const wc = await apiFetch('/competitions/WC/matches');
-    if (wc && wc.matches && wc.matches.length > 0) {
-        apiConnected = true;
-        return wc.matches;
-    }
-    
-    return null;
-}
-
-// ========== 本地比赛数据 ==========
-function getLocalMatches() {
-    return {
-        upcoming: [
-            { home: '卡塔尔', away: '瑞士', homeFlag: '🇶🇦', awayFlag: '🇨🇭', homeRank: 50, awayRank: 14, group: 'B', time: '6/14 03:00', loc: '旧金山' },
-            { home: '巴西', away: '摩洛哥', homeFlag: '🇧🇷', awayFlag: '🇲🇦', homeRank: 5, awayRank: 15, group: 'C', time: '6/14 06:00', loc: '纽约' },
-            { home: '海地', away: '苏格兰', homeFlag: '🇭🇹', awayFlag: '🏴󠁧󠁢󠁳󠁣󠁴󠁿', homeRank: 60, awayRank: 35, group: 'C', time: '6/14 09:00', loc: '纽约' },
-            { home: '澳大利亚', away: '土耳其', homeFlag: '🇦🇺', awayFlag: '🇹🇷', homeRank: 25, awayRank: 28, group: 'D', time: '6/14 09:00', loc: '洛杉矶' }
-        ],
-        finished: [
-            { home: '墨西哥', away: '南非', homeFlag: '🇲🇽', awayFlag: '🇿🇦', score: '2-0', group: 'A' },
-            { home: '韩国', away: '捷克', homeFlag: '🇰🇷', awayFlag: '🇨🇿', score: '2-1', group: 'A' },
-            { home: '加拿大', away: '波黑', homeFlag: '🇨🇦', awayFlag: '🇧🇦', score: '1-1', group: 'B' },
-            { home: '美国', away: '巴拉圭', homeFlag: '🇺🇸', awayFlag: '🇵🇾', score: '4-1', group: 'D' }
-        ],
-        schedule: [
-            { home: '捷克', away: '南非', homeFlag: '🇨🇿', awayFlag: '🇿🇦', time: '6/19 03:00', group: 'A' },
-            { home: '墨西哥', away: '韩国', homeFlag: '🇲🇽', awayFlag: '🇰🇷', time: '6/19 06:00', group: 'A' },
-            { home: '瑞士', away: '波黑', homeFlag: '🇨🇭', awayFlag: '🇧🇦', time: '6/19 09:00', group: 'B' },
-            { home: '加拿大', away: '卡塔尔', homeFlag: '🇨🇦', awayFlag: '🇶🇦', time: '6/19 12:00', group: 'B' },
-            { home: '巴西', away: '海地', homeFlag: '🇧🇷', awayFlag: '🇭🇹', time: '6/20 03:00', group: 'C' },
-            { home: '苏格兰', away: '摩洛哥', homeFlag: '🏴󠁧󠁢󠁳󠁣󠁴󠁿', awayFlag: '🇲🇦', time: '6/20 06:00', group: 'C' },
-            { home: '美国', away: '土耳其', homeFlag: '🇺🇸', awayFlag: '🇹🇷', time: '6/20 09:00', group: 'D' },
-            { home: '澳大利亚', away: '巴拉圭', homeFlag: '🇦🇺', awayFlag: '🇵🇾', time: '6/20 12:00', group: 'D' }
-        ]
-    };
-}
-
-// ========== AI预测 ==========
-function predictMatch(home, away, homeRank, awayRank) {
+// ========== 本地算法降级 ==========
+function predictLocal(home, away, homeRank, awayRank) {
     const homeStr = 100 - (homeRank || 50);
     const awayStr = 100 - (awayRank || 50);
     const total = homeStr + awayStr;
@@ -468,45 +479,46 @@ function predictMatch(home, away, homeRank, awayRank) {
     
     const confidence = 60 + Math.round(Math.random() * 25);
     
-    let rec, recType, stars, reason;
-    if (homeWin > awayWin + 15) {
-        rec = home + '胜'; recType = 'win';
-        stars = Math.min(5, Math.round(homeWin / 15));
-        reason = home + '实力占优（FIFA第' + homeRank + ' vs 第' + awayRank + '）';
-    } else if (awayWin > homeWin + 10) {
-        rec = away + '胜'; recType = 'lose';
-        stars = Math.min(5, Math.round(awayWin / 15));
-        reason = away + '排名更靠前（FIFA第' + awayRank + '），客场仍有优势';
-    } else {
-        rec = '平局'; recType = 'draw';
-        stars = 3;
-        reason = '两队实力接近（排名差' + Math.abs(homeRank - awayRank) + '位）';
-    }
-    
-    const homeOdds = (2.5 + Math.random()).toFixed(2);
-    const drawOdds = (3.0 + Math.random()).toFixed(2);
-    const awayOdds = (2.5 + Math.random() * 2).toFixed(2);
+    let reason;
+    if (homeWin > awayWin + 15) reason = home + '排名领先' + Math.abs(homeRank - awayRank) + '位，主场优势明显';
+    else if (awayWin > homeWin + 10) reason = away + '国际排名更高，客场稳定发挥';
+    else reason = '两队实力均衡，胜负难料';
     
     return {
         score: homeGoals + '-' + awayGoals,
         homeWin, draw, awayWin,
-        confidence, rec, recType, stars, reason,
-        homeOdds, drawOdds, awayOdds
+        confidence,
+        analysis: reason
     };
 }
 
+// ========== 推荐生成 ==========
+function makeRecommendation(home, away, p) {
+    let rec, recType, stars, reason;
+    if (p.homeWin > p.awayWin + 15) {
+        rec = home + '胜'; recType = 'win';
+        stars = Math.min(5, Math.round(p.homeWin / 15));
+        reason = (p.analysis || '') + '，推荐主胜';
+    } else if (p.awayWin > p.homeWin + 10) {
+        rec = away + '胜'; recType = 'lose';
+        stars = Math.min(5, Math.round(p.awayWin / 15));
+        reason = (p.analysis || '') + '，推荐客胜';
+    } else {
+        rec = '平局'; recType = 'draw'; stars = 3;
+        reason = (p.analysis || '') + '，保守看好平局';
+    }
+    return { rec, recType, stars, reason };
+}
+
 // ========== 渲染 ==========
-function getFlag(teamName) {
-    return FLAG_MAP[teamName] || '⚽';
-}
+function getFlag(teamName) { return FLAG_MAP[teamName] || '⚽'; }
+function getRank(teamName) { return FIFA_RANK[teamName] || 50; }
 
-function getRank(teamName) {
-    return FIFA_RANK[teamName] || 50;
-}
-
-function renderLiveCard(m, p, dataSource) {
-    const recClass = p.recType === 'win' ? 'win' : p.recType === 'lose' ? 'lose' : 'draw';
-    const mid = m.id || Math.random().toString(36).substr(2,6);
+function renderCardHtml(m, p, rec, isDeepSeek) {
+    const recClass = rec.recType;
+    const homeOdds = (2.5 + Math.random()).toFixed(2);
+    const drawOdds = (3.0 + Math.random()).toFixed(2);
+    const awayOdds = (2.5 + Math.random() * 2).toFixed(2);
     
     return `
     <div class="match-card">
@@ -517,25 +529,26 @@ function renderLiveCard(m, p, dataSource) {
         <div class="match-main">
             <div class="teams">
                 <div class="team">
-                    <div class="flag">${m.homeFlag || getFlag(m.home)}</div>
+                    <div class="flag">${m.homeFlag || getFlag(m.homeEn || m.home)}</div>
                     <div class="name">${m.home}</div>
-                    <div class="rank">FIFA #${m.homeRank || getRank(m.home)}</div>
+                    <div class="rank">FIFA #${m.homeRank}</div>
                 </div>
                 <div class="vs-time">
                     <div class="vs">VS</div>
                     <div class="time">${(m.time || '').split(' ')[1] || ''}</div>
                 </div>
                 <div class="team">
-                    <div class="flag">${m.awayFlag || getFlag(m.away)}</div>
+                    <div class="flag">${m.awayFlag || getFlag(m.awayEn || m.away)}</div>
                     <div class="name">${m.away}</div>
-                    <div class="rank">FIFA #${m.awayRank || getRank(m.away)}</div>
+                    <div class="rank">FIFA #${m.awayRank}</div>
                 </div>
             </div>
             
             <div class="prediction">
-                <div class="pred-label">🤖 AI预测比分</div>
+                <div class="pred-label">🤖 DeepSeek AI 预测</div>
                 <div class="pred-score">${p.score}</div>
                 <div class="confidence">置信度 ${p.confidence}%</div>
+                <div class="ai-analysis">💡 ${p.analysis || ''}</div>
             </div>
             
             <div class="prob-row">
@@ -557,135 +570,101 @@ function renderLiveCard(m, p, dataSource) {
             </div>
             
             <div class="recommend">
-                <span class="rec-tag">推荐${p.recType === 'win' ? '主胜' : p.recType === 'lose' ? '客胜' : '平'}</span>
-                <span class="stars">${'⭐'.repeat(p.stars)}</span>
-                <span class="rec-desc">${p.reason}</span>
+                <span class="rec-tag">推荐${rec.recType === 'win' ? '主胜' : rec.recType === 'lose' ? '客胜' : '平'}</span>
+                <span class="stars">${'⭐'.repeat(rec.stars)}</span>
+                <span class="rec-desc">${rec.reason}</span>
             </div>
             
             <div class="odds-section">
                 <div class="odds-title">竞彩赔率</div>
                 <div class="odds-grid">
-                    <div class="odds-btn ${p.recType === 'win' ? 'selected' : ''}" onclick="addToSlip('${m.home}胜', ${p.homeOdds})">
+                    <div class="odds-btn ${rec.recType === 'win' ? 'selected' : ''}" onclick="addToSlip('${m.home}胜', ${homeOdds})">
                         <span class="lb">主胜</span>
-                        <span class="val">${p.homeOdds}</span>
+                        <span class="val">${homeOdds}</span>
                     </div>
-                    <div class="odds-btn ${p.recType === 'draw' ? 'selected' : ''}" onclick="addToSlip('平局', ${p.drawOdds})">
+                    <div class="odds-btn ${rec.recType === 'draw' ? 'selected' : ''}" onclick="addToSlip('平局', ${drawOdds})">
                         <span class="lb">平局</span>
-                        <span class="val">${p.drawOdds}</span>
+                        <span class="val">${drawOdds}</span>
                     </div>
-                    <div class="odds-btn ${p.recType === 'lose' ? 'selected' : ''}" onclick="addToSlip('${m.away}胜', ${p.awayOdds})">
+                    <div class="odds-btn ${rec.recType === 'lose' ? 'selected' : ''}" onclick="addToSlip('${m.away}胜', ${awayOdds})">
                         <span class="lb">客胜</span>
-                        <span class="val">${p.awayOdds}</span>
+                        <span class="val">${awayOdds}</span>
                     </div>
                 </div>
             </div>
             
-            <div class="data-source">📊 ${dataSource}</div>
+            <div class="data-source">
+                <span class="${isDeepSeek ? 'ai' : ''}">📊 ${isDeepSeek ? 'DeepSeek AI 深度分析' : 'FIFA排名算法'}</span>
+            </div>
         </div>
     </div>
     `;
 }
 
-function renderFinishedCard(f) {
-    return `
-    <div class="finished-card">
-        <div class="flag">${f.homeFlag || getFlag(f.home)}</div>
-        <div class="team-name">${f.home}</div>
-        <div class="finished-score">${f.score}</div>
-        <div class="team-name">${f.away}</div>
-        <div class="flag">${f.awayFlag || getFlag(f.away)}</div>
-    </div>
-    `;
-}
-
-// ========== 主加载逻辑 ==========
+// ========== 主加载 ==========
 async function loadPredictions() {
     const livePanel = document.getElementById('live-panel');
-    livePanel.innerHTML = '<div class="loading"><div class="spinner"></div>加载数据中...</div>';
+    livePanel.innerHTML = '<div class="loading"><div class="spinner"></div>DeepSeek AI 分析中...</div>';
     
-    const apiMatches = await fetchLiveMatches();
-    const local = getLocalMatches();
-    
+    const local = LOCAL_DATA;
     let liveHtml = '';
     let finishedHtml = '';
     let scheduleHtml = '';
+    let aiCount = 0;
     
-    if (apiMatches && apiMatches.length > 0) {
-        // 有真实API数据
-        document.getElementById('apiStatus').className = 'api-status live';
-        document.getElementById('apiStatus').textContent = '🟢 Football-Data API 已连接';
+    // 逐个用DeepSeek预测
+    for (const m of local.upcoming) {
+        const p = await predictWithDeepSeek(m.homeEn || m.home, m.awayEn || m.away, m.homeRank, m.awayRank);
         
-        apiMatches.forEach(match => {
-            const home = match.homeTeam.name;
-            const away = match.awayTeam.name;
-            const homeRank = getRank(home);
-            const awayRank = getRank(away);
-            const status = match.status;
-            
-            if (status === 'FINISHED') {
-                const score = match.score.fullTime.home + '-' + match.score.fullTime.away;
-                finishedHtml += renderFinishedCard({
-                    home, away,
-                    homeFlag: getFlag(home),
-                    awayFlag: getFlag(away),
-                    score
-                });
-            } else if (status === 'IN_PLAY' || status === 'PAUSED') {
-                // 进行中的比赛
-                const p = predictMatch(home, away, homeRank, awayRank);
-                const m = {
-                    home, away,
-                    homeFlag: getFlag(home),
-                    awayFlag: getFlag(away),
-                    homeRank, awayRank,
-                    group: match.competition?.name || '',
-                    time: '进行中',
-                    loc: match.venue || ''
-                };
-                liveHtml += renderLiveCard(m, p, 'Football-Data API 实时数据');
-            } else {
-                // 未开始
-                const p = predictMatch(home, away, homeRank, awayRank);
-                const utcDate = new Date(match.utcDate);
-                const localTime = utcDate.toLocaleString('zh-CN', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' });
-                const m = {
-                    home, away,
-                    homeFlag: getFlag(home),
-                    awayFlag: getFlag(away),
-                    homeRank, awayRank,
-                    group: match.competition?.name || '',
-                    time: localTime,
-                    loc: match.venue || ''
-                };
-                liveHtml += renderLiveCard(m, p, 'Football-Data API 实时数据');
-            }
-        });
+        let finalP, isDeepSeek;
+        if (p) {
+            finalP = p;
+            isDeepSeek = true;
+            aiCount++;
+        } else {
+            finalP = predictLocal(m.home, m.away, m.homeRank, m.awayRank);
+            isDeepSeek = false;
+        }
+        
+        const rec = makeRecommendation(m.home, m.away, finalP);
+        liveHtml += renderCardHtml(m, finalP, rec, isDeepSeek);
+    }
+    
+    // 更新状态
+    if (aiCount > 0) {
+        document.getElementById('apiStatus').className = 'api-status deepseek';
+        document.getElementById('apiStatus').textContent = '🟢 DeepSeek AI 已连接 | ' + aiCount + '/' + local.upcoming.length + '场AI预测';
+        deepseekOk = true;
     } else {
-        // API无数据，使用本地
-        document.getElementById('apiStatus').className = 'api-status local';
-        document.getElementById('apiStatus').textContent = '🟡 本地预测模式';
-        
-        local.upcoming.forEach(m => {
-            const p = predictMatch(m.home, m.away, m.homeRank, m.awayRank);
-            liveHtml += renderLiveCard(m, p, 'FIFA排名 + 本地算法');
-        });
-        
-        local.finished.forEach(f => {
-            finishedHtml += renderFinishedCard(f);
-        });
-        
-        local.schedule.forEach(s => {
-            scheduleHtml += `
-            <div class="finished-card">
-                <div class="flag">${s.homeFlag}</div>
-                <div class="team-name">${s.home} vs ${s.away}</div>
-                <div style="color:#00d4aa;font-size:12px;">${s.time}</div>
-            </div>
-            `;
-        });
+        document.getElementById('apiStatus').className = 'api-status fallback';
+        document.getElementById('apiStatus').textContent = '🟡 DeepSeek降级，本地算法预测';
     }
     
     livePanel.innerHTML = liveHtml || '<div style="text-align:center;color:#666;padding:40px;">暂无今日预测</div>';
+    
+    // 渲染已完成和赛程
+    local.finished.forEach(f => {
+        finishedHtml += `
+        <div class="finished-card">
+            <div class="flag">${f.homeFlag}</div>
+            <div class="team-name">${f.home}</div>
+            <div class="finished-score">${f.score}</div>
+            <div class="team-name">${f.away}</div>
+            <div class="flag">${f.awayFlag}</div>
+        </div>
+        `;
+    });
+    
+    local.schedule.forEach(s => {
+        scheduleHtml += `
+        <div class="finished-card">
+            <div class="flag">${s.homeFlag}</div>
+            <div class="team-name">${s.home} vs ${s.away}</div>
+            <div style="color:#00d4aa;font-size:12px;">${s.time}</div>
+        </div>
+        `;
+    });
+    
     document.getElementById('finished-panel').innerHTML = finishedHtml || '<div style="text-align:center;color:#666;padding:40px;">暂无已完赛</div>';
     document.getElementById('schedule-panel').innerHTML = scheduleHtml || '<div style="text-align:center;color:#666;padding:40px;">暂无赛程</div>';
 }
@@ -700,8 +679,8 @@ function switchTab(id, el) {
 
 function addToSlip(pick, odds) {
     const existing = slip.find(s => s.pick === pick);
-    if (existing) { existing.odds = parseFloat(odds); }
-    else { slip.push({ pick, odds: parseFloat(odds) }); }
+    if (existing) existing.odds = parseFloat(odds);
+    else slip.push({ pick, odds: parseFloat(odds) });
     updateSlip();
 }
 
@@ -713,8 +692,7 @@ function updateSlip() {
     if (slip.length === 0) { el.classList.remove('show'); return; }
     el.classList.add('show');
     document.getElementById('slipCount').textContent = slip.length;
-    let total = 1;
-    let html = '';
+    let total = 1, html = '';
     slip.forEach((s, i) => {
         total *= s.odds;
         html += `<div class="slip-item"><span>${s.pick}</span><span>${s.odds.toFixed(2)} <span class="del" onclick="removeFromSlip(${i})">✕</span></span></div>`;
@@ -725,8 +703,8 @@ function updateSlip() {
 
 function updateTime() {
     const now = new Date();
-    const t = now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
-    document.getElementById('updateTime').textContent = t + ' 更新';
+    document.getElementById('updateTime').textContent =
+        now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0') + ' 更新';
 }
 
 // ========== 初始化 ==========
