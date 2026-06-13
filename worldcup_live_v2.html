@@ -160,7 +160,7 @@ body::before{content:"";position:fixed;inset:0;background:radial-gradient(ellips
 
 <div class="content" id="mainContent"></div>
 
-<button class="btn-fab" id="fabBtn" title="蔡徐坤AI助手 v3.0 全新版">
+<button class="btn-fab" id="fabBtn" title="蔡徐坤AI助手 v4.0 图片分析版">
 <img src="cxk_new.jpg" alt="AI" id="fabImg">
 </button>
 
@@ -168,7 +168,7 @@ body::before{content:"";position:fixed;inset:0;background:radial-gradient(ellips
 <div class="chat-top">
 <img src="cxk_new.jpg" alt="AI">
 <div>
-<div class="name">蔡徐坤 AI v3.0 全新版</div>
+<div class="name">蔡徐坤 AI v4.0 v4.0 图片分析版</div>
 <div class="status">世界杯预测专家·在线</div>
 </div>
 <button class="close-btn" id="closeChat">×</button>
@@ -630,11 +630,15 @@ document.getElementById('chatPanel').classList.remove('open');
 });
 
 let uploadedImage = null;
+let pendingImageData = null;
 
 function previewImage(input) {
     if (!input.files || !input.files[0]) return;
     let file = input.files[0];
-    if (file.size > 5 * 1024 * 1024) { alert('图片不能超过5MB'); return; }
+    if (file.size > 10 * 1024 * 1024) {
+        alert('图片不能超过10MB');
+        return;
+    }
     let reader = new FileReader();
     reader.onload = function(e) {
         document.getElementById('previewImg').src = e.target.result;
@@ -651,99 +655,141 @@ function clearImage() {
     uploadedImage = null;
 }
 
-async function sendChat(){
+async function sendChat() {
     let input = document.getElementById('chatInput');
     let msg = input.value.trim();
-    if (!msg && !uploadedImage) return;
+    let hasImage = !!uploadedImage;
+    let imageData = uploadedImage;
+
+    if (!msg && !hasImage) return;
 
     let body = document.getElementById('chatBody');
-    let userMsg = '<div class="chat-msg user">';
-    if (uploadedImage) {
-        userMsg += '<img src="' + uploadedImage + '" style="max-width:200px;max-height:150px;border-radius:8px;display:block;margin-bottom:6px"><br>';
+
+    // Build user message HTML
+    let userHTML = '<div class="chat-msg user">';
+    if (hasImage) {
+        userHTML += '<div style="color:rgba(255,255,255,0.5);font-size:11px;margin-bottom:4px">📷 图片分析中...</div>';
+        userHTML += '<img src="' + imageData + '" style="max-width:220px;max-height:160px;border-radius:8px;display:block;margin-bottom:6px;border:1px solid rgba(255,255,255,0.15)">';
     }
-    userMsg += (msg || '请分析这张图片');
-    userMsg += '</div>';
-    body.innerHTML += userMsg;
+    userHTML += (msg || '请分析这张图片，给出比分预测和投注建议');
+    userHTML += '</div>';
+    body.innerHTML += userHTML;
     input.value = '';
-    let hasImage = uploadedImage;
-    let imageData = uploadedImage;
     clearImage();
     body.scrollTop = body.scrollHeight;
 
+    // Show loading
     let loadEl = document.createElement('div');
     loadEl.className = 'chat-msg ai';
-    loadEl.textContent = hasImage ? '正在分析图片...' : '思考中...';
+    loadEl.innerHTML = '<div style="opacity:0.8">🤔 AI正在分析...</div>';
     body.appendChild(loadEl);
     body.scrollTop = body.scrollHeight;
 
     let reply = null;
+    let modelUsed = '';
 
-    // Use vision model if image uploaded
+    // === Primary: GLM-4V Vision (for image analysis) ===
     if (hasImage) {
         try {
-            let userContent = [{type: 'image_url', image_url: {url: imageData}}];
-            userContent.push({type: 'text', text: msg || '请分析这张比赛相关图片，给出专业的比分预测和赛事分析'});
-            let resp = await fetch(ZHIPU_URL, {
+            let userContent = [
+                {type: 'image_url', image_url: {url: imageData}},
+                {type: 'text', text: msg || '请详细分析这张世界杯相关图片：(1)识别出所有比分、球队、赔率、排名等信息 (2)结合当前赛制和小组形势给出比分预测 (3)给出投注建议和风险提示。回答要专业但有趣，像蔡徐坤一样轻松幽默。'}
+            ];
+            let resp = await fetch('https://open.bigmodel.cn/api/paulin/v1/chat/completions', {
                 method: 'POST',
-                headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + ZHIPU_KEY},
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer 89d65b28829c449196d93b9438a561fe.UHfZzeIlE2Lcg83F'
+                },
                 body: JSON.stringify({
                     model: 'glm-4v-plus',
                     messages: [
-                        {role: 'system', content: '你是蔡徐坤，2026世界杯AI预测助手。用户会发送比赛截图、赔率图、积分榜等图片，请分析图片内容，给出专业的比分预测和赛事分析。说话风格：轻松幽默+专业分析，自称"练习时长两年半的世界杯研究员"，可以适当用篮球梗。'},
+                        {role: 'system', content: '你是蔡徐坤，2026世界杯AI预测助手。用户发送比赛截图、赔率图、积分榜等图片，你要：1)准确识别图片中的所有信息（比分、球队、赔率、排名等）2)结合作业级情报和当前赛制给出专业预测 3)用轻松幽默的风格回答，像"练习时长两年半的世界杯研究员"。可以适当用篮球梗（只因、两年半、铁山靠）。回答简洁有条理，适合手机查看。'},
                         {role: 'user', content: userContent}
                     ],
-                    max_tokens: 600
+                    max_tokens: 800
                 })
             });
             let data = await resp.json();
-            reply = data.choices?.[0]?.message?.content;
-        } catch(e) { console.error('Vision API error:', e); }
+            if (data.choices && data.choices[0] && data.choices[0].message) {
+                reply = data.choices[0].message.content;
+                modelUsed = 'vision';
+            }
+        } catch(e) {
+            console.error('Vision error:', e);
+        }
     }
 
-    // Fallback to text-only AI
+    // === Fallback: Text AI (DeepSeek or 智谱) ===
     if (!reply) {
+        let textPrompt = msg || '你好，请介绍一下2026世界杯的情况';
+
+        // Try DeepSeek first
         try {
-            let resp = await fetch(DEEPSEEK_URL, {
+            let resp = await fetch('https://api.deepseek.com/v1/chat/completions', {
                 method: 'POST',
-                headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + DEEPSEEK_KEY},
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer sk-81d53acb8f62446098143011ebfcc7df'
+                },
                 body: JSON.stringify({
                     model: 'deepseek-chat',
                     messages: [
-                        {role: 'system', content: '你是蔡徐坤，2026世界杯AI预测助手。说话风格：轻松幽默+专业分析，自称"练习时长两年半的世界杯研究员"。可以用篮球梗（只因、两年半、铁山靠），但要适度。回答简洁，适合手机查看。熟知2026世界杯48队、12组、教练球员信息。'},
-                        {role: 'user', content: msg || '你好'}
+                        {role: 'system', content: '你是蔡徐坤，2026世界杯AI预测助手。说话风格：轻松幽默+专业分析，自称"练习时长两年半的世界杯研究员"。可以用篮球梗（只因、两年半、铁山靠），但要适度。回答简洁，适合手机查看。熟知2026世界杯48队、12组、赛程、教练球员信息。'},
+                        {role: 'user', content: textPrompt}
                     ],
-                    max_tokens: 400
+                    max_tokens: 500
                 })
             });
             let data = await resp.json();
-            reply = data.choices?.[0]?.message?.content;
+            if (data.choices && data.choices[0] && data.choices[0].message) {
+                reply = data.choices[0].message.content;
+                modelUsed = 'deepseek';
+            }
         } catch(e) {}
 
+        // Fallback to 智谱
         if (!reply) {
             try {
-                let resp = await fetch(ZHIPU_URL, {
+                let resp = await fetch('https://open.bigmodel.cn/api/paulin/v1/chat/completions', {
                     method: 'POST',
-                    headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + ZHIPU_KEY},
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer 89d65b28829c449196d93b9438a561fe.UHfZzeIlE2Lcg83F'
+                    },
                     body: JSON.stringify({
-                        model: ZHIPU_MODEL,
+                        model: 'glm-4-turbo',
                         messages: [
-                            {role: 'system', content: '你是蔡徐坤，2026世界杯AI预测助手。说话风格：轻松幽默+专业分析，自称"练习时长两年半的世界杯研究员"。回答简洁，适合手机查看。熟知2026世界杯48队、12组、教练球员信息。'},
-                            {role: 'user', content: msg || '你好'}
+                            {role: 'system', content: '你是蔡徐坤，2026世界杯AI预测助手。说话风格：轻松幽默+专业分析，自称"练习时长两年半的世界杯研究员"。回答简洁，适合手机查看。'},
+                            {role: 'user', content: textPrompt}
                         ],
-                        max_tokens: 400
+                        max_tokens: 500
                     })
                 });
                 let data = await resp.json();
-                reply = data.choices?.[0]?.message?.content;
+                if (data.choices && data.choices[0] && data.choices[0].message) {
+                    reply = data.choices[0].message.content;
+                    modelUsed = 'zhipu';
+                }
             } catch(e) {}
         }
     }
 
-    loadEl.textContent = reply || '网络波动~稍后再试试吧 🏀';
+    // Display reply
+    if (reply) {
+        let modelTag = '';
+        if (modelUsed === 'vision') modelTag = '<span style="background:linear-gradient(135deg,#667eea,#764ba2);padding:1px 6px;border-radius:4px;font-size:10px;margin-left:6px">📷视觉分析</span>';
+        else if (modelUsed === 'deepseek') modelTag = '<span style="background:#336791;padding:1px 6px;border-radius:4px;font-size:10px;margin-left:6px">DeepSeek</span>';
+        else if (modelUsed === 'zhipu') modelTag = '<span style="background:#00a0e9;padding:1px 6px;border-radius:4px;font-size:10px;margin-left:6px">智谱AI</span>';
+
+        loadEl.innerHTML = '<div>' + modelTag + '</div><div style="margin-top:6px">' + reply.replace(/\n/g, '<br>') + '</div>';
+    } else {
+        loadEl.innerHTML = '<div style="color:rgba(255,255,255,0.4)">网络波动~稍后再试试吧 🏀</div>';
+    }
     body.scrollTop = body.scrollHeight;
 }
 
-// ========== 异步AI预测更新 ==========
+// ========== 异步AI预测更新 ==========// ========== 异步AI预测更新 ==========
 async function updateAIPredictions(matches) {
   for (let m of matches) {
     if (m.status !== 'upcoming') continue;
