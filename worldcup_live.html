@@ -210,6 +210,23 @@ body{font-family:-apple-system,'PingFang SC','Microsoft YaHei','Helvetica Neue',
 // 48支球队, 12小组, 至少20场比赛
 // WeChat compatible - no let/const, no arrow functions, no template literals
 
+// Country name Chinese mapping
+var NAME_ZH = {
+  'Mexico':'墨西哥','South Africa':'南非','South Korea':'韩国','Czech Republic':'捷克',
+  'Canada':'加拿大','Bosnia':'波黑','Qatar':'卡塔尔','Switzerland':'瑞士',
+  'Brazil':'巴西','Morocco':'摩洛哥','Haiti':'海地','Scotland':'苏格兰',
+  'USA':'美国','Paraguay':'巴拉圭','Australia':'澳大利亚','Turkey':'土耳其',
+  'Germany':'德国','Curacao':'库拉索','Ivory Coast':'科特迪瓦','Ecuador':'厄瓜多尔',
+  'Netherlands':'荷兰','Japan':'日本','Sweden':'瑞典','Tunisia':'突尼斯',
+  'Belgium':'比利时','Egypt':'埃及','Iran':'伊朗','New Zealand':'新西兰',
+  'Spain':'西班牙','Cape Verde':'佛得角','Saudi Arabia':'沙特阿拉伯','Uruguay':'乌拉圭',
+  'France':'法国','Senegal':'塞内加尔','Iraq':'伊拉克','Norway':'挪威',
+  'Argentina':'阿根廷','Algeria':'阿尔及利亚','Austria':'奥地利','Jordan':'约旦',
+  'Portugal':'葡萄牙','DR Congo':'刚果(金)','Uzbekistan':'乌兹别克斯坦','Colombia':'哥伦比亚',
+  'England':'英格兰','Croatia':'克罗地亚','Ghana':'加纳','Panama':'巴拿马'
+};
+
+// Country flag map
 // Country flag map
 var FLAGS = {
   'Mexico':'🇲🇽','South Africa':'🇿🇦','South Korea':'🇰🇷','Czech Republic':'🇨🇿',
@@ -460,7 +477,7 @@ function renderCardHTML(m) {
     + '<div class="team-info">'
     + '<span class="flag">' + m.homeFlag + '</span>'
     + '<div class="team-details">'
-    + '<div class="team-name">' + m.home + '</div>'
+    + '<div class="team-name">' + NAME_ZH[m.home] + '</div>'
     + '<div class="team-meta">FIFA #' + m.homeRank + '</div>'
     + '</div>'
     + '</div>'
@@ -470,7 +487,7 @@ function renderCardHTML(m) {
     + '<div class="team-info right">'
     + '<span class="flag">' + m.awayFlag + '</span>'
     + '<div class="team-details">'
-    + '<div class="team-name">' + m.away + '</div>'
+    + '<div class="team-name">' + NAME_ZH[m.away] + '</div>'
     + '<div class="team-meta">FIFA #' + m.awayRank + '</div>'
     + '</div>'
     + '</div>'
@@ -563,7 +580,7 @@ function renderTeams() {
       if (info.group === grp) {
         html += '<div class="team-archive-card">'
           + '<div class="flag">' + info.flag + '</div>'
-          + '<div class="team-name">' + name + '</div>'
+          + '<div class="team-name">' + NAME_ZH[name] + '</div>'
           + '<div class="team-meta">FIFA #' + info.rank + '</div>'
           + '<div class="team-meta">教练: ' + info.coach + '</div>'
           + '</div>';
@@ -611,7 +628,9 @@ function generateAIResponse(q) {
   var foundMatch = null;
   for (var i = 0; i < MATCHES.length; i++) {
     var m = MATCHES[i];
-    if (q.indexOf(m.home.toLowerCase()) >= 0 || q.indexOf(m.away.toLowerCase()) >= 0) {
+    var homeZh = NAME_ZH[m.home];
+    var awayZh = NAME_ZH[m.away];
+    if (q.indexOf(m.home.toLowerCase()) >= 0 || q.indexOf(m.away.toLowerCase()) >= 0 || q.indexOf(homeZh) >= 0 || q.indexOf(awayZh) >= 0) {
       foundMatch = m;
       break;
     }
