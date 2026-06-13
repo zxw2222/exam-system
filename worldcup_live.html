@@ -717,6 +717,7 @@ return html;
 }
 }
 
+
 function renderTeams(){
 let html='';
 for(let [gn,teams] of Object.entries(GROUPS)){
@@ -839,25 +840,6 @@ loadEl.textContent=reply;
 loadEl.textContent=reply;
 }
 body.scrollTop=body.scrollHeight;
-}
-
-// ========== 尝试Football-Data API ==========
-async function fetchFootballData(){
-try{
-let resp=await fetch(FOOTBALL_BASE+'/competitions/WC/matches?status=FINISHED',{
-headers:{'X-Auth-Token':FOOTBALL_KEY}
-});
-if(resp.ok){
-document.getElementById('dataStatus').className='status-dot online';
-document.getElementById('dataLabel').textContent='API在线';
-} else {
-throw new Error('API unavailable');
-}
-}catch(e){
-document.getElementById('dataStatus').className='status-dot online';
-document.getElementById('dataStatus').style.background='var(--gold)';
-document.getElementById('dataLabel').textContent='本地模式';
-}
 }
 
 // ========== 启动 ==========
