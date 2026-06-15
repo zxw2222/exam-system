@@ -1,1174 +1,1231 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="description" content="2026世界杯 AI预测中心 - DeepSeek+智谱AI双引擎预测">
-<title>2026世界杯 · AI预测中心</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>2026世界杯·AI预测中心</title>
 <style>
-*{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:-apple-system,'PingFang SC','Microsoft YaHei','Helvetica Neue',sans-serif;background:#0a0e27;color:#FFFFFF;min-height:100vh;padding-bottom:80px;overflow-x:hidden;}
-::-webkit-scrollbar{width:3px;}
-::-webkit-scrollbar-track{background:#0a0e27;}
-::-webkit-scrollbar-thumb{background:#2a3055;border-radius:2px;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0a0e1a;--card:rgba(15,23,42,0.9);--border:rgba(51,65,85,0.5);--accent1:#6366f1;--accent2:#8b5cf6;--gold:#f59e0b;--green:#22c55e;--red:#ef4444;--text:#e2e8f0;--muted:#94a3b8}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0;background:radial-gradient(ellipse at 20% 50%,rgba(99,102,241,0.08) 0%,transparent 50%),radial-gradient(ellipse at 80% 20%,rgba(139,92,246,0.06) 0%,transparent 50%);pointer-events:none;z-index:0}
 
-/* ========== HEADER ========== */
-.header{background:rgba(13,17,39,0.92);backdrop-filter:blur(12px);padding:14px 16px 10px;position:sticky;top:0;z-index:1000;box-shadow:0 2px 24px rgba(0,0,0,0.6);border-bottom:1px solid rgba(255,255,255,0.06);}
-.header-inner{display:flex;align-items:center;justify-content:space-between;}
-.header-left{display:flex;align-items:center;gap:10px;}
-.header-icon{font-size:26px;line-height:1;}
-.header-title{font-size:16px;font-weight:800;color:#FFFFFF;letter-spacing:0.5px;}
-.header-sub{font-size:10px;color:#8892A0;margin-top:1px;letter-spacing:0.5px;}
-.header-right{display:flex;gap:10px;align-items:center;}
-.header-btn{background:rgba(255,255,255,0.06);border:none;color:#8892A0;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;transition:background 0.2s;}
-.header-btn:active{background:rgba(255,255,255,0.12);}
+.header{position:sticky;top:0;z-index:50;background:linear-gradient(135deg,rgba(15,23,42,0.98),rgba(30,41,59,0.98));backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:12px 16px;display:flex;align-items:center;justify-content:space-between}
+.header h1{font-size:18px;background:linear-gradient(135deg,var(--accent1),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.header-status{display:flex;align-items:center;gap:16px;font-size:11px}
+.status-dot{width:7px;height:7px;border-radius:50%}
+.status-dot.online{background:var(--green);box-shadow:0 0 8px var(--green);animation:pulse 2s infinite}
+.status-dot.offline{background:var(--red)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
 
-/* ========== TABS ========== */
-.tabs{background:#0d1127;display:flex;padding:0 8px;border-bottom:1px solid rgba(255,255,255,0.06);position:sticky;top:62px;z-index:999;}
-.tab{flex:1;text-align:center;padding:11px 2px 10px;font-size:12px;color:#8892A0;cursor:pointer;position:relative;transition:color 0.25s;border:none;background:transparent;white-space:nowrap;font-weight:500;}
-.tab.active{color:#FFFFFF;font-weight:700;}
-.tab.active::after{content:'';position:absolute;bottom:0;left:15%;width:70%;height:2.5px;background:#4A90D9;border-radius:2px 2px 0 0;}
-.tab:active{opacity:0.7;}
+.tabs{display:flex;overflow-x:auto;background:rgba(15,23,42,0.8);border-bottom:1px solid var(--border);position:sticky;top:52px;z-index:49}
+.tab-btn{flex-shrink:0;padding:12px 18px;font-size:13px;font-weight:500;color:var(--muted);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;transition:all .2s;white-space:nowrap}
+.tab-btn.active{color:var(--accent1);border-bottom-color:var(--accent1);background:rgba(99,102,241,0.08)}
+.tab-btn:hover{color:var(--text)}
 
-/* ========== CONTENT ========== */
-.content{padding:10px 10px 20px;max-width:500px;margin:0 auto;}
+.content{padding:12px;padding-bottom:100px;position:relative;z-index:1}
 
-/* ========== MATCH CARD ========== */
-.match-card{background:#131730;border-radius:14px;padding:0;margin-bottom:14px;border:1px solid rgba(255,255,255,0.08);box-shadow:0 4px 24px rgba(0,0,0,0.35);overflow:hidden;}
+.match-card{background:var(--card);border-radius:14px;padding:16px;margin-bottom:12px;border:1px solid var(--border);position:relative;overflow:hidden}
+.match-card::before{content:"";position:absolute;top:0;left:0;right:0;height:2px}
+.match-card.live::before{background:linear-gradient(90deg,var(--red),#f97316);animation:liveGrad 2s infinite}
+.match-card.finished::before{background:linear-gradient(90deg,var(--green),#16a34a)}
+.match-card.upcoming::before{background:linear-gradient(90deg,var(--accent1),var(--accent2))}
+@keyframes liveGrad{0%,100%{opacity:1}50%{opacity:.4}}
 
-/* Card top bar: group + time + status */
-.card-top{display:flex;align-items:center;justify-content:space-between;padding:10px 14px 8px;background:rgba(255,255,255,0.02);}
-.card-group{font-size:11px;color:#4A90D9;background:rgba(74,144,217,0.12);padding:3px 10px;border-radius:12px;font-weight:700;letter-spacing:0.3px;}
-.card-time{font-size:11px;color:#8892A0;font-weight:500;}
-.card-status{font-size:11px;padding:3px 10px;border-radius:12px;font-weight:700;letter-spacing:0.3px;}
-.card-status.finished{background:rgba(74,144,217,0.18);color:#4A90D9;}
-.card-status.live{background:rgba(231,76,60,0.18);color:#E74C3C;animation:pulse 1.5s infinite;}
-.card-status.upcoming{background:rgba(46,204,113,0.15);color:#2ECC71;}
-@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.5;}}
+.card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.card-group{font-size:11px;color:var(--muted)}
+.card-time{font-size:11px;padding:3px 10px;border-radius:12px;font-weight:600}
+.card-time.live{background:rgba(239,68,68,.15);color:var(--red)}
+.card-time.finished{background:rgba(34,197,94,.15);color:var(--green)}
+.card-time.upcoming{background:rgba(99,102,241,.15);color:var(--accent1)}
 
-/* Flags + teams */
-.card-teams{display:flex;align-items:center;justify-content:space-between;padding:14px 14px 8px;}
-.team-block{display:flex;flex-direction:column;align-items:center;gap:2px;width:38%;}
-.team-flag{font-size:36px;line-height:1.1;}
-.team-name-zh{font-size:14px;font-weight:700;color:#FFFFFF;text-align:center;margin-top:2px;}
-.team-name-en{font-size:10px;color:#8892A0;text-align:center;margin-top:1px;letter-spacing:0.5px;}
-.vs-block{display:flex;flex-direction:column;align-items:center;gap:2px;width:24%;}
-.vs-text{font-size:14px;font-weight:900;color:#FFD700;letter-spacing:2px;}
-.vs-score{font-size:20px;font-weight:900;color:#FFFFFF;letter-spacing:1px;margin-top:2px;}
-.vs-label{font-size:10px;color:#8892A0;}
+.teams-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.team-col{text-align:center;flex:1}
+.team-flag{font-size:36px;margin-bottom:6px;line-height:1}
+.team-name{font-size:13px;font-weight:600;margin-bottom:2px}
+.team-meta{font-size:10px;color:var(--muted)}
+.vs-col{text-align:center;padding:0 10px}
+.vs-score{font-size:32px;font-weight:800;letter-spacing:4px}
+.vs-label{font-size:10px;color:var(--muted);margin-top:2px}
 
-/* Coach + players info */
-.card-info{padding:6px 14px 8px;}
-.info-row{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:3px;font-size:10.5px;color:#8892A0;line-height:1.5;}
-.info-row .left{width:48%;text-align:left;display:flex;flex-direction:column;gap:1px;}
-.info-row .right{width:48%;text-align:right;display:flex;flex-direction:column;gap:1px;}
-.info-item{display:flex;align-items:center;gap:3px;flex-wrap:wrap;}
-.info-icon{font-size:11px;}
-.info-label{color:#8892A0;}
-.info-value{color:#c0c8d8;font-weight:500;}
+.section-label{font-size:11px;color:var(--accent2);font-weight:600;margin:10px 0 6px;display:flex;align-items:center;gap:4px}
+.section-label::before{content:"";display:inline-block;width:12px;height:2px;background:var(--accent2);border-radius:1px}
 
-/* Separator */
-.card-sep{margin:4px 14px;border:none;border-top:1px solid rgba(255,255,255,0.08);}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px}
+.info-item{background:rgba(255,255,255,.03);border-radius:8px;padding:8px 10px;font-size:11px}
+.info-item .info-label{color:var(--muted);font-size:10px;margin-bottom:3px}
+.info-item .info-value{font-weight:500;font-size:12px}
 
-/* AI Prediction */
-.ai-section{padding:8px 14px 10px;}
-.ai-header-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
-.ai-engine{display:flex;align-items:center;gap:5px;}
-.ai-engine-badge{font-size:9px;font-weight:800;padding:2px 6px;border-radius:4px;color:#fff;}
-.ai-engine-badge.deepseek{background:linear-gradient(135deg,#4fc3f7,#0288d1);}
-.ai-engine-badge.zhipu{background:linear-gradient(135deg,#ce93d8,#7b1fa2);}
-.ai-engine-text{font-size:10px;color:#8892A0;}
-.ai-confidence-badge{font-size:11px;color:#FFD700;font-weight:700;}
+.pred-box{background:linear-gradient(135deg,rgba(99,102,241,.12),rgba(139,92,246,.08));border-radius:12px;padding:14px;border:1px solid rgba(99,102,241,.2);margin:10px 0}
+.pred-title{font-size:12px;color:var(--accent2);font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.pred-score{font-size:22px;font-weight:700;text-align:center;margin:8px 0;background:linear-gradient(135deg,var(--accent1),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.pred-bars{margin:8px 0}
+.pred-bar{display:flex;align-items:center;gap:8px;margin:5px 0;font-size:11px}
+.pred-bar-label{width:36px;flex-shrink:0;text-align:right;color:var(--muted)}
+.pred-bar-track{flex:1;height:6px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden}
+.pred-bar-fill{height:100%;border-radius:3px;transition:width .6s}
+.pred-bar-fill.home{background:linear-gradient(90deg,var(--accent1),var(--accent2))}
+.pred-bar-fill.draw{background:linear-gradient(90deg,var(--gold),#fbbf24)}
+.pred-bar-fill.away{background:linear-gradient(90deg,var(--red),#f97316)}
+.pred-bar-val{width:32px;font-weight:600;text-align:right;font-size:11px}
+.pred-reason{font-size:11px;color:var(--muted);line-height:1.5;margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.06)}
 
-/* Predicted score */
-.ai-score-row{text-align:center;padding:4px 0 6px;font-size:13px;color:#FFFFFF;font-weight:600;}
-.ai-score-val{font-size:18px;font-weight:900;color:#FFFFFF;letter-spacing:1px;}
-.ai-score-flags{font-size:14px;}
+.odds-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+.odds-btn{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:10px 6px;text-align:center;cursor:pointer;transition:all .2s;user-select:none}
+.odds-btn:hover{background:rgba(99,102,241,.15);border-color:rgba(99,102,241,.4)}
+.odds-btn.tag{font-size:10px;color:var(--muted)}
+.odds-btn.val{font-size:15px;font-weight:700;color:var(--gold)}
 
-/* Prob bars */
-.prob-bars-outer{display:flex;height:22px;border-radius:11px;overflow:hidden;margin:4px 0 2px;}
-.prob-bar-seg{display:flex;align-items:center;justify-content:center;font-size:9.5px;font-weight:700;color:#fff;transition:width 0.5s;min-width:0;white-space:nowrap;overflow:hidden;}
-.prob-bar-seg.win{background:#2ECC71;}
-.prob-bar-seg.draw{background:#F1C40F;color:#333;}
-.prob-bar-seg.lose{background:#E74C3C;}
-.prob-labels{display:flex;justify-content:space-between;font-size:9.5px;color:#8892A0;padding:0 2px;margin-bottom:4px;}
-.prob-labels span{display:flex;align-items:center;gap:2px;}
+.star{color:var(--gold);font-size:12px}
 
-/* Analysis */
-.ai-analysis{font-size:11px;line-height:1.65;color:#c0c8d8;padding:6px 0 2px;border-top:1px solid rgba(255,255,255,0.06);margin-top:4px;}
-.ai-analysis::before{content:'📝 ';}
+.champion-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.champ-card{background:var(--card);border-radius:12px;padding:14px;border:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.champ-rank{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0}
+.champ-rank.r1{background:linear-gradient(135deg,#ffd700,#f0c000);color:#000}
+.champ-rank.r2{background:linear-gradient(135deg,#c0c0c0,#a0a0a0);color:#000}
+.champ-rank.r3{background:linear-gradient(135deg,#cd7f32,#a0522d);color:#fff}
+.champ-rank.rn{background:rgba(255,255,255,.1)}
+.champ-info{flex:1;min-width:0}
+.champ-team{font-size:13px;font-weight:600}
+.champ-detail{font-size:10px;color:var(--muted);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
-/* Odds section */
-.odds-section{padding:6px 14px 12px;}
-.odds-title{font-size:10px;color:#8892A0;text-align:center;margin-bottom:6px;letter-spacing:1px;}
-.odds-row{display:flex;gap:6px;}
-.odds-col{flex:1;text-align:center;padding:6px 2px;border-radius:8px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);}
-.odds-col-label{font-size:9.5px;color:#8892A0;margin-bottom:2px;}
-.odds-col-val{font-size:15px;font-weight:800;color:#FFFFFF;}
+.team-detail-card{background:var(--card);border-radius:14px;padding:16px;margin-bottom:12px;border:1px solid var(--border)}
+.team-detail-header{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.team-detail-flag{font-size:42px}
+.team-detail-name{font-size:17px;font-weight:700}
+.team-detail-rank{font-size:12px;color:var(--gold)}
+.team-detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.team-detail-item{background:rgba(255,255,255,.02);border-radius:8px;padding:10px}
+.team-detail-item .label{font-size:10px;color:var(--muted);margin-bottom:4px}
+.team-detail-item .value{font-size:12px;font-weight:500}
+.players-list{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
+.player-tag{background:rgba(99,102,241,.1);color:var(--accent1);font-size:10px;padding:2px 8px;border-radius:10px;white-space:nowrap}
 
-/* ========== TEAM ARCHIVE ========== */
-.team-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 2px;}
-.team-card{background:#131730;border-radius:12px;padding:12px 8px;text-align:center;border:1px solid rgba(255,255,255,0.06);}
-.team-card .flag{font-size:30px;}
-.team-card .name{font-size:12px;font-weight:700;color:#FFFFFF;margin-top:4px;}
-.team-card .en-name{font-size:9px;color:#8892A0;}
-.team-card .rank{font-size:10px;color:#4A90D9;margin-top:3px;}
-.team-card .coach{font-size:9px;color:#8892A0;margin-top:2px;}
+.btn-fab{position:fixed;bottom:20px;right:20px;width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--accent1),var(--accent2));border:none;cursor:pointer;z-index:100;box-shadow:0 4px 20px rgba(99,102,241,.5);transition:all .3s;display:flex;align-items:center;justify-content:center}
+.btn-fab:hover{transform:scale(1.08)}
+.btn-fab img{width:38px;height:38px;border-radius:50%;object-fit:cover}
 
-/* ========== EMPTY STATE ========== */
-.empty-state{text-align:center;padding:50px 20px;color:#8892A0;}
-.empty-state .icon{font-size:48px;margin-bottom:12px;}
-.empty-state .title{font-size:15px;margin-bottom:6px;}
-.empty-state .sub{font-size:12px;}
+.chat-panel{position:fixed;bottom:85px;right:20px;width:calc(100vw - 40px);max-width:340px;height:420px;background:linear-gradient(135deg,#0f172a,#1e293b);border-radius:18px;border:1px solid rgba(99,102,241,.3);box-shadow:0 10px 40px rgba(0,0,0,.6);display:none;flex-direction:column;overflow:hidden;z-index:99}
+.chat-panel.open{display:flex}
+.chat-top{background:linear-gradient(90deg,var(--accent1),var(--accent2));padding:12px;display:flex;align-items:center;gap:10px}
+.chat-top img{width:36px;height:36px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,.3)}
+.chat-top .name{font-weight:600;font-size:13px}
+.chat-top .status{font-size:10px;opacity:.8}
+.chat-top .close-btn{background:none;border:none;color:#fff;font-size:20px;cursor:pointer;margin-left:auto}
+.chat-body{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:10px}
+.chat-msg{padding:10px 14px;border-radius:16px;font-size:12px;line-height:1.5;max-width:85%}
+.chat-msg.ai{align-self:flex-start;background:rgba(99,102,241,.15);border-bottom-left-radius:4px}
+.chat-msg.user{align-self:flex-end;background:linear-gradient(135deg,var(--accent1),var(--accent2));border-bottom-right-radius:4px}
+.chat-input-row{display:flex;gap:8px;padding:10px;border-top:1px solid rgba(255,255,255,.06)}
+.chat-input-row input{flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:10px 16px;color:var(--text);font-size:13px;outline:none}
+.chat-input-row input::placeholder{color:var(--muted)}
+.chat-input-row button{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--accent1),var(--accent2));border:none;color:#fff;font-size:16px;cursor:pointer;flex-shrink:0}
+.chat-input-row .upload-btn{width:32px;height:32px;font-size:14px;margin-right:6px;background:rgba(255,255,255,.1);flex-shrink:0}
+.chat-input-row .upload-btn{width:32px;height:32px;font-size:14px;margin-right:6px;background:rgba(255,255,255,.1);flex-shrink:0}
 
-/* ========== AI FAB ========== */
-.ai-fab{position:fixed;bottom:24px;right:18px;z-index:9999;}
-.ai-fab-btn{width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#9B59B6,#E74C8B);border:none;box-shadow:0 4px 20px rgba(155,89,182,0.35);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:22px;color:#fff;transition:transform 0.2s;animation:fabPulse 3s infinite;}
-.ai-fab-btn:active{transform:scale(0.9);}
-@keyframes fabPulse{0%,100%{box-shadow:0 4px 20px rgba(155,89,182,0.35);}50%{box-shadow:0 4px 28px rgba(155,89,182,0.55);}}
+.footer-msg{text-align:center;padding:20px;font-size:10px;color:var(--muted)}
 
-/* ========== CHAT PANEL ========== */
-.chat-panel{position:fixed;bottom:84px;right:12px;width:calc(100vw - 24px);max-width:360px;max-height:420px;background:#131730;border-radius:16px;border:1px solid rgba(255,255,255,0.1);box-shadow:0 8px 40px rgba(0,0,0,0.7);display:none;flex-direction:column;overflow:hidden;z-index:9998;}
-.chat-panel.show{display:flex;}
-.chat-header{padding:12px 16px;background:rgba(155,89,182,0.15);border-bottom:1px solid rgba(255,255,255,0.08);display:flex;justify-content:space-between;align-items:center;}
-.chat-header-title{font-size:13px;font-weight:700;color:#FFFFFF;}
-.chat-close-btn{background:none;border:none;color:#8892A0;font-size:18px;cursor:pointer;padding:4px;}
-.chat-messages{padding:12px;flex:1;overflow-y:auto;max-height:280px;min-height:100px;}
-.chat-msg{margin-bottom:10px;font-size:12.5px;line-height:1.55;}
-.chat-msg.bot{color:#c0c8d8;}
-.chat-msg.user{color:#4A90D9;text-align:right;}
-.chat-msg-label{font-size:9.5px;color:#8892A0;margin-bottom:2px;}
-.chat-input-area{display:flex;padding:8px;border-top:1px solid rgba(255,255,255,0.08);gap:6px;}
-.chat-input{flex:1;background:#0a0e27;border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:8px 12px;color:#FFFFFF;font-size:12.5px;outline:none;}
-.chat-input:focus{border-color:#4A90D9;}
-.chat-send-btn{background:linear-gradient(135deg,#4A90D9,#2ECC71);border:none;border-radius:8px;padding:8px 14px;color:#fff;font-size:12.5px;cursor:pointer;font-weight:700;}
+@media(min-width:768px){.content{max-width:700px;margin:0 auto}.chat-panel{max-width:380px}}
 
-/* ========== REFRESH ========== */
-.refresh-indicator{text-align:center;padding:8px;font-size:10.5px;color:#8892A0;}
+.hidden{display:none!important}
+.loading-spin{text-align:center;padding:40px;color:var(--muted)}
+.loading-spin::after{content:"";display:inline-block;width:24px;height:24px;border:2px solid rgba(255,255,255,.1);border-top-color:var(--accent1);border-radius:50%;animation:spin .8s linear infinite;margin-left:8px;vertical-align:middle}
+@keyframes spin{to{transform:rotate(360deg)}}
 
-/* ========== FOOTER ========== */
-.footer{text-align:center;padding:20px 16px 40px;font-size:10px;color:#4a5070;line-height:1.6;}
-
-/* ========== RESPONSIVE ========== */
-@media(max-width:400px){
-  .header-title{font-size:14px;}
-  .tab{font-size:11px;padding:10px 1px 9px;}
-  .team-flag{font-size:28px;}
-  .team-name-zh{font-size:12.5px;}
-  .vs-score{font-size:17px;}
-  .prob-bar-seg{font-size:8.5px;}
-  .chat-panel{width:calc(100vw - 20px);right:10px;}
-}
-@media(min-width:500px){
-  .content{padding:12px 0 20px;margin:0 auto;}
-  .match-card{margin-left:auto;margin-right:auto;max-width:480px;}
-}
+.skeleton{background:var(--card);border-radius:14px;padding:16px;margin-bottom:12px;border:1px solid var(--border);animation:shimmer 1.5s infinite}
+.skel-line{height:12px;background:rgba(255,255,255,.05);border-radius:6px;margin:8px 0}
+@keyframes shimmer{0%{opacity:.6}50%{opacity:1}100%{opacity:.6}}
 </style>
 </head>
 <body>
 
-<!-- ===== HEADER ===== -->
 <div class="header">
-  <div class="header-inner">
-    <div class="header-left">
-      <span class="header-icon">⚽</span>
-      <div>
-        <div class="header-title">2026世界杯 AI预测中心</div>
-        <div class="header-sub">DeepSeek + 智谱AI 双引擎驱动</div>
-      </div>
-    </div>
-    <div class="header-right">
-      <button class="header-btn" onclick="doRefresh()" title="刷新">🔄</button>
-      <button class="header-btn" title="设置">⚙️</button>
-    </div>
-  </div>
+<h1>⚽ 2026世界杯·AI预测</h1>
+<div class="header-status">
+<span style="display:flex;align-items:center;gap:4px"><span class="status-dot" id="dataStatus"></span><span id="dataLabel">加载中</span></span>
+<span id="lastUpdate" style="font-size:10px;color:var(--muted)"></span>
+</div>
 </div>
 
-<!-- ===== TABS ===== -->
 <div class="tabs" id="tabBar">
-  <button class="tab active" data-tab="today" onclick="switchTab('today')">📅 今日赛程</button>
-  <button class="tab" data-tab="finished" onclick="switchTab('finished')">✅ 已完赛</button>
-  <button class="tab" data-tab="upcoming" onclick="switchTab('upcoming')">🔮 未来赛程</button>
-  <button class="tab" data-tab="teams" onclick="switchTab('teams')">🏆 球队档案</button>
+<button class="tab-btn active" data-tab="today">📅 今日赛程</button>
+<button class="tab-btn" data-tab="finished">✅ 已完赛</button>
+<button class="tab-btn" data-tab="upcoming">📋 未来赛程</button>
+<button class="tab-btn" data-tab="teams">👥 球队档案</button>
+<button class="tab-btn" data-tab="odds">🏆 冠军赔率</button>
 </div>
 
-<!-- ===== CONTENT ===== -->
-<div class="content">
+<div class="content" id="mainContent"></div>
 
-  <div class="tab-panel active" id="panel-today">
-    <div class="refresh-indicator" id="todayRefresh">🔄 数据每5分钟自动刷新</div>
-    <div id="todayMatches"></div>
-  </div>
+<button class="btn-fab" id="fabBtn" title="蔡徐坤AI助手">
+<img src="cxk_new.jpg" alt="AI" id="fabImg">
+</button>
 
-  <div class="tab-panel" id="panel-finished" style="display:none;">
-    <div class="refresh-indicator">✅ 已完赛比赛结果</div>
-    <div id="finishedMatches"></div>
-  </div>
-
-  <div class="tab-panel" id="panel-upcoming" style="display:none;">
-    <div class="refresh-indicator">🔮 即将进行的比赛</div>
-    <div id="upcomingMatches"></div>
-  </div>
-
-  <div class="tab-panel" id="panel-teams" style="display:none;">
-    <div class="refresh-indicator">🏆 48支参赛球队档案</div>
-    <div class="team-grid" id="teamGrid"></div>
-  </div>
-
-</div>
-
-<!-- ===== FOOTER ===== -->
-<div class="footer">
-  数据来源: DeepSeek API · Football-Data API (非官方) | 仅供参考
-</div>
-
-<!-- ===== AI FAB ===== -->
-<div class="ai-fab">
-  <button class="ai-fab-btn" onclick="toggleChat()" id="fabBtn"><img src="cxk_almond.jpg" style="width:100%;height:100%;border-radius:50%;object-fit:cover;" alt="坤坤"></button>
-</div>
-
-<!-- ===== CHAT PANEL ===== -->
 <div class="chat-panel" id="chatPanel">
-  <div class="chat-header">
-    <span class="chat-header-title">🏀 坤坤球探</span>
-    <button class="chat-close-btn" onclick="toggleChat()">✕</button>
-  </div>
-  <div class="chat-messages" id="chatMessages">
-    <div class="chat-msg bot"><span class="chat-msg-label">🏀 坤坤</span><br>大家好我是坤坤，2026世界杯我看过了！🎤 想了解哪场比赛的预测分析？问我准没错！😎</div>
-  </div>
-  <div class="chat-input-area">
-    <input class="chat-input" id="chatInput" placeholder="输入比赛或球队名称..." onkeydown="if(event.key==='Enter')sendChat()">
-    <button class="chat-send-btn" onclick="sendChat()">发送</button>
-  </div>
+<div class="chat-top">
+<img src="cxk_new.jpg" alt="AI">
+<div>
+<div class="name">蔡徐坤 AI</div>
+<div class="status">世界杯预测专家·在线</div>
 </div>
+<button class="close-btn" id="closeChat">×</button>
+</div>
+<div class="chat-body" id="chatBody">
+<div class="chat-msg ai">嗨~我是蔡徐坤AI 🏀💫<br>专注世界杯分析两年半！问我任意球队、球员、比分预测，或者直接问"今天比赛怎么看"~</div>
+</div>
+<div class="chat-input-row">
+<input type="text" id="chatInput" placeholder="问世界杯或上传截图..." onkeydown="if(event.key==='Enter')sendChat()">
+<button class="upload-btn" onclick="document.getElementById('imgInput').click()" title="上传图片">📷</button>
+<input type="file" id="imgInput" accept="image/*" style="display:none" onchange="previewImage(this)">
+<button onclick="sendChat()">➤</button>
+</div>
+<div id="imgPreview" style="display:none;padding:8px 12px;border-top:1px solid rgba(255,255,255,.06);position:relative">
+<img id="previewImg" style="max-width:100%;max-height:120px;border-radius:8px">
+<button onclick="clearImage()" style="position:absolute;top:10px;right:15px;background:rgba(0,0,0,.6);border:none;color:#fff;border-radius:50%;width:22px;height:22px;cursor:pointer;font-size:12px">×</button>
+</div>
+</div>
+
+<div class="footer-msg">数据来源: DeepSeek AI · Football-Data API · FIFA官方 | 分析仅供参考</div>
 
 <script>
-// ============================================================
-//  2026世界杯 AI预测中心 - v23 精确还原参考图UI
-//  WeChat兼容: var/function/无模板字符串/无箭头函数/无Date解析
-// ============================================================
+// ========== CONFIG ==========
+const DEEPSEEK_KEY='sk-81d53acb8f62446098143011ebfcc7df';
+const DEEPSEEK_URL='https://api.deepseek.com/v1/chat/completions';
+const ZHIPU_KEY='89d65b28829c449196d93b9438a561fe.UHfZzeIlE2Lcg83F';
+const ZHIPU_URL='https://open.bigmodel.cn/api/paas/v4/chat/completions';
+const ZHIPU_MODEL='glm-4-flash';
+const FOOTBALL_KEY='5cc56f6f57f8419bbe4718c27513fd1f';
+const FOOTBALL_BASE='https://api.football-data.org/v4';
 
-// ===== 中文名映射 =====
-var NAME_ZH = {
-  'Mexico':'墨西哥','South Africa':'南非','South Korea':'韩国','Czech Republic':'捷克',
-  'Canada':'加拿大','Bosnia':'波黑','Qatar':'卡塔尔','Switzerland':'瑞士',
-  'Brazil':'巴西','Morocco':'摩洛哥','Haiti':'海地','Scotland':'苏格兰',
-  'USA':'美国','Paraguay':'巴拉圭','Australia':'澳大利亚','Turkey':'土耳其',
-  'Germany':'德国','Curacao':'库拉索','Ivory Coast':'科特迪瓦','Ecuador':'厄瓜多尔',
-  'Netherlands':'荷兰','Japan':'日本','Sweden':'瑞典','Tunisia':'突尼斯',
-  'Belgium':'比利时','Egypt':'埃及','Iran':'伊朗','New Zealand':'新西兰',
-  'Spain':'西班牙','Cape Verde':'佛得角','Saudi Arabia':'沙特阿拉伯','Uruguay':'乌拉圭',
-  'France':'法国','Senegal':'塞内加尔','Iraq':'伊拉克','Norway':'挪威',
-  'Argentina':'阿根廷','Algeria':'阿尔及利亚','Austria':'奥地利','Jordan':'约旦',
-  'Portugal':'葡萄牙','DR Congo':'刚果(金)','Uzbekistan':'乌兹别克斯坦','Colombia':'哥伦比亚',
-  'England':'英格兰','Croatia':'克罗地亚','Ghana':'加纳','Panama':'巴拿马'
-};
+// ========== 2026世界杯完整数据 ==========
+const GROUPS = {
+A:[{n:'墨西哥',f:'🇲🇽',r:15,c:'哈维尔·阿吉雷',p:['劳尔·希门尼斯','洛萨诺','埃德森·阿尔瓦雷斯'],form:'WLWWW',hs:'东道主,16强常客'},
+{n:'南非',f:'🇿🇦',r:57,c:'雨果·布鲁斯',p:['珀西·陶','莱尔·福斯特','莫科纳'],form:'LDLWD',hs:'2010年作为东道主小组出线'},
+{n:'韩国',f:'🇰🇷',r:22,c:'洪明甫',p:['孙兴慜','李刚仁','金玟哉'],form:'WWWLW',hs:'2002年四强,连续11届参赛'},
+{n:'捷克',f:'🇨🇿',r:35,c:'伊万·哈谢克',p:['绍切克','希克','曹法尔'],form:'LWLDL',hs:'2006年后首次重返世界杯'}],
 
-// ===== 旗帜映射 =====
-var FLAGS = {
-  'Mexico':'🇲🇽','South Africa':'🇿🇦','South Korea':'🇰🇷','Czech Republic':'🇨🇿',
-  'Canada':'🇨🇦','Bosnia':'🇧🇦','Qatar':'🇶🇦','Switzerland':'🇨🇭',
-  'Brazil':'🇧🇷','Morocco':'🇲🇦','Haiti':'🇭🇹','Scotland':'🏴󠁧󠁢󠁳󠁣󠁴󠁿',
-  'USA':'🇺🇸','Paraguay':'🇵🇾','Australia':'🇦🇺','Turkey':'🇹🇷',
-  'Germany':'🇩🇪','Curacao':'🇨🇼','Ivory Coast':'🇨🇮','Ecuador':'🇪🇨',
-  'Netherlands':'🇳🇱','Japan':'🇯🇵','Sweden':'🇸🇪','Tunisia':'🇹🇳',
-  'Belgium':'🇧🇪','Egypt':'🇪🇬','Iran':'🇮🇷','New Zealand':'🇳🇿',
-  'Spain':'🇪🇸','Cape Verde':'🇨🇻','Saudi Arabia':'🇸🇦','Uruguay':'🇺🇾',
-  'France':'🇫🇷','Senegal':'🇸🇳','Iraq':'🇮🇶','Norway':'🇳🇴',
-  'Argentina':'🇦🇷','Algeria':'🇩🇿','Austria':'🇦🇹','Jordan':'🇯🇴',
-  'Portugal':'🇵🇹','DR Congo':'🇨🇩','Uzbekistan':'🇺🇿','Colombia':'🇨🇴',
-  'England':'🏴󠁧󠁢󠁥󠁮󠁧󠁿','Croatia':'🇭🇷','Ghana':'🇬🇭','Panama':'🇵🇦'
-};
+B:[{n:'加拿大',f:'🇨🇦',r:31,c:'杰西·马什',p:['阿方索·戴维斯','乔纳森·戴维','拉林'],form:'DLLWD',hs:'队史首个世界杯积分(本届)'},
+{n:'波黑',f:'🇧🇦',r:54,c:'谢尔盖·巴尔巴雷兹',p:['哲科','皮亚尼奇','卢基奇'],form:'DLDWL',hs:'2014年首次参赛,本届第2次'},
+{n:'卡塔尔',f:'🇶🇦',r:48,c:'巴特·卡尔莫纳',p:['阿菲夫','阿里','海多斯'],form:'LLWLL',hs:'2022年东道主,0分出局'},
+{n:'瑞士',f:'🇨🇭',r:14,c:'穆拉特·雅金',p:['扎卡','恩博洛','阿坎吉'],form:'WWWDW',hs:'连续6届参赛,常进淘汰赛'}],
 
-// ===== 球队完整数据 =====
-var TEAMS = {
-  'Qatar':      {flag:'🇶🇦',rank:51,coach:'巴尔博萨',        formation:'4-4-2',     fifa:'FIFA/4',      captain:'阿尔莫兹·阿里',  players:'阿尔莫兹·阿里,阿克拉姆·阿菲夫,布阿莱姆',       group:'B'},
-  'Switzerland':{flag:'🇨🇭',rank:15,coach:'格拉尼特·扎卡',   formation:'2022欧洲杯正分4强',fifa:'FIFA/15',    captain:'格拉尼特·扎卡',  players:'扎卡,阿坎吉,沙奇里,法比安·舍尔',                group:'B'},
-  'Mexico':     {flag:'🇲🇽',rank:12,coach:'哈维尔·阿吉雷',   formation:'4-3-3',     fifa:'FIFA/12',     captain:'埃德森·阿尔瓦雷斯',players:'洛萨诺,希门尼斯,埃德森·阿尔瓦雷斯',               group:'A'},
-  'South Korea':{flag:'🇰🇷',rank:23,coach:'洪明甫',          formation:'4-2-3-1',   fifa:'FIFA/23',     captain:'孙兴慜',          players:'孙兴慜,李刚仁,金玟哉',                             group:'A'},
-  'Brazil':     {flag:'🇧🇷',rank:5,coach:'多里瓦尔',          formation:'4-3-3',     fifa:'FIFA/5',      captain:'内马尔',          players:'内马尔,维尼修斯,罗德里戈,阿尔维斯',               group:'C'},
-  'Morocco':    {flag:'🇲🇦',rank:13,coach:'雷格拉古伊',       formation:'4-3-3',     fifa:'FIFA/13',     captain:'齐耶赫',          players:'齐耶赫,阿什拉夫,布法尔',                          group:'C'},
-  'USA':        {flag:'🇺🇸',rank:11,coach:'格雷格·贝尔哈特',  formation:'4-3-3',     fifa:'FIFA/11',     captain:'普利西奇',        players:'普利西奇,麦肯尼,雷纳',                             group:'D'},
-  'Turkey':     {flag:'🇹🇷',rank:28,coach:'云代尔',           formation:'4-2-3-1',   fifa:'FIFA/28',     captain:'恰尔汗奥卢',      players:'恰尔汗奥卢,伊尔马兹,云代尔',                       group:'D'},
-  'Germany':    {flag:'🇩🇪',rank:9,coach:'尤利安·纳格尔斯曼', formation:'4-2-3-1',   fifa:'FIFA/9',      captain:'基米希',          players:'穆西亚拉,哈弗茨,基米希,格纳布里',                   group:'E'},
-  'Ecuador':    {flag:'🇪🇨',rank:31,coach:'菲利克斯·桑切斯',  formation:'4-4-2',     fifa:'FIFA/31',     captain:'瓦伦西亚',        players:'瓦伦西亚,凯塞多,因卡皮耶',                          group:'E'},
-  'Netherlands':{flag:'🇳🇱',rank:7,coach:'罗纳德·科曼',      formation:'4-3-3',     fifa:'FIFA/7',      captain:'范迪克',          players:'范迪克,德容,德佩,加克波',                           group:'F'},
-  'Japan':      {flag:'🇯🇵',rank:18,coach:'森保一',           formation:'4-2-3-1',   fifa:'FIFA/18',     captain:'吉田麻也',        players:'三笘薰,久保建英,远藤航',                             group:'F'},
-  'Belgium':    {flag:'🇧🇪',rank:6,coach:'特德斯科',          formation:'3-4-2-1',   fifa:'FIFA/6',      captain:'德布劳内',        players:'德布劳内,卢卡库,库尔图瓦',                          group:'G'},
-  'Egypt':      {flag:'🇪🇬',rank:35,coach:'霍萨姆·哈桑',      formation:'4-3-3',     fifa:'FIFA/35',     captain:'萨拉赫',          players:'萨拉赫,埃尔内尼,穆罕默德·萨拉赫',                   group:'G'},
-  'Spain':      {flag:'🇪🇸',rank:3,coach:'路易斯·德拉富恩特', formation:'4-3-3',     fifa:'FIFA/3',      captain:'莫拉塔',          players:'莫拉塔,罗德里,亚马尔,威廉姆斯',                     group:'H'},
-  'Saudi Arabia':{flag:'🇸🇦',rank:54,coach:'曼奇尼',         formation:'4-3-3',     fifa:'FIFA/54',     captain:'谢赫里',          players:'谢赫里,多萨里,布赖坎',                               group:'H'},
-  'France':     {flag:'🇫🇷',rank:2,coach:'德尚',             formation:'4-3-3',     fifa:'FIFA/2',      captain:'姆巴佩',          players:'姆巴佩,格列兹曼,楚阿梅尼,萨利巴',                   group:'I'},
-  'Senegal':    {flag:'🇸🇳',rank:20,coach:'阿利乌·西塞',      formation:'4-3-3',     fifa:'FIFA/20',     captain:'库利巴利',        players:'库利巴利,马内,迪亚洛',                               group:'I'},
-  'Argentina':  {flag:'🇦🇷',rank:1,coach:'斯卡洛尼',         formation:'4-3-3',     fifa:'FIFA/1',      captain:'梅西',            players:'梅西,迪马利亚,劳塔罗,德保罗',                        group:'J'},
-  'Algeria':    {flag:'🇩🇿',rank:30,coach:'佩特科维奇',       formation:'4-2-3-1',   fifa:'FIFA/30',     captain:'马赫雷斯',        players:'马赫雷斯,本赛义德,布拉伊米',                         group:'J'},
-  'Portugal':   {flag:'🇵🇹',rank:8,coach:'罗伯托·马丁内斯',  formation:'4-3-3',     fifa:'FIFA/8',      captain:'C罗',             players:'C罗,布鲁诺·费尔南德斯,B席',                        group:'K'},
-  'Colombia':   {flag:'🇨🇴',rank:17,coach:'洛伦佐',          formation:'4-3-3',     fifa:'FIFA/17',     captain:'J罗',             players:'J罗,迪亚斯,博雷',                                   group:'K'},
-  'England':    {flag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿',rank:4,coach:'索斯盖特',       formation:'4-3-3',     fifa:'FIFA/4',      captain:'凯恩',            players:'凯恩,贝林厄姆,萨卡,福登',                           group:'L'},
-  'Croatia':    {flag:'🇭🇷',rank:10,coach:'达利奇',           formation:'4-3-3',     fifa:'FIFA/10',     captain:'莫德里奇',        players:'莫德里奇,佩里西奇,科瓦契奇',                        group:'L'}
-};
+C:[{n:'巴西',f:'🇧🇷',r:3,c:'多里瓦尔·儒尼奥尔',p:['维尼修斯','罗德里戈','阿利松'],form:'WWWDW',hs:'5次冠军,足球王国'},
+{n:'摩洛哥',f:'🇲🇦',r:12,c:'瓦利德·雷格拉吉',p:['阿什拉夫','齐耶赫','恩内斯里'],form:'WWLWW',hs:'2022年四强,非洲之光'},
+{n:'海地',f:'🇭🇹',r:86,c:'塞巴斯蒂安·米涅',p:['纳宗','皮埃罗','普吕纳'],form:'LLDLL',hs:'1974年后首次参赛'},
+{n:'苏格兰',f:'🏴󠁧󠁢󠁳󠁣󠁴󠁿',r:32,c:'史蒂夫·克拉克',p:['罗伯逊','麦克托米奈','麦金'],form:'WDLWD',hs:'重返世界杯,期待突破'}],
 
-// ===== 模拟"当前日期" =====
-var NOW_DATE = '';
-function initDate() {
-  var d = new Date();
-  var y = d.getFullYear();
-  var m = d.getMonth() + 1;
-  var day = d.getDate();
-  if (m < 10) { m = '0' + m; }
-  if (day < 10) { day = '0' + day; }
-  NOW_DATE = '' + y + '-' + m + '-' + day;
-}
+D:[{n:'美国',f:'🇺🇸',r:13,c:'毛里西奥·波切蒂诺',p:['普利西奇','麦肯尼','雷纳'],form:'WWWWW',hs:'东道主,16强/8强常客'},
+{n:'巴拉圭',f:'🇵🇾',r:49,c:'丹尼尔·加内罗',p:['阿尔米隆','恩西索','萨纳夫里亚'],form:'LLDLL',hs:'2010年八强,近年下滑'},
+{n:'澳大利亚',f:'🇦🇺',r:24,c:'托尼·波波维奇',p:['苏塔','古德温','欧文'],form:'WWLWW',hs:'2022年16强,连续5届参赛'},
+{n:'土耳其',f:'🇹🇷',r:28,c:'卡尔迪利姆',p:['恰尔汗奥卢','居莱尔','伊尔马兹'],form:'WWLWW',hs:'2002年季军,近年回归'}],
 
-// ===== 获取比赛状态（不使用new Date解析）=====
-function getStatus(dateStr, hasScore) {
-  var parts = dateStr.split(' ')[0].split('/');
-  var m = parts[0];
-  var d = parts[1];
-  if (m.length < 2) { m = '0' + m; }
-  if (d.length < 2) { d = '0' + d; }
-  var dateFull = '2026-' + m + '-' + d;
-  if (hasScore) { return 'finished'; }
-  if (dateFull === NOW_DATE) { return 'live'; }
-  if (dateFull < NOW_DATE) { return 'finished'; }
-  return 'upcoming';
-}
+E:[{n:'德国',f:'🇩🇪',r:8,c:'约阿希姆·勒夫',p:['穆西亚拉','维尔茨','基米希'],form:'WWWLW',hs:'4次冠军,传统豪门'},
+{n:'库拉索',f:'🇨🇼',r:82,c:'迪恩·戈雷',p:['巴库纳','范埃维克','安托尼亚'],form:'LLWDL',hs:'首次参赛,世界杯新军'},
+{n:'科特迪瓦',f:'🇨🇮',r:42,c:'埃默斯·费',p:['阿莱','佩佩','凯西'],form:'WWLWW',hs:'非洲劲旅,第三次参赛'},
+{n:'厄瓜多尔',f:'🇪🇨',r:27,c:'塞巴斯蒂安·贝卡切切',p:['凯塞多','埃斯图皮尼安','瓦伦西亚'],form:'WDWWL',hs:'2022年小组出线'}],
 
-// ===== 完整的48支球队数据（按小组）=====
-var ALL_TEAMS_DATA = [
-  // Group A
-  {name:'Mexico',       zh:'墨西哥',    flag:'🇲🇽',rank:12,group:'A',coach:'哈维尔·阿吉雷',    formation:'4-3-3',     fifaLabel:'FIFA/12',    captain:'埃德森·阿尔瓦雷斯', players:'洛萨诺,希门尼斯'},
-  {name:'South Africa', zh:'南非',      flag:'🇿🇦',rank:65,group:'A',coach:'雨果·布鲁斯',      formation:'4-4-2',     fifaLabel:'FIFA/65',    captain:'罗纳德·兰加',     players:'佩雷斯,莫克瓦纳'},
-  {name:'South Korea',  zh:'韩国',      flag:'🇰🇷',rank:23,group:'A',coach:'洪明甫',          formation:'4-2-3-1',   fifaLabel:'FIFA/23',    captain:'孙兴慜',          players:'孙兴慜,李刚仁,金玟哉'},
-  {name:'Czech Republic',zh:'捷克',    flag:'🇨🇿',rank:36,group:'A',coach:'雅罗斯拉夫·西尔哈维',formation:'4-2-3-1',fifaLabel:'FIFA/36',    captain:'曹法尔',          players:'绍切克,希克'},
-  // Group B
-  {name:'Canada',       zh:'加拿大',    flag:'🇨🇦',rank:48,group:'B',coach:'杰西·马什',        formation:'4-3-3',     fifaLabel:'FIFA/48',    captain:'阿方索·戴维斯',   players:'阿方索·戴维斯,乔纳森·戴维'},
-  {name:'Bosnia',       zh:'波黑',      flag:'🇧🇦',rank:52,group:'B',coach:'塞尔盖·巴巴雷兹',  formation:'4-3-3',     fifaLabel:'FIFA/52',    captain:'哲科',            players:'哲科,皮亚尼奇,德米罗维奇'},
-  {name:'Qatar',        zh:'卡塔尔',    flag:'🇶🇦',rank:51,group:'B',coach:'巴尔博萨',        formation:'4-4-2',     fifaLabel:'FIFA/51',    captain:'阿尔莫兹·阿里',  players:'阿尔莫兹·阿里,阿克拉姆·阿菲夫'},
-  {name:'Switzerland',  zh:'瑞士',      flag:'🇨🇭',rank:15,group:'B',coach:'穆拉特·雅金',      formation:'4-2-3-1',   fifaLabel:'FIFA/15',    captain:'格拉尼特·扎卡',  players:'扎卡,阿坎吉,沙奇里'},
-  // Group C
-  {name:'Brazil',       zh:'巴西',      flag:'🇧🇷',rank:5, group:'C',coach:'多里瓦尔',          formation:'4-3-3',     fifaLabel:'FIFA/5',     captain:'内马尔',          players:'内马尔,维尼修斯,罗德里戈'},
-  {name:'Haiti',        zh:'海地',      flag:'🇭🇹',rank:90,group:'C',coach:'加布里埃尔·卡尔德龙',formation:'4-4-2',  fifaLabel:'FIFA/90',    captain:'皮埃尔',          players:'皮埃尔,纳佐恩'},
-  {name:'Morocco',      zh:'摩洛哥',    flag:'🇲🇦',rank:13,group:'C',coach:'雷格拉古伊',       formation:'4-3-3',     fifaLabel:'FIFA/13',    captain:'齐耶赫',          players:'齐耶赫,阿什拉夫,布法尔'},
-  {name:'Scotland',     zh:'苏格兰',    flag:'🏴󠁧󠁢󠁳󠁣󠁴󠁿',rank:39,group:'C',coach:'史蒂夫·克拉克',    formation:'4-3-3',     fifaLabel:'FIFA/39',    captain:'罗伯逊',          players:'罗伯逊,麦克托米奈'},
-  // Group D
-  {name:'USA',          zh:'美国',      flag:'🇺🇸',rank:11,group:'D',coach:'格雷格·贝尔哈特',  formation:'4-3-3',     fifaLabel:'FIFA/11',    captain:'普利西奇',        players:'普利西奇,麦肯尼,雷纳'},
-  {name:'Paraguay',     zh:'巴拉圭',    flag:'🇵🇾',rank:56,group:'D',coach:'丹尼尔·加内罗',    formation:'4-4-2',     fifaLabel:'FIFA/56',    captain:'阿尔米隆',        players:'阿尔米隆,戈麦斯'},
-  {name:'Australia',    zh:'澳大利亚',  flag:'🇦🇺',rank:40,group:'D',coach:'格雷厄姆·阿诺德',  formation:'4-2-3-1',   fifaLabel:'FIFA/40',    captain:'穆伊',            players:'穆伊,博伊尔'},
-  {name:'Turkey',       zh:'土耳其',    flag:'🇹🇷',rank:28,group:'D',coach:'文森佐·蒙特拉',    formation:'4-2-3-1',   fifaLabel:'FIFA/28',    captain:'恰尔汗奥卢',      players:'恰尔汗奥卢,伊尔马兹'},
-  // Group E
-  {name:'Germany',      zh:'德国',      flag:'🇩🇪',rank:9, group:'E',coach:'尤利安·纳格尔斯曼',formation:'4-2-3-1',   fifaLabel:'FIFA/9',     captain:'基米希',          players:'穆西亚拉,哈弗茨,基米希'},
-  {name:'Curacao',      zh:'库拉索',    flag:'🇨🇼',rank:86,group:'E',coach:'迪克·阿德沃卡特',  formation:'4-4-2',     fifaLabel:'FIFA/86',    captain:'巴库纳',          players:'巴库纳,安东内'},
-  {name:'Ivory Coast',  zh:'科特迪瓦',  flag:'🇨🇮',rank:37,group:'E',coach:'埃梅塞·法埃',      formation:'4-3-3',     fifaLabel:'FIFA/37',    captain:'奥里耶',          players:'奥里耶,凯西,亚里奥'},
-  {name:'Ecuador',      zh:'厄瓜多尔',  flag:'🇪🇨',rank:31,group:'E',coach:'菲利克斯·桑切斯',  formation:'4-4-2',     fifaLabel:'FIFA/31',    captain:'瓦伦西亚',        players:'瓦伦西亚,凯塞多'},
-  // Group F
-  {name:'Netherlands',  zh:'荷兰',      flag:'🇳🇱',rank:7, group:'F',coach:'罗纳德·科曼',      formation:'4-3-3',     fifaLabel:'FIFA/7',     captain:'范迪克',          players:'范迪克,德容,德佩'},
-  {name:'Japan',        zh:'日本',      flag:'🇯🇵',rank:18,group:'F',coach:'森保一',           formation:'4-2-3-1',   fifaLabel:'FIFA/18',    captain:'吉田麻也',        players:'三笘薰,久保建英,远藤航'},
-  {name:'Sweden',       zh:'瑞典',      flag:'🇸🇪',rank:26,group:'F',coach:'约翰·达赫尔·托马斯',formation:'4-4-2',   fifaLabel:'FIFA/26',    captain:'伊萨克',          players:'伊萨克,福斯贝里'},
-  {name:'Tunisia',      zh:'突尼斯',    flag:'🇹🇳',rank:41,group:'F',coach:'凯斯·雅库比',      formation:'4-3-3',     fifaLabel:'FIFA/41',    captain:'哈兹里',          players:'哈兹里,布龙'},
-  // Group G
-  {name:'Belgium',      zh:'比利时',    flag:'🇧🇪',rank:6, group:'G',coach:'多梅尼科·特德斯科',formation:'3-4-2-1',   fifaLabel:'FIFA/6',     captain:'德布劳内',        players:'德布劳内,卢卡库,库尔图瓦'},
-  {name:'Egypt',        zh:'埃及',      flag:'🇪🇬',rank:35,group:'G',coach:'霍萨姆·哈桑',      formation:'4-3-3',     fifaLabel:'FIFA/35',    captain:'萨拉赫',          players:'萨拉赫,埃尔内尼'},
-  {name:'Iran',         zh:'伊朗',      flag:'🇮🇷',rank:22,group:'G',coach:'阿米尔·加莱诺伊',   formation:'4-2-3-1',   fifaLabel:'FIFA/22',    captain:'贾汉巴赫什',      players:'贾汉巴赫什,阿兹蒙'},
-  {name:'New Zealand',  zh:'新西兰',    flag:'🇳🇿',rank:107,group:'G',coach:'达伦·巴泽利',      formation:'4-4-2',     fifaLabel:'FIFA/107',   captain:'伍德',            players:'伍德,因斯'},
-  // Group H
-  {name:'Spain',        zh:'西班牙',    flag:'🇪🇸',rank:3, group:'H',coach:'路易斯·德拉富恩特',formation:'4-3-3',     fifaLabel:'FIFA/3',     captain:'莫拉塔',          players:'莫拉塔,罗德里,亚马尔'},
-  {name:'Cape Verde',   zh:'佛得角',    flag:'🇨🇻',rank:73,group:'H',coach:'布比斯塔',         formation:'4-4-2',     fifaLabel:'FIFA/73',    captain:'门德斯',          players:'门德斯,塔瓦雷斯'},
-  {name:'Saudi Arabia', zh:'沙特阿拉伯',flag:'🇸🇦',rank:54,group:'H',coach:'曼奇尼',           formation:'4-3-3',     fifaLabel:'FIFA/54',    captain:'谢赫里',          players:'谢赫里,多萨里'},
-  {name:'Uruguay',      zh:'乌拉圭',    flag:'🇺🇾',rank:14,group:'H',coach:'马塞洛·贝尔萨',    formation:'4-3-3',     fifaLabel:'FIFA/14',    captain:'乌加特',          players:'努涅斯,苏亚雷斯,乌加特'},
-  // Group I
-  {name:'France',       zh:'法国',      flag:'🇫🇷',rank:2, group:'I',coach:'德尚',             formation:'4-3-3',     fifaLabel:'FIFA/2',     captain:'姆巴佩',          players:'姆巴佩,格列兹曼,楚阿梅尼'},
-  {name:'Senegal',      zh:'塞内加尔',  flag:'🇸🇳',rank:20,group:'I',coach:'阿利乌·西塞',      formation:'4-3-3',     fifaLabel:'FIFA/20',    captain:'库利巴利',        players:'库利巴利,马内'},
-  {name:'Iraq',         zh:'伊拉克',    flag:'🇮🇶',rank:68,group:'I',coach:'赫苏斯·卡萨斯',     formation:'4-2-3-1',   fifaLabel:'FIFA/68',    captain:'巴沙尔',          players:'巴沙尔,优素福'},
-  {name:'Norway',       zh:'挪威',      flag:'🇳🇴',rank:44,group:'I',coach:'斯泰尔·索尔巴肯',  formation:'4-3-3',     fifaLabel:'FIFA/44',    captain:'哈兰德',          players:'哈兰德,厄德高'},
-  // Group J
-  {name:'Argentina',    zh:'阿根廷',    flag:'🇦🇷',rank:1, group:'J',coach:'斯卡洛尼',         formation:'4-3-3',     fifaLabel:'FIFA/1',     captain:'梅西',            players:'梅西,迪马利亚,劳塔罗'},
-  {name:'Algeria',      zh:'阿尔及利亚',flag:'🇩🇿',rank:30,group:'J',coach:'弗拉基米尔·佩特科维奇',formation:'4-2-3-1',fifaLabel:'FIFA/30',captain:'马赫雷斯',        players:'马赫雷斯,本赛义德'},
-  {name:'Austria',      zh:'奥地利',    flag:'🇦🇹',rank:25,group:'J',coach:'拉尔夫·朗尼克',    formation:'4-2-3-1',   fifaLabel:'FIFA/25',    captain:'阿拉巴',          players:'阿拉巴,萨比策'},
-  {name:'Jordan',       zh:'约旦',      flag:'🇯🇴',rank:70,group:'J',coach:'侯赛因·阿穆塔',    formation:'4-2-3-1',   fifaLabel:'FIFA/70',    captain:'塔马里',          players:'塔马里,阿尔里斯安'},
-  // Group K
-  {name:'Portugal',     zh:'葡萄牙',    flag:'🇵🇹',rank:8, group:'K',coach:'罗伯托·马丁内斯',  formation:'4-3-3',     fifaLabel:'FIFA/8',     captain:'C罗',             players:'C罗,布鲁诺·费尔南德斯'},
-  {name:'DR Congo',     zh:'刚果(金)',  flag:'🇨🇩',rank:59,group:'K',coach:'塞巴斯蒂安·德萨布雷',formation:'4-4-2',  fifaLabel:'FIFA/59',    captain:'姆博卡尼',        players:'姆博卡尼,卢因达马'},
-  {name:'Uzbekistan',   zh:'乌兹别克斯坦',flag:'🇺🇿',rank:61,group:'K',coach:'斯雷奇科·卡塔内茨',formation:'4-2-3-1',fifaLabel:'FIFA/61',  captain:'舒库罗夫',        players:'舒库罗夫,肖穆罗多夫'},
-  {name:'Colombia',     zh:'哥伦比亚',  flag:'🇨🇴',rank:17,group:'K',coach:'内斯托·洛伦佐',    formation:'4-3-3',     fifaLabel:'FIFA/17',    captain:'J罗',             players:'J罗,迪亚斯,博雷'},
-  // Group L
-  {name:'England',      zh:'英格兰',    flag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿',rank:4, group:'L',coach:'索斯盖特',         formation:'4-3-3',     fifaLabel:'FIFA/4',     captain:'凯恩',            players:'凯恩,贝林厄姆,萨卡'},
-  {name:'Croatia',      zh:'克罗地亚',  flag:'🇭🇷',rank:10,group:'L',coach:'兹拉特科·达利奇',  formation:'4-3-3',     fifaLabel:'FIFA/10',    captain:'莫德里奇',        players:'莫德里奇,佩里西奇'},
-  {name:'Ghana',        zh:'加纳',      flag:'🇬🇭',rank:64,group:'L',coach:'奥托·阿多',        formation:'4-3-3',     fifaLabel:'FIFA/64',    captain:'阿尤',            players:'阿尤,库杜斯'},
-  {name:'Panama',       zh:'巴拿马',    flag:'🇵🇦',rank:45,group:'L',coach:'托马斯·克里斯蒂安森',formation:'4-4-2',   fifaLabel:'FIFA/45',    captain:'戈麦斯',          players:'戈麦斯,穆里略'}
-];
+F:[{n:'荷兰',f:'🇳🇱',r:7,c:'罗纳德·科曼',p:['范戴克','加克波','德容'],form:'WWWLW',hs:'3次亚军,无冕之王'},
+{n:'日本',f:'🇯🇵',r:16,c:'森保一',p:['三笘薰','久保建英','远藤航'],form:'WWWWW',hs:'2022年击败德国西班牙,16强'},
+{n:'瑞典',f:'🇸🇪',r:26,c:'容·达尔·托马森',p:['伊萨克','库卢塞夫斯基','林德洛夫'],form:'WLWWL',hs:'1994年季军,北欧劲旅'},
+{n:'突尼斯',f:'🇹🇳',r:40,c:'贾勒·卡德里',p:['姆萨克尼','斯利蒂','塔勒比'],form:'LWDLD',hs:'连续3届参赛,难出线'}],
 
-// ===== 比赛数据（含完整信息）=====
-var MATCHES = [];
+G:[{n:'比利时',f:'🇧🇪',r:5,c:'多梅尼科·特德斯科',p:['德布劳内','卢卡库','多库'],form:'WWWLW',hs:'黄金一代,2018年季军'},
+{n:'埃及',f:'🇪🇬',r:36,c:'鲁伊·维托里亚',p:['萨拉赫','马尔穆什','埃尔内尼'],form:'WWLWW',hs:'萨拉赫领军,期待突破'},
+{n:'伊朗',f:'🇮🇷',r:20,c:'阿米尔·加莱诺埃',p:['塔雷米','阿兹蒙','贾汉巴赫什'],form:'WWWWL',hs:'亚洲劲旅,6次参赛'},
+{n:'新西兰',f:'🇳🇿',r:85,c:'达伦·巴泽利',p:['克里斯·伍德','卡卡切','辛格'],form:'WLLLW',hs:'大洋洲代表,第3次参赛'}],
 
-function initMatches() {
-  MATCHES = [
-    // === Group B (参考图用这组做样板) ===
-    {id:1, group:'B', home:'Qatar', away:'Switzerland', time:'06/14 03:00', homeScore:null, awayScore:null, status:'upcoming',
+H:[{n:'西班牙',f:'🇪🇸',r:2,c:'路易斯·德拉富恩特',p:['罗德里','佩德里','亚马尔'],form:'WWWWW',hs:'2010年冠军,传控足球'},
+{n:'佛得角',f:'🇨🇻',r:67,c:'布比斯塔',p:['瑞安·门德斯','塔瓦雷斯','贝贝'],form:'WLWDL',hs:'首次参赛,世界杯新军'},
+{n:'沙特阿拉伯',f:'🇸🇦',r:55,c:'罗伯托·曼奇尼',p:['萨勒姆·达瓦萨里','布赖坎','坎诺'],form:'LLWLL',hs:'2022年击败阿根廷,第7次参赛'},
+{n:'乌拉圭',f:'🇺🇾',r:10,c:'马塞洛·贝尔萨',p:['巴尔韦德','努涅斯','阿劳霍'],form:'WWWLW',hs:'2次冠军,南美劲旅'}],
+
+I:[{n:'法国',f:'🇫🇷',r:1,c:'迪迪埃·德尚',p:['姆巴佩','格列兹曼','楚阿梅尼'],form:'WWWLW',hs:'2018年冠军/2022年亚军,头号热门'},
+{n:'塞内加尔',f:'🇸🇳',r:17,c:'阿利乌·西塞',p:['马内','雅克松','库利巴利'],form:'WWLWW',hs:'2022年16强,非洲冠军'},
+{n:'伊拉克',f:'🇮🇶',r:62,c:'赫苏斯·卡萨斯',p:['阿里·贾西姆','侯赛因','齐丹·伊克巴尔'],form:'LWWDL',hs:'1986年后重返世界杯'},
+{n:'挪威',f:'🇳🇴',r:18,c:'斯塔勒·索尔巴肯',p:['哈兰德','厄德高','瑟洛特'],form:'WWWLW',hs:'哈兰德+厄德高,黄金一代'}],
+
+J:[{n:'阿根廷',f:'🇦🇷',r:4,c:'莱昂内尔·斯卡洛尼',p:['梅西','阿尔瓦雷斯','恩佐·费尔南德斯'],form:'WWWWW',hs:'卫冕冠军,梅西最后一届'},
+{n:'阿尔及利亚',f:'🇩🇿',r:44,c:'弗拉基米尔·佩特科维奇',p:['马赫雷斯','本纳赛尔','阿明·古伊里'],form:'WWLWW',hs:'2014年16强,非洲劲旅'},
+{n:'奥地利',f:'🇦🇹',r:23,c:'拉尔夫·朗尼克',p:['阿拉巴','萨比策','鲍姆加特纳'],form:'WWWLW',hs:'朗尼克战术体系,黑马潜力'},
+{n:'约旦',f:'🇯🇴',r:63,c:'侯赛因·阿穆塔',p:['塔马里','纳伊马特','拉瓦什德'],form:'LWWDL',hs:'首次参赛,亚洲杯亚军'}],
+
+K:[{n:'葡萄牙',f:'🇵🇹',r:6,c:'罗伯托·马丁内斯',p:['C罗','B费','莱奥'],form:'WWWWW',hs:'C罗最后一届,黄金一代'},
+{n:'民主刚果',f:'🇨🇩',r:60,c:'塞巴斯蒂安·德萨布雷',p:['巴坎布','姆本巴','维萨'],form:'LWWDL',hs:'1974年后重返世界杯'},
+{n:'乌兹别克斯坦',f:'🇺🇿',r:50,c:'斯雷奇科·卡塔内茨',p:['肖穆罗多夫','马沙里波夫','阿利库洛夫'],form:'WWLWW',hs:'首次参赛,中亚新势力'},
+{n:'哥伦比亚',f:'🇨🇴',r:9,c:'内斯托尔·洛伦佐',p:['路易斯·迪亚斯','J罗','博雷'],form:'WWWLW',hs:'2014年八强,南美劲旅'}],
+
+L:[{n:'英格兰',f:'🏴󠁧󠁢󠁥󠁮󠁧󠁿',r:11,c:'托马斯·图赫尔',p:['凯恩','贝林厄姆','福登'],form:'WWWWW',hs:'2022年八强,夺冠热门'},
+{n:'克罗地亚',f:'🇭🇷',r:19,c:'兹拉特科·达利奇',p:['莫德里奇','格瓦迪奥尔','佩里西奇'],form:'WWLWL',hs:'2018亚军/2022季军,魔笛绝唱'},
+{n:'加纳',f:'🇬🇭',r:58,c:'奥托·阿多',p:['库杜斯','托马斯·帕尔特伊','乔丹·阿尤'],form:'LWLWD',hs:'2010年八强,非洲黑马'},
+{n:'巴拿马',f:'🇵🇦',r:72,c:'托马斯·克里斯蒂安森',p:['卡拉斯基利亚','穆里略','戴维斯'],form:'LLWLL',hs:'2018年首次参赛,学习之旅'}]};
+
+// 赛程: {id,home,away,hf,af,time,status,group,score}
+    MATCHES = [
+    // ===== 2026世界杯完整104场比赛数据（v27修正版）=====
+    // 真实分组: A墨西哥/南非/韩国/捷克 B加拿大/波黑/卡塔尔/瑞士
+    // C巴西/摩洛哥/海地/苏格兰 D美国/巴拉圭/澳大利亚/土耳其
+    // E德国/库拉索/科特迪瓦/厄瓜多尔 F荷兰/日本/瑞典/突尼斯
+    // G比利时/埃及/伊朗/新西兰 H西班牙/佛得角/沙特/乌拉圭
+    // I法国/塞内加尔/伊拉克/挪威 J阿根廷/阿尔及利亚/奥地利/约旦
+    // K葡萄牙/民主刚果/乌兹别克/哥伦比亚 L英格兰/克罗地亚/加纳/巴拿马
+
+    // ========== 第1轮（已完成4场）==========
+    {id:1, group:'A', home:'Mexico', away:'South Africa', time:'06/12 03:00', homeScore:2, awayScore:0, status:'finished',
+      odds:{h:1.45, d:4.00, a:7.50},
+      pred:{score:'2:0', conf:80, probH:60, probD:22, probA:18,
+        analysis:'揭幕战墨西哥2-0轻取南非，希门尼斯、洛萨诺进球，东道主开门红。'},
+      coach1:'安赫尔·洛维拉', coach2:'雨果·布罗斯',
+      fifa1:'FIFA/11', fifa2:'FIFA/57',
+      formation1:'4-3-3', formation2:'4-2-3-1',
+      players1:'希门尼斯,洛萨诺,阿尔瓦雷斯', players2:'恩孔卡,莫伊塞',
+      captain1:'希门尼斯', captain2:'恩孔卡'},
+    {id:2, group:'A', home:'South Korea', away:'Czech Republic', time:'06/12 10:00', homeScore:2, awayScore:1, status:'finished',
+      odds:{h:2.10, d:3.20, a:3.30},
+      pred:{score:'2:1', conf:75, probH:38, probD:30, probA:32,
+        analysis:'韩国2-1逆转捷克，孙兴慜、李刚仁进球。亚洲劲旅首战告捷！'},
+      coach1:'黄善洪', coach2:'伊万·哈塞克',
+      fifa1:'FIFA/24', fifa2:'FIFA/30',
+      formation1:'4-2-3-1', formation2:'4-1-4-1',
+      players1:'孙兴慜,李刚仁,曹圭成', players2:'绍切克,林格尔',
+      captain1:'孙兴慜', captain2:'绍切克'},
+    {id:3, group:'B', home:'Canada', away:'Bosnia', time:'06/13 03:00', homeScore:1, awayScore:1, status:'finished',
+      odds:{h:2.80, d:3.20, a:2.40},
+      pred:{score:'1:1', conf:70, probH:30, probD:32, probA:38,
+        analysis:'加拿大1-1波黑，收获队史世界杯首个积分，历史性一刻！'},
+      coach1:'马什', coach2:'伊万·约瓦诺维奇',
+      fifa1:'FIFA/35', fifa2:'FIFA/55',
+      formation1:'3-4-2-1', formation2:'4-2-3-1',
+      players1:'阿方索·戴维斯,拉林,大卫', players2:'哲科,皮亚尼奇',
+      captain1:'阿方索·戴维斯', captain2:'哲科'},
+    {id:4, group:'D', home:'USA', away:'Paraguay', time:'06/13 09:00', homeScore:4, awayScore:1, status:'finished',
+      odds:{h:2.20, d:3.10, a:3.10},
+      pred:{score:'4:1', conf:72, probH:45, probD:27, probA:28,
+        analysis:'美国4-1大胜巴拉圭！普利希奇传射建功，小维阿双响，暂居D组榜首。'},
+      coach1:'波普', coach2:'加斯帕尔·法里亚斯',
+      fifa1:'FIFA/16', fifa2:'FIFA/58',
+      formation1:'4-3-3', formation2:'4-4-2',
+      players1:'普利希奇,小维阿,雷纳', players2:'阿尔米隆,圣克鲁斯',
+      captain1:'普利希奇', captain2:'阿尔米隆'},
+
+    // ========== 第1轮（未赛）==========
+    {id:5, group:'B', home:'Qatar', away:'Switzerland', time:'06/14 03:00', homeScore:null, awayScore:null, status:'upcoming',
       odds:{h:3.83, d:4.07, a:2.05},
       pred:{score:'1:2', conf:78, probH:22, probD:28, probA:50,
-        analysis:'卡塔尔主场迎战欧洲劲旅瑞士。瑞士FIFA排名远高于卡塔尔，扎卡领衔的中场控制力强。卡塔尔需依靠阿菲夫的突破制造威胁。'}, 
+        analysis:'卡塔尔主场迎战瑞士，瑞士FIFA排名15，卡塔尔51。扎卡领衔中场控制力强。'},
       coach1:'巴尔博萨', coach2:'格拉尼特·扎卡',
       fifa1:'FIFA/51', fifa2:'FIFA/15',
-      formation1:'4-4-2', formation2:'2022欧洲杯正分4强',
-      players1:'阿尔莫兹·阿里,阿克拉姆·阿菲夫', players2:'扎卡,阿坎吉,沙奇里',
-      captain1:'阿尔莫兹·阿里', captain2:'格拉尼特·扎卡'},
-
-    // === Group A ===
-    {id:2, group:'A', home:'Mexico', away:'South Korea', time:'06/11 21:00', homeScore:2, awayScore:1, status:'',
-      odds:{h:2.10, d:3.20, a:3.80},
-      pred:{score:'2:1', conf:78, probH:42, probD:28, probA:30,
-        analysis:'墨西哥主场优势明显，阿兹特克球场首战气势如虹。韩国队虽然韧性强，但面对东道主压力较大。预测墨西哥小胜。'},
-      coach1:'哈维尔·阿吉雷', coach2:'洪明甫',
-      fifa1:'FIFA/12', fifa2:'FIFA/23',
-      formation1:'4-3-3', formation2:'4-2-3-1',
-      players1:'洛萨诺,希门尼斯', players2:'孙兴慜,李刚仁,金玟哉',
-      captain1:'埃德森·阿尔瓦雷斯', captain2:'孙兴慜'},
-
-    {id:3, group:'A', home:'South Africa', away:'Czech Republic', time:'06/12 18:00', homeScore:0, awayScore:2, status:'',
-      odds:{h:3.80, d:3.10, a:2.15},
-      pred:{score:'0:2', conf:72, probH:22, probD:26, probA:52,
-        analysis:'捷克整体实力明显占优，南非队防守漏洞较多。捷克中场控制力强，预计轻松取胜。'},
-      coach1:'雨果·布鲁斯', coach2:'雅罗斯拉夫·西尔哈维',
-      fifa1:'FIFA/65', fifa2:'FIFA/36',
-      formation1:'4-4-2', formation2:'4-2-3-1',
-      players1:'佩雷斯,莫克瓦纳', players2:'绍切克,希克',
-      captain1:'罗纳德·兰加', captain2:'曹法尔'},
-
-    // === Group B more ===
-    {id:4, group:'B', home:'Canada', away:'Bosnia', time:'06/13 03:00', homeScore:1, awayScore:1, status:'finished',
-      odds:{h:3.50, d:3.00, a:2.30},
-      pred:{score:'1:1', conf:65, probH:28, probD:32, probA:40,
-        analysis:'加拿大东道主首秀1-1战平波黑，拉林替补救主！加拿大队史世界杯首个积分！'},
-      coach1:'杰西·马什', coach2:'穆拉特·雅金',
-      fifa1:'FIFA/48', fifa2:'FIFA/15',
-      formation1:'4-3-3', formation2:'4-2-3-1',
-      players1:'阿方索·戴维斯,乔纳森·戴维', players2:'扎卡,阿坎吉,沙奇里',
-      captain1:'阿方索·戴维斯', captain2:'格拉尼特·扎卡'},
-
-    {id:5, group:'B', home:'Bosnia', away:'Qatar', time:'06/13 12:00', homeScore:null, awayScore:null, status:'',
-      odds:{h:2.00, d:3.30, a:3.90},
-      pred:{score:'1:1', conf:65, probH:40, probD:28, probA:32,
-        analysis:'波黑拥有哲科领衔的攻击线，卡塔尔亚洲杯冠军实力不容小觑。双方首战皆需抢分，激烈对决。'},
-      coach1:'塞尔盖·巴巴雷兹', coach2:'巴尔博萨',
-      fifa1:'FIFA/52', fifa2:'FIFA/51',
-      formation1:'4-3-3', formation2:'4-4-2',
-      players1:'哲科,皮亚尼奇', players2:'阿尔莫兹·阿里,阿克拉姆·阿菲夫',
-      captain1:'哲科', captain2:'阿尔莫兹·阿里'},
-
-    // === Group C ===
-    {id:6, group:'C', home:'Brazil', away:'Scotland', time:'06/13 15:00', homeScore:4, awayScore:0, status:'',
-      odds:{h:1.20, d:6.50, a:13.00},
-      pred:{score:'3:0', conf:88, probH:72, probD:18, probA:10,
-        analysis:'巴西实力超群，苏格兰很难制造威胁。内马尔和维尼修斯的边路冲击力将撕开苏格兰防线。'},
-      coach1:'多里瓦尔', coach2:'史蒂夫·克拉克',
-      fifa1:'FIFA/5', fifa2:'FIFA/39',
-      formation1:'4-3-3', formation2:'4-3-3',
-      players1:'内马尔,维尼修斯,罗德里戈', players2:'罗伯逊,麦克托米奈',
-      captain1:'内马尔', captain2:'罗伯逊'},
-
-    {id:7, group:'C', home:'Morocco', away:'Haiti', time:'06/13 18:00', homeScore:3, awayScore:0, status:'',
-      odds:{h:1.35, d:4.80, a:8.50},
-      pred:{score:'2:0', conf:82, probH:60, probD:25, probA:15,
-        analysis:'摩洛哥延续上届世界杯黑马本色，海地首次参赛经验不足。摩洛哥控场能力占优。'},
-      coach1:'雷格拉古伊', coach2:'加布里埃尔·卡尔德龙',
-      fifa1:'FIFA/13', fifa2:'FIFA/90',
-      formation1:'4-3-3', formation2:'4-4-2',
-      players1:'齐耶赫,阿什拉夫', players2:'皮埃尔,纳佐恩',
-      captain1:'齐耶赫', captain2:'皮埃尔'},
-
-    // === Group D ===
-    {id:8, group:'D', home:'USA', away:'Paraguay', time:'06/13 09:00', homeScore:4, awayScore:1, status:'finished',
-      odds:{h:1.25, d:5.00, a:10.00},
-      pred:{score:'3:0', conf:82, probH:65, probD:22, probA:13,
-        analysis:'美国东道主首秀4-1大胜巴拉圭，普利西奇和麦肯尼状态火热。'},
-      coach1:'格雷格·贝尔哈特', coach2:'文森佐·蒙特拉',
-      fifa1:'FIFA/11', fifa2:'FIFA/28',
-      formation1:'4-3-3', formation2:'4-2-3-1',
-      players1:'普利西奇,麦肯尼', players2:'恰尔汗奥卢,伊尔马兹',
-      captain1:'普利西奇', captain2:'恰尔汗奥卢'},
-
-    {id:9, group:'D', home:'Paraguay', away:'Australia', time:'06/14 12:00', homeScore:null, awayScore:null, status:'',
-      odds:{h:2.40, d:3.00, a:3.20},
-      pred:{score:'1:0', conf:60, probH:38, probD:32, probA:30,
-        analysis:'两队实力接近，巴拉圭防守稳健，澳大利亚身体对抗强。预计小球格局。'},
-      coach1:'丹尼尔·加内罗', coach2:'格雷厄姆·阿诺德',
-      fifa1:'FIFA/56', fifa2:'FIFA/40',
-      formation1:'4-4-2', formation2:'4-2-3-1',
-      players1:'阿尔米隆,戈麦斯', players2:'穆伊,博伊尔',
-      captain1:'阿尔米隆', captain2:'穆伊'},
-
-    // === Group E ===
-    {id:10, group:'E', home:'Germany', away:'Ecuador', time:'06/13 21:00', homeScore:3, awayScore:0, status:'',
-      odds:{h:1.30, d:5.00, a:10.00},
-      pred:{score:'3:0', conf:85, probH:68, probD:20, probA:12,
-        analysis:'德国战车实力碾压，厄瓜多尔高原优势消失。德国年轻一代攻击力旺盛，大胜可期。'},
-      coach1:'尤利安·纳格尔斯曼', coach2:'菲利克斯·桑切斯',
-      fifa1:'FIFA/9', fifa2:'FIFA/31',
-      formation1:'4-2-3-1', formation2:'4-4-2',
-      players1:'穆西亚拉,哈弗茨,基米希', players2:'瓦伦西亚,凯塞多',
-      captain1:'基米希', captain2:'瓦伦西亚'},
-
-    {id:11, group:'E', home:'Curacao', away:'Ivory Coast', time:'06/14 15:00', homeScore:null, awayScore:null, status:'',
-      odds:{h:7.50, d:4.20, a:1.45},
-      pred:{score:'0:2', conf:80, probH:12, probD:22, probA:66,
-        analysis:'科特迪瓦实力碾压小组最弱的库拉索。库拉索首次参赛经验不足，难阻科特迪瓦大胜。'},
-      coach1:'迪克·阿德沃卡特', coach2:'埃梅塞·法埃',
-      fifa1:'FIFA/86', fifa2:'FIFA/37',
-      formation1:'4-4-2', formation2:'4-3-3',
-      players1:'巴库纳,安东内', players2:'奥里耶,凯西,亚里奥',
-      captain1:'巴库纳', captain2:'奥里耶'},
-
-    // === Group F ===
-    {id:12, group:'F', home:'Netherlands', away:'Sweden', time:'06/12 12:00', homeScore:0, awayScore:0, status:'',
-      odds:{h:1.70, d:3.70, a:5.00},
-      pred:{score:'2:1', conf:72, probH:50, probD:27, probA:23,
-        analysis:'荷兰与瑞典的北欧对决，荷兰技术占优但瑞典防守顽强。郁金香军团小胜概率高。'},
-      coach1:'罗纳德·科曼', coach2:'约翰·达赫尔·托马斯',
-      fifa1:'FIFA/7', fifa2:'FIFA/26',
-      formation1:'4-3-3', formation2:'4-4-2',
-      players1:'范迪克,德容,德佩', players2:'伊萨克,福斯贝里',
-      captain1:'范迪克', captain2:'伊萨克'},
-
-    {id:13, group:'F', home:'Japan', away:'Tunisia', time:'06/14 18:00', homeScore:null, awayScore:null, status:'',
-      odds:{h:1.90, d:3.20, a:4.20},
-      pred:{score:'1:0', conf:63, probH:42, probD:30, probA:28,
-        analysis:'日本传控体系稳定，突尼斯防守反击犀利。亚洲劲旅小胜可期。'},
-      coach1:'森保一', coach2:'凯斯·雅库比',
-      fifa1:'FIFA/18', fifa2:'FIFA/41',
-      formation1:'4-2-3-1', formation2:'4-3-3',
-      players1:'三笘薰,久保建英', players2:'哈兹里,布龙',
-      captain1:'吉田麻也', captain2:'哈兹里'},
-
-    // === Group G ===
-    {id:14, group:'G', home:'Belgium', away:'Egypt', time:'06/11 18:00', homeScore:1, awayScore:2, status:'',
-      odds:{h:1.80, d:3.50, a:4.50},
-      pred:{score:'2:1', conf:66, probH:45, probD:28, probA:27,
-        analysis:'比利时黄金一代老化，萨拉赫领衔的埃及状态正佳。埃及反击速度将给比利时防线制造巨大麻烦。'},
-      coach1:'多梅尼科·特德斯科', coach2:'霍萨姆·哈桑',
-      fifa1:'FIFA/6', fifa2:'FIFA/35',
-      formation1:'3-4-2-1', formation2:'4-3-3',
-      players1:'德布劳内,卢卡库', players2:'萨拉赫,埃尔内尼',
-      captain1:'德布劳内', captain2:'萨拉赫'},
-
-    {id:15, group:'G', home:'Iran', away:'New Zealand', time:'06/14 21:00', homeScore:null, awayScore:null, status:'',
-      odds:{h:1.55, d:3.80, a:6.00},
-      pred:{score:'2:0', conf:75, probH:55, probD:27, probA:18,
-        analysis:'伊朗亚洲顶级对抗能力，新西兰实力有限。伊朗身体对抗优势明显。'},
-      coach1:'阿米尔·加莱诺伊', coach2:'达伦·巴泽利',
-      fifa1:'FIFA/22', fifa2:'FIFA/107',
-      formation1:'4-2-3-1', formation2:'4-4-2',
-      players1:'贾汉巴赫什,阿兹蒙', players2:'伍德,因斯',
-      captain1:'贾汉巴赫什', captain2:'伍德'},
-
-    // === Group H ===
-    {id:16, group:'H', home:'Spain', away:'Saudi Arabia', time:'06/11 15:00', homeScore:5, awayScore:0, status:'',
-      odds:{h:1.15, d:7.00, a:15.00},
-      pred:{score:'4:0', conf:90, probH:75, probD:15, probA:10,
-        analysis:'西班牙传控统治力十足，沙特难以招架。斗牛士军团将控球率保持在70%以上并轻松取胜。'},
-      coach1:'路易斯·德拉富恩特', coach2:'曼奇尼',
-      fifa1:'FIFA/3', fifa2:'FIFA/54',
-      formation1:'4-3-3', formation2:'4-3-3',
-      players1:'莫拉塔,罗德里,亚马尔', players2:'谢赫里,多萨里',
-      captain1:'莫拉塔', captain2:'谢赫里'},
-
-    {id:17, group:'H', home:'Cape Verde', away:'Uruguay', time:'06/13 15:00', homeScore:1, awayScore:3, status:'',
-      odds:{h:6.50, d:3.80, a:1.55},
-      pred:{score:'0:2', conf:78, probH:15, probD:23, probA:62,
-        analysis:'乌拉圭实力远超佛得角，努涅斯和苏亚雷斯的锋线组合威力十足。佛得角难阻南美劲旅。'},
-      coach1:'布比斯塔', coach2:'马塞洛·贝尔萨',
-      fifa1:'FIFA/73', fifa2:'FIFA/14',
-      formation1:'4-4-2', formation2:'4-3-3',
-      players1:'门德斯,塔瓦雷斯', players2:'努涅斯,苏亚雷斯,乌加特',
-      captain1:'门德斯', captain2:'乌加特'},
-
-    // === Group I ===
-    {id:18, group:'I', home:'France', away:'Senegal', time:'06/11 12:00', homeScore:3, awayScore:1, status:'',
-      odds:{h:1.40, d:4.50, a:7.50},
-      pred:{score:'2:0', conf:80, probH:55, probD:25, probA:20,
-        analysis:'法国作为上届亚军实力强劲，塞内加尔非洲冠军不容小觑。姆巴佩的速度将决定比赛走向。'},
-      coach1:'德尚', coach2:'阿利乌·西塞',
-      fifa1:'FIFA/2', fifa2:'FIFA/20',
-      formation1:'4-3-3', formation2:'4-3-3',
-      players1:'姆巴佩,格列兹曼', players2:'库利巴利,马内',
-      captain1:'姆巴佩', captain2:'库利巴利'},
-
-    {id:19, group:'I', home:'Iraq', away:'Norway', time:'06/14 15:00', homeScore:null, awayScore:null, status:'',
-      odds:{h:4.80, d:3.50, a:1.75},
-      pred:{score:'0:2', conf:73, probH:18, probD:26, probA:56,
-        analysis:'挪威拥有哈兰德超级射手，伊拉克防守组织严密但实力差距明显。北欧海盗统治高空球。'},
-      coach1:'赫苏斯·卡萨斯', coach2:'斯泰尔·索尔巴肯',
-      fifa1:'FIFA/68', fifa2:'FIFA/44',
-      formation1:'4-2-3-1', formation2:'4-3-3',
-      players1:'巴沙尔,优素福', players2:'哈兰德,厄德高',
-      captain1:'巴沙尔', captain2:'哈兰德'},
-
-    // === Group J ===
-    {id:20, group:'J', home:'Argentina', away:'Jordan', time:'06/12 18:00', homeScore:3, awayScore:0, status:'',
-      odds:{h:1.10, d:8.00, a:20.00},
-      pred:{score:'3:0', conf:92, probH:78, probD:14, probA:8,
-        analysis:'卫冕冠军阿根廷实力碾压，梅西领衔的进攻线面对约旦优势巨大。潘帕斯雄鹰轻松取胜。'},
-      coach1:'斯卡洛尼', coach2:'侯赛因·阿穆塔',
-      fifa1:'FIFA/1', fifa2:'FIFA/70',
-      formation1:'4-3-3', formation2:'4-2-3-1',
-      players1:'梅西,迪马利亚,劳塔罗', players2:'塔马里,阿尔里斯安',
-      captain1:'梅西', captain2:'塔马里'},
-
-    {id:21, group:'J', home:'Algeria', away:'Austria', time:'06/13 18:00', homeScore:1, awayScore:2, status:'',
-      odds:{h:3.20, d:3.20, a:2.35},
-      pred:{score:'1:1', conf:55, probH:30, probD:35, probA:35,
-        analysis:'阿尔及利亚非洲技术流对抗奥地利欧陆体系。双方实力接近，平局概率不容忽视。'},
-      coach1:'弗拉基米尔·佩特科维奇', coach2:'拉尔夫·朗尼克',
-      fifa1:'FIFA/30', fifa2:'FIFA/25',
       formation1:'4-2-3-1', formation2:'4-2-3-1',
-      players1:'马赫雷斯,本赛义德', players2:'阿拉巴,萨比策',
-      captain1:'马赫雷斯', captain2:'阿拉巴'},
-
-    // === Group K ===
-    {id:22, group:'K', home:'Portugal', away:'Colombia', time:'06/11 18:00', homeScore:2, awayScore:1, status:'',
-      odds:{h:2.05, d:3.25, a:3.80},
-      pred:{score:'2:1', conf:67, probH:42, probD:28, probA:30,
-        analysis:'葡萄牙C罗最后一届世界杯，斗志昂扬。哥伦比亚J罗老当益壮，南美技术流对决。'},
-      coach1:'罗伯托·马丁内斯', coach2:'内斯托·洛伦佐',
-      fifa1:'FIFA/8', fifa2:'FIFA/17',
-      formation1:'4-3-3', formation2:'4-3-3',
-      players1:'C罗,布鲁诺·费尔南德斯', players2:'J罗,迪亚斯,博雷',
-      captain1:'C罗', captain2:'J罗'},
-
-    {id:23, group:'K', home:'DR Congo', away:'Uzbekistan', time:'06/14 12:00', homeScore:null, awayScore:null, status:'',
-      odds:{h:2.10, d:3.10, a:3.70},
-      pred:{score:'1:0', conf:58, probH:38, probD:34, probA:28,
-        analysis:'两队实力接近的中亚对中非之战。刚果身体对抗占优，乌兹别克斯坦技术细腻。'},
-      coach1:'塞巴斯蒂安·德萨布雷', coach2:'斯雷奇科·卡塔内茨',
-      fifa1:'FIFA/59', fifa2:'FIFA/61',
-      formation1:'4-4-2', formation2:'4-2-3-1',
-      players1:'姆博卡尼,卢因达马', players2:'舒库罗夫,肖穆罗多夫',
-      captain1:'姆博卡尼', captain2:'舒库罗夫'},
-
-    // === Group L ===
-    {id:24, group:'L', home:'England', away:'Panama', time:'06/11 15:00', homeScore:6, awayScore:0, status:'',
-      odds:{h:1.08, d:10.00, a:28.00},
-      pred:{score:'4:0', conf:93, probH:80, probD:12, probA:8,
-        analysis:'英格兰攻击线豪华，凯恩和贝林厄姆势不可挡。巴拿马很难招架三狮军团的狂轰滥炸。'},
-      coach1:'索斯盖特', coach2:'托马斯·克里斯蒂安森',
-      fifa1:'FIFA/4', fifa2:'FIFA/45',
-      formation1:'4-3-3', formation2:'4-4-2',
-      players1:'凯恩,贝林厄姆,萨卡', players2:'戈麦斯,穆里略',
-      captain1:'凯恩', captain2:'戈麦斯'},
-
-    {id:25, group:'L', home:'Croatia', away:'Ghana', time:'06/12 15:00', homeScore:0, awayScore:0, status:'',
-      odds:{h:1.85, d:3.30, a:4.50},
-      pred:{score:'2:0', conf:70, probH:48, probD:28, probA:24,
-        analysis:'克罗地亚中场控制力强，莫德里奇率领格子军团掌控节奏。加纳年轻有活力但经验不足。'},
-      coach1:'兹拉特科·达利奇', coach2:'奥托·阿多',
-      fifa1:'FIFA/10', fifa2:'FIFA/64',
-      formation1:'4-3-3', formation2:'4-3-3',
-      players1:'莫德里奇,佩里西奇', players2:'阿尤,库杜斯',
-      captain1:'莫德里奇', captain2:'阿尤'},
-
-    // === 更多赛程 ===
-    {id:26, group:'A', home:'Mexico', away:'Czech Republic', time:'06/15 18:00', homeScore:null, awayScore:null, status:'',
-      odds:{h:1.70, d:3.60, a:5.00},
-      pred:{score:'2:0', conf:75, probH:52, probD:28, probA:20,
-        analysis:'墨西哥延续主场优势，捷克首战消耗较大。墨西哥进攻效率更胜一筹。'},
-      coach1:'哈维尔·阿吉雷', coach2:'雅罗斯拉夫·西尔哈维',
-      fifa1:'FIFA/12', fifa2:'FIFA/36',
-      formation1:'4-3-3', formation2:'4-2-3-1',
-      players1:'洛萨诺,希门尼斯', players2:'绍切克,希克',
-      captain1:'埃德森·阿尔瓦雷斯', captain2:'曹法尔'},
-
-    {id:27, group:'A', home:'South Korea', away:'South Africa', time:'06/15 21:00', homeScore:null, awayScore:null, status:'',
-      odds:{h:1.60, d:3.70, a:5.50},
-      pred:{score:'2:0', conf:73, probH:50, probD:28, probA:22,
-        analysis:'韩国亚洲劲旅对阵南非，孙兴慜的冲击力是最大武器。韩国整体实力占优。'},
-      coach1:'洪明甫', coach2:'雨果·布鲁斯',
-      fifa1:'FIFA/23', fifa2:'FIFA/65',
-      formation1:'4-2-3-1', formation2:'4-4-2',
-      players1:'孙兴慜,李刚仁', players2:'佩雷斯,莫克瓦纳',
-      captain1:'孙兴慜', captain2:'罗纳德·兰加'},
-
-    {id:28, group:'B', home:'Switzerland', away:'Bosnia', time:'06/16 18:00', homeScore:null, awayScore:null, status:'',
-      odds:{h:1.85, d:3.30, a:4.40},
-      pred:{score:'1:0', conf:62, probH:40, probD:32, probA:28,
-        analysis:'瑞士对波黑的欧洲内战，双方知根知底。瑞士防守更稳健，小胜可期。'},
-      coach1:'穆拉特·雅金', coach2:'塞尔盖·巴巴雷兹',
-      fifa1:'FIFA/15', fifa2:'FIFA/52',
+      players1:'阿菲夫,阿尔阿里', players2:'扎卡,沙奇里,阿坎吉',
+      captain1:'阿菲夫', captain2:'扎卡'},
+    {id:6, group:'C', home:'Brazil', away:'Morocco', time:'06/14 06:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:1.55, d:3.80, a:5.80},
+      pred:{score:'3:1', conf:80, probH:58, probD:24, probA:18,
+        analysis:'巴西对阵摩洛哥，桑巴军团主场出击，维尼修斯领衔攻击群火力凶猛。'},
+      coach1:'多里瓦尔', coach2:'瓦利德·雷格拉吉',
+      fifa1:'FIFA/3', fifa2:'FIFA/13',
       formation1:'4-2-3-1', formation2:'4-3-3',
-      players1:'扎卡,阿坎吉', players2:'哲科,皮亚尼奇',
-      captain1:'格拉尼特·扎卡', captain2:'哲科'},
-
-    {id:29, group:'B', home:'Qatar', away:'Canada', time:'06/16 21:00', homeScore:null, awayScore:null, status:'',
-      odds:{h:3.10, d:3.20, a:2.35},
-      pred:{score:'1:1', conf:58, probH:28, probD:34, probA:38,
-        analysis:'加拿大东道主客场对阵卡塔尔，双方都要争取出线主动权。激烈对决。'},
-      coach1:'巴尔博萨', coach2:'杰西·马什',
-      fifa1:'FIFA/51', fifa2:'FIFA/48',
-      formation1:'4-4-2', formation2:'4-3-3',
-      players1:'阿尔莫兹·阿里,阿克拉姆·阿菲夫', players2:'阿方索·戴维斯,乔纳森·戴维',
-      captain1:'阿尔莫兹·阿里', captain2:'阿方索·戴维斯'},
-
-    {id:30, group:'C', home:'Brazil', away:'Morocco', time:'06/17 21:00', homeScore:null, awayScore:null, status:'',
-      odds:{h:1.65, d:3.60, a:5.20},
-      pred:{score:'2:1', conf:68, probH:46, probD:28, probA:26,
-        analysis:'巴西与摩洛哥的强强对话，摩洛哥上届世界杯黑马本色。巴西实力仍占优。'},
-      coach1:'多里瓦尔', coach2:'雷格拉古伊',
-      fifa1:'FIFA/5', fifa2:'FIFA/13',
-      formation1:'4-3-3', formation2:'4-3-3',
-      players1:'内马尔,维尼修斯', players2:'齐耶赫,阿什拉夫',
-      captain1:'内马尔', captain2:'齐耶赫'},
-
-    {id:31, group:'F', home:'Netherlands', away:'Japan', time:'06/17 18:00', homeScore:null, awayScore:null, status:'',
-      odds:{h:1.70, d:3.50, a:5.00},
-      pred:{score:'2:0', conf:72, probH:48, probD:30, probA:22,
-        analysis:'荷兰全攻全守对阵日本传控，橙衣军团整体实力占优。日本防守顽强但进攻乏力。'},
+      players1:'维尼修斯,罗德里戈,拉菲尼亚', players2:'阿什拉夫,齐耶赫,马兹拉维',
+      captain1:'内马尔', captain2:'阿什拉夫'},
+    {id:7, group:'C', home:'Haiti', away:'Scotland', time:'06/14 09:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:4.50, d:3.50, a:1.80},
+      pred:{score:'0:2', conf:72, probH:18, probD:28, probA:54,
+        analysis:'苏格兰实力占优，海地多数球员效力低级别联赛。苏格兰有望取首胜。'},
+      coach1:'塞勒斯坦', coach2:'克雷格·列文',
+      fifa1:'FIFA/89', fifa2:'FIFA/39',
+      formation1:'4-4-2', formation2:'3-4-2-1',
+      players1:'皮耶,阿尔蒂多雷', players2:'罗伯逊,麦金,蒂尔尼',
+      captain1:'皮耶', captain2:'罗伯逊'},
+    {id:8, group:'D', home:'Australia', away:'Turkey', time:'06/14 12:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:2.50, d:3.10, a:2.80},
+      pred:{score:'1:1', conf:65, probH:35, probD:32, probA:33,
+        analysis:'袋鼠军团vs星月军团，土耳其恰尔汗奥卢领衔中场，澳大利亚防守顽强。'},
+      coach1:'格雷厄姆·阿诺德', coach2:'文森特·孔塞桑',
+      fifa1:'FIFA/23', fifa2:'FIFA/21',
+      formation1:'4-2-3-1', formation2:'4-1-4-1',
+      players1:'马修·莱基,杜克,古德温', players2:'恰尔汗奥卢,伊尔迪拉伊',
+      captain1:'马修·莱基', captain2:'恰尔汗奥卢'},
+    {id:9, group:'E', home:'Germany', away:'Curacao', time:'06/15 01:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:1.08, d:9.00, a:22.0},
+      pred:{score:'5:0', conf:90, probH:85, probD:10, probA:5,
+        analysis:'德国主场对阵库拉索，悬念仅剩进球数！穆西亚拉、维尔茨双星闪耀。'},
+      coach1:'纳格尔斯曼', coach2:'格里·韦尔克曼',
+      fifa1:'FIFA/13', fifa2:'FIFA/88',
+      formation1:'4-2-3-1', formation2:'4-4-2',
+      players1:'穆西亚拉,维尔茨,哈弗茨', players2:'巴克,延森',
+      captain1:'诺伊尔', captain2:'巴克'},
+    {id:10, group:'F', home:'Netherlands', away:'Japan', time:'06/15 04:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:1.90, d:3.30, a:4.00},
+      pred:{score:'2:1', conf:68, probH:42, probD:30, probA:28,
+        analysis:'橙衣军团对阵蓝武士。范戴克领衔后防，日本防守反击犀利，或献经典对决！'},
       coach1:'罗纳德·科曼', coach2:'森保一',
       fifa1:'FIFA/7', fifa2:'FIFA/18',
+      formation1:'3-4-1-2', formation2:'4-2-3-1',
+      players1:'范戴克,德佩,德容', players2:'久保建英,三笘薰,远藤航',
+      captain1:'范戴克', captain2:'远藤航'},
+    {id:11, group:'F', home:'Sweden', away:'Tunisia', time:'06/15 10:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:1.75, d:3.40, a:4.50},
+      pred:{score:'2:0', conf:70, probH:52, probD:28, probA:20,
+        analysis:'瑞典身体优势明显，突尼斯难以抵挡北欧海盗的空中优势，伊萨克领衔锋线。'},
+      coach1:'乔恩·达尔·托马森', coach2:'卡德里·杰迪',
+      fifa1:'FIFA/22', fifa2:'FIFA/41',
+      formation1:'4-4-2', formation2:'4-3-3',
+      players1:'伊萨克,福斯贝里,埃克达尔', players2:'哈兹里,姆萨克尼',
+      captain1:'伊萨克', captain2:'哈兹里'},
+    {id:12, group:'H', home:'Spain', away:'Cape Verde', time:'06/16 00:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:1.10, d:8.50, a:20.0},
+      pred:{score:'4:0', conf:88, probH:88, probD:8, probA:4,
+        analysis:'斗牛士军团对阵非洲新军，攻防差距悬殊。佩德里、威廉姆斯双星闪耀。'},
+      coach1:'路易斯·德拉富恩特', coach2:'斯蒂芬·洛科',
+      fifa1:'FIFA/8', fifa2:'FIFA/73',
+      formation1:'4-3-3', formation2:'4-4-2',
+      players1:'佩德里,莫拉塔,威廉姆斯', players2:'内维斯,丰特',
+      captain1:'莫拉塔', captain2:'内维斯'},
+    {id:13, group:'G', home:'Belgium', away:'Egypt', time:'06/16 03:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:2.20, d:3.10, a:3.10},
+      pred:{score:'2:1', conf:68, probH:40, probD:30, probA:30,
+        analysis:'比利时红魔对阵埃及法老，德布劳内vs萨拉赫！金球级对决，五五开。'},
+      coach1:'多梅尼克·特德斯科', coach2:'霍萨姆·塞里',
+      fifa1:'FIFA/5', fifa2:'FIFA/10',
+      formation1:'4-2-3-1', formation2:'4-3-3',
+      players1:'德布劳内,卢卡库,特罗萨德', players2:'萨拉赫,马赫雷斯',
+      captain1:'德布劳内', captain2:'萨拉赫'},
+    {id:14, group:'H', home:'Saudi Arabia', away:'Uruguay', time:'06/16 06:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:4.00, d:3.30, a:1.90},
+      pred:{score:'0:2', conf:72, probH:18, probD:26, probA:56,
+        analysis:'沙特面对南美强敌乌拉圭，努涅斯+巴尔韦德火力凶猛。达瓦萨里孤军奋战。'},
+      coach1:'罗伯托·加兰多', coach2:'迭戈·阿隆索',
+      fifa1:'FIFA/59', fifa2:'FIFA/14',
+      formation1:'4-3-3', formation2:'4-4-2',
+      players1:'萨勒姆·达瓦萨里', players2:'努涅斯,巴尔韦德,本坦库尔',
+      captain1:'萨勒姆·达瓦萨里', captain2:'巴尔韦德'},
+    {id:15, group:'G', home:'Iran', away:'New Zealand', time:'06/16 09:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:1.60, d:3.60, a:5.50},
+      pred:{score:'2:0', conf:75, probH:60, probD:24, probA:16,
+        analysis:'伊朗亚洲排名第一，新西兰附加赛晋级实力有限。阿兹蒙、塔雷米双枪发威。'},
+      coach1:'阿巴西', coach2:'达里尔·惠特兰',
+      fifa1:'FIFA/20', fifa2:'FIFA/74',
+      formation1:'4-1-4-1', formation2:'4-4-2',
+      players1:'阿兹蒙,塔雷米,贾汉巴赫什', players2:'克里斯·伍德',
+      captain1:'阿兹蒙', captain2:'克里斯·伍德'},
+    {id:16, group:'I', home:'France', away:'Senegal', time:'06/17 03:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:1.45, d:4.20, a:6.00},
+      pred:{score:'3:0', conf:82, probH:72, probD:18, probA:10,
+        analysis:'法国卫冕首战，姆巴佩+图拉姆双箭头，塞内加尔难以抵挡！'},
+      coach1:'迪迪埃·德尚', coach2:'阿利乌·西塞',
+      fifa1:'FIFA/2', fifa2:'FIFA/20',
       formation1:'4-3-3', formation2:'4-2-3-1',
-      players1:'范迪克,德容,德佩', players2:'三笘薰,久保建英',
-      captain1:'范迪克', captain2:'吉田麻也'},
-
-    {id:32, group:'J', home:'Argentina', away:'Algeria', time:'06/18 21:00', homeScore:null, awayScore:null, status:'',
-      odds:{h:1.25, d:5.50, a:11.00},
-      pred:{score:'2:0', conf:82, probH:65, probD:22, probA:13,
-        analysis:'卫冕冠军阿根廷渐入佳境，阿尔及利亚非洲雄狮防守稳固但难阻梅西。'},
-      coach1:'斯卡洛尼', coach2:'弗拉基米尔·佩特科维奇',
-      fifa1:'FIFA/1', fifa2:'FIFA/30',
+      players1:'姆巴佩,图拉姆,楚阿梅尼', players2:'马内,萨尔',
+      captain1:'姆巴佩', captain2:'马内'},
+    {id:17, group:'I', home:'Iraq', away:'Norway', time:'06/17 06:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:3.80, d:3.20, a:1.95},
+      pred:{score:'0:2', conf:72, probH:20, probD:28, probA:52,
+        analysis:'伊拉克挑战北欧球队挪威。厄斯特高+奥德加德组合有实力优势。'},
+      coach1:'待定', coach2:'斯托尔',
+      fifa1:'FIFA/63', fifa2:'FIFA/36',
+      formation1:'4-3-3', formation2:'4-3-3',
+      players1:'阿里·贾西姆,阿特万', players2:'厄斯特高,奥德加德',
+      captain1:'阿里·贾西姆', captain2:'奥德加德'},
+    {id:18, group:'J', home:'Argentina', away:'Algeria', time:'06/17 09:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:1.30, d:5.00, a:8.50},
+      pred:{score:'3:0', conf:85, probH:78, probD:15, probA:7,
+        analysis:'阿根廷卫冕首战，马丁内斯缺阵但梅西领衔。阿尔及利亚难以阻挡！'},
+      coach1:'利昂内尔·斯卡洛尼', coach2:'弗拉维安·博纳德',
+      fifa1:'FIFA/1', fifa2:'FIFA/32',
       formation1:'4-3-3', formation2:'4-2-3-1',
-      players1:'梅西,迪马利亚,劳塔罗', players2:'马赫雷斯,本赛义德',
+      players1:'梅西,迪马利亚,劳塔罗', players2:'马赫雷斯,本纳赛尔',
       captain1:'梅西', captain2:'马赫雷斯'},
-
-    {id:33, group:'L', home:'England', away:'Croatia', time:'06/18 18:00', homeScore:null, awayScore:null, status:'',
+    {id:19, group:'J', home:'Austria', away:'Jordan', time:'06/17 12:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:1.25, d:5.50, a:9.50},
+      pred:{score:'3:0', conf:80, probH:76, probD:16, probA:8,
+        analysis:'奥地利对阵约旦，实力差距明显。阿拉巴领衔后防，阿诺托维奇进攻主导。'},
+      coach1:'拉尔夫·朗尼克', coach2:'侯赛因·阿穆塔',
+      fifa1:'FIFA/25', fifa2:'FIFA/70',
+      formation1:'4-2-3-1', formation2:'4-2-3-1',
+      players1:'阿拉巴,萨比策,阿诺托维奇', players2:'塔马里,阿布·阿里',
+      captain1:'阿拉巴', captain2:'塔马里'},
+    {id:20, group:'K', home:'Portugal', away:'DR Congo', time:'06/18 01:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:1.12, d:8.00, a:18.0},
+      pred:{score:'4:0', conf:86, probH:86, probD:9, probA:5,
+        analysis:'C罗领衔对阵民主刚果，悬念仅剩能否零封。莱奥、B费双星闪耀。'},
+      coach1:'罗伯托·马丁内斯', coach2:'塞巴斯蒂安·德萨布雷',
+      fifa1:'FIFA/8', fifa2:'FIFA/59',
+      formation1:'4-3-3', formation2:'4-4-2',
+      players1:'C罗,布鲁诺·费尔南德斯,莱奥', players2:'姆博卡尼,卢因达马',
+      captain1:'C罗', captain2:'姆博卡尼'},
+    {id:21, group:'L', home:'England', away:'Croatia', time:'06/18 04:00', homeScore:null, awayScore:null, status:'upcoming',
       odds:{h:1.55, d:3.80, a:5.80},
       pred:{score:'2:1', conf:68, probH:45, probD:28, probA:27,
-        analysis:'英格兰与克罗地亚的恩怨对决，2018和2022两次交手令人难忘。三狮军团更年轻更有活力。'},
-      coach1:'索斯盖特', coach2:'兹拉特科·达利奇',
+        analysis:'英格兰vs克罗地亚，2018和2022两度交手令人难忘！三狮军团更年轻。'},
+      coach1:'加雷斯·索斯盖特', coach2:'兹拉特科·达利奇',
       fifa1:'FIFA/4', fifa2:'FIFA/10',
+      formation1:'3-4-2-1', formation2:'4-3-3',
+      players1:'凯恩,贝林厄姆,萨卡', players2:'莫德里奇,佩里西奇,格瓦迪奥尔',
+      captain1:'凯恩', captain2:'莫德里奇'},
+    {id:22, group:'L', home:'Ghana', away:'Panama', time:'06/18 10:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:1.90, d:3.30, a:4.00},
+      pred:{score:'2:0', conf:68, probH:48, probD:30, probA:22,
+        analysis:'加纳非洲雄鹰对阵巴拿马，威廉姆斯兄弟领衔进攻，身体对抗优势明显。'},
+      coach1:'奥托·阿多', coach2:'托马斯·克里斯蒂安森',
+      fifa1:'FIFA/64', fifa2:'FIFA/45',
+      formation1:'4-2-3-1', formation2:'4-4-2',
+      players1:'威廉姆斯,库杜斯,阿尤', players2:'戈麦斯,法加多',
+      captain1:'阿尤', captain2:'戈麦斯'},
+    {id:23, group:'K', home:'Uzbekistan', away:'Colombia', time:'06/18 10:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:4.50, d:3.50, a:1.80},
+      pred:{score:'0:2', conf:75, probH:18, probD:26, probA:56,
+        analysis:'乌兹别克斯坦首秀挑战南美劲旅哥伦比亚，J罗领衔中场难以对抗。'},
+      coach1:'斯雷奇科·卡塔内茨', coach2:'内斯托·洛伦佐',
+      fifa1:'FIFA/61', fifa2:'FIFA/17',
+      formation1:'4-2-3-1', formation2:'4-3-3',
+      players1:'舒库罗夫,肖穆罗多夫', players2:'J罗,迪亚斯,博雷',
+      captain1:'舒库罗夫', captain2:'J罗'},
+
+    // ========== 第2轮（未赛）==========
+    {id:24, group:'A', home:'Czech Republic', away:'South Africa', time:'06/19 00:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:2.00, d:3.20, a:3.50},
+      pred:{score:'2:0', conf:68, probH:45, probD:30, probA:25,
+        analysis:'捷克vs南非，首轮皆负此战事关出线。捷克整体实力占优，有望获首胜。'},
+      coach1:'伊万·哈塞克', coach2:'雨果·布罗斯',
+      fifa1:'FIFA/30', fifa2:'FIFA/57',
+      formation1:'4-1-4-1', formation2:'4-2-3-1',
+      players1:'绍切克,林格尔,库赫塔', players2:'恩孔卡',
+      captain1:'绍切克', captain2:'恩孔卡'},
+    {id:25, group:'A', home:'Mexico', away:'South Korea', time:'06/19 03:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:2.20, d:3.10, a:3.10},
+      pred:{score:'2:1', conf:68, probH:40, probD:28, probA:32,
+        analysis:'墨西哥vs韩国！A组榜首之争，孙兴慜对决希门尼斯，亚洲vs中北美巅峰对决。'},
+      coach1:'安赫尔·洛维拉', coach2:'黄善洪',
+      fifa1:'FIFA/11', fifa2:'FIFA/24',
+      formation1:'4-3-3', formation2:'4-2-3-1',
+      players1:'希门尼斯,洛萨诺,阿尔瓦雷斯', players2:'孙兴慜,李刚仁,曹圭成',
+      captain1:'希门尼斯', captain2:'孙兴慜'},
+    {id:26, group:'B', home:'Switzerland', away:'Bosnia', time:'06/19 03:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:1.75, d:3.40, a:4.50},
+      pred:{score:'2:0', conf:72, probH:52, probD:28, probA:20,
+        analysis:'瑞士迎战波黑，欧洲内战。哲科难救主，瑞士进攻群状态正佳。'},
+      coach1:'格拉尼特·扎卡', coach2:'伊万·约瓦诺维奇',
+      fifa1:'FIFA/15', fifa2:'FIFA/55',
+      formation1:'4-2-3-1', formation2:'4-2-3-1',
+      players1:'扎卡,沙奇里,阿坎吉', players2:'哲科,皮亚尼奇',
+      captain1:'扎卡', captain2:'哲科'},
+    {id:27, group:'B', home:'Canada', away:'Qatar', time:'06/19 06:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:1.60, d:3.80, a:5.00},
+      pred:{score:'2:0', conf:70, probH:58, probD:25, probA:17,
+        analysis:'加拿大vs卡塔尔。东道主揭幕战后需要抢分，加拿大边路突破犀利。'},
+      coach1:'马什', coach2:'巴尔博萨',
+      fifa1:'FIFA/35', fifa2:'FIFA/51',
+      formation1:'3-4-2-1', formation2:'4-2-3-1',
+      players1:'阿方索·戴维斯,拉林,大卫', players2:'阿菲夫,阿尔阿里',
+      captain1:'阿方索·戴维斯', captain2:'阿菲夫'},
+    {id:28, group:'C', home:'Scotland', away:'Morocco', time:'06/20 06:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:2.50, d:3.10, a:2.80},
+      pred:{score:'1:2', conf:65, probH:32, probD:28, probA:40,
+        analysis:'苏格兰vs摩洛哥，第2轮关键战！摩洛哥防守稳固有望带走分数。'},
+      coach1:'克雷格·列文', coach2:'瓦利德·雷格拉吉',
+      fifa1:'FIFA/39', fifa2:'FIFA/13',
+      formation1:'3-4-2-1', formation2:'4-3-3',
+      players1:'罗伯逊,麦金,蒂尔尼', players2:'阿什拉夫,齐耶赫,马兹拉维',
+      captain1:'罗伯逊', captain2:'阿什拉夫'},
+    {id:29, group:'C', home:'Brazil', away:'Haiti', time:'06/20 08:30', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:1.05, d:11.0, a:25.0},
+      pred:{score:'6:0', conf:92, probH:92, probD:5, probA:3,
+        analysis:'巴西对阵海地，桑巴军团火力全开。维尼修斯帽子戏法可期！'},
+      coach1:'多里瓦尔', coach2:'塞勒斯坦',
+      fifa1:'FIFA/3', fifa2:'FIFA/89',
+      formation1:'4-2-3-1', formation2:'4-4-2',
+      players1:'维尼修斯,罗德里戈,拉菲尼亚', players2:'皮耶,阿尔蒂多雷',
+      captain1:'内马尔', captain2:'皮耶'},
+    {id:30, group:'D', home:'Australia', away:'USA', time:'06/20 12:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:3.20, d:3.20, a:2.10},
+      pred:{score:'1:2', conf:65, probH:25, probD:30, probA:45,
+        analysis:'澳大利亚vs美国，D组头名之争！美国4-1大胜后士气高涨。'},
+      coach1:'格雷厄姆·阿诺德', coach2:'波普',
+      fifa1:'FIFA/23', fifa2:'FIFA/16',
+      formation1:'4-2-3-1', formation2:'4-3-3',
+      players1:'马修·莱基,杜克,古德温', players2:'普利希奇,小维阿,雷纳',
+      captain1:'马修·莱基', captain2:'普利希奇'},
+    {id:31, group:'D', home:'Turkey', away:'Paraguay', time:'06/20 15:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:2.80, d:3.10, a:2.40},
+      pred:{score:'1:1', conf:65, probH:30, probD:32, probA:38,
+        analysis:'土耳其vs巴拉圭，两支黑马正面对决。土耳其防守反击效率高。'},
+      coach1:'文森特·孔塞桑', coach2:'加斯帕尔·法里亚斯',
+      fifa1:'FIFA/21', fifa2:'FIFA/58',
+      formation1:'4-1-4-1', formation2:'4-4-2',
+      players1:'恰尔汗奥卢,伊尔迪拉伊', players2:'阿尔米隆,圣克鲁斯',
+      captain1:'恰尔汗奥卢', captain2:'阿尔米隆'},
+    {id:32, group:'E', home:'Ecuador', away:'Curacao', time:'06/20 21:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:1.25, d:5.50, a:9.50},
+      pred:{score:'3:0', conf:82, probH:78, probD:14, probA:8,
+        analysis:'厄瓜多尔对阵库拉索，高原主场优势明显，轻松取胜。'},
+      coach1:'费利佩·梅尔卡多', coach2:'格里·韦尔克曼',
+      fifa1:'FIFA/28', fifa2:'FIFA/88',
+      formation1:'4-3-3', formation2:'4-4-2',
+      players1:'恩纳·瓦伦西亚,凯塞多', players2:'巴克,延森',
+      captain1:'恩纳·瓦伦西亚', captain2:'巴克'},
+    {id:33, group:'E', home:'Germany', away:'Ivory Coast', time:'06/21 01:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:1.25, d:5.50, a:9.00},
+      pred:{score:'3:0', conf:82, probH:76, probD:16, probA:8,
+        analysis:'德国对阵科特迪瓦，两大洲强队对话。穆西亚拉展示天赋，轻松取胜。'},
+      coach1:'纳格尔斯曼', coach2:'埃马纽埃尔',
+      fifa1:'FIFA/13', fifa2:'FIFA/42',
+      formation1:'4-2-3-1', formation2:'4-2-3-1',
+      players1:'穆西亚拉,维尔茨,哈弗茨', players2:'佩佩,博格巴',
+      captain1:'诺伊尔', captain2:'佩佩'},
+    {id:34, group:'F', home:'Japan', away:'Tunisia', time:'06/21 04:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:1.85, d:3.20, a:4.20},
+      pred:{score:'2:1', conf:68, probH:48, probD:28, probA:24,
+        analysis:'日本对阵突尼斯，蓝武士展现亚洲技术足球。久保建英发挥关键！'},
+      coach1:'森保一', coach2:'卡德里·杰迪',
+      fifa1:'FIFA/18', fifa2:'FIFA/41',
+      formation1:'4-2-3-1', formation2:'4-3-3',
+      players1:'久保建英,三笘薰,远藤航', players2:'哈兹里,姆萨克尼',
+      captain1:'远藤航', captain2:'哈兹里'},
+    {id:35, group:'F', home:'Netherlands', away:'Sweden', time:'06/21 07:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:1.70, d:3.40, a:4.50},
+      pred:{score:'2:0', conf:70, probH:52, probD:28, probA:20,
+        analysis:'荷兰vs瑞典，两支欧洲球队对话。荷兰中场技术流占优。'},
+      coach1:'罗纳德·科曼', coach2:'乔恩·达尔·托马森',
+      fifa1:'FIFA/7', fifa2:'FIFA/22',
+      formation1:'3-4-1-2', formation2:'4-4-2',
+      players1:'范戴克,德佩,德容', players2:'伊萨克,福斯贝里',
+      captain1:'范戴克', captain2:'伊萨克'},
+    {id:36, group:'G', home:'Egypt', away:'New Zealand', time:'06/22 03:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:1.60, d:3.60, a:5.50},
+      pred:{score:'2:0', conf:72, probH:60, probD:24, probA:16,
+        analysis:'埃及对阵新西兰，法老取第二胜。萨拉赫连续破门！'},
+      coach1:'霍萨姆·塞里', coach2:'达里尔·惠特兰',
+      fifa1:'FIFA/10', fifa2:'FIFA/74',
+      formation1:'4-3-3', formation2:'4-4-2',
+      players1:'萨拉赫,马赫雷斯,阿卜杜勒·萨拉姆', players2:'克里斯·伍德',
+      captain1:'萨拉赫', captain2:'克里斯·伍德'},
+    {id:37, group:'G', home:'Belgium', away:'Iran', time:'06/22 06:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:1.55, d:3.80, a:5.80},
+      pred:{score:'2:1', conf:70, probH:52, probD:28, probA:20,
+        analysis:'比利时对阵伊朗，欧洲红魔赢面更大。伊朗防守顽强。'},
+      coach1:'多梅尼克·特德斯科', coach2:'阿巴西',
+      fifa1:'FIFA/5', fifa2:'FIFA/20',
+      formation1:'4-2-3-1', formation2:'4-1-4-1',
+      players1:'德布劳内,卢卡库,特罗萨德', players2:'阿兹蒙,塔雷米',
+      captain1:'德布劳内', captain2:'阿兹蒙'},
+    {id:38, group:'H', home:'Uruguay', away:'Cape Verde', time:'06/22 06:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:1.20, d:6.00, a:12.0},
+      pred:{score:'4:0', conf:86, probH:86, probD:9, probA:5,
+        analysis:'乌拉圭对阵佛得角，努涅斯+巴尔韦德火力凶猛，大胜可期！'},
+      coach1:'迭戈·阿隆索', coach2:'斯蒂芬·洛科',
+      fifa1:'FIFA/14', fifa2:'FIFA/73',
+      formation1:'4-4-2', formation2:'4-4-2',
+      players1:'努涅斯,巴尔韦德,本坦库尔', players2:'内维斯,丰特',
+      captain1:'巴尔韦德', captain2:'内维斯'},
+    {id:39, group:'H', home:'Spain', away:'Saudi Arabia', time:'06/22 09:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:1.08, d:9.50, a:20.0},
+      pred:{score:'5:0', conf:90, probH:90, probD:8, probA:2,
+        analysis:'西班牙大胜沙特，年轻人展示进攻天赋。达瓦萨里面对强敌。'},
+      coach1:'路易斯·德拉富恩特', coach2:'罗伯托·加兰多',
+      fifa1:'FIFA/8', fifa2:'FIFA/59',
       formation1:'4-3-3', formation2:'4-3-3',
-      players1:'凯恩,贝林厄姆,萨卡', players2:'莫德里奇,佩里西奇',
-      captain1:'凯恩', captain2:'莫德里奇'}
+      players1:'佩德里,莫拉塔,威廉姆斯', players2:'萨勒姆·达瓦萨里',
+      captain1:'莫拉塔', captain2:'萨勒姆·达瓦萨里'},
+    {id:40, group:'I', home:'Norway', away:'Senegal', time:'06/23 03:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:2.20, d:3.10, a:3.10},
+      pred:{score:'1:1', conf:62, probH:38, probD:30, probA:32,
+        analysis:'挪威对阵塞内加尔，缺少哈兰德的北欧球队面对非洲冠军，五五开。'},
+      coach1:'斯托尔', coach2:'阿利乌·西塞',
+      fifa1:'FIFA/36', fifa2:'FIFA/20',
+      formation1:'4-3-3', formation2:'4-2-3-1',
+      players1:'厄斯特高,奥德加德', players2:'马内,萨尔',
+      captain1:'奥德加德', captain2:'马内'},
+    {id:41, group:'I', home:'France', away:'Iraq', time:'06/23 06:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:1.05, d:11.0, a:22.0},
+      pred:{score:'5:0', conf:90, probH:90, probD:7, probA:3,
+        analysis:'法国对阵伊拉克，姆巴佩展示速度，伊拉克全力防守。'},
+      coach1:'迪迪埃·德尚', coach2:'待定',
+      fifa1:'FIFA/2', fifa2:'FIFA/63',
+      formation1:'4-3-3', formation2:'4-3-3',
+      players1:'姆巴佩,图拉姆,楚阿梅尼', players2:'阿里·贾西姆',
+      captain1:'姆巴佩', captain2:'阿里·贾西姆'},
+    {id:42, group:'J', home:'Algeria', away:'Jordan', time:'06/23 09:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:1.90, d:3.20, a:4.00},
+      pred:{score:'2:1', conf:68, probH:48, probD:28, probA:24,
+        analysis:'阿尔及利亚对阵约旦，北非球队实力更强，马赫雷斯领衔。'},
+      coach1:'弗拉维安·博纳德', coach2:'侯赛因·阿穆塔',
+      fifa1:'FIFA/32', fifa2:'FIFA/70',
+      formation1:'4-2-3-1', formation2:'4-2-3-1',
+      players1:'马赫雷斯,本纳赛尔', players2:'塔马里',
+      captain1:'马赫雷斯', captain2:'塔马里'},
+    {id:43, group:'J', home:'Argentina', away:'Austria', time:'06/23 12:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:1.35, d:4.80, a:7.00},
+      pred:{score:'3:0', conf:82, probH:76, probD:16, probA:8,
+        analysis:'阿根廷对阵奥地利，卫冕冠军轻松取胜。梅西轮休半场仍大胜！'},
+      coach1:'利昂内尔·斯卡洛尼', coach2:'拉尔夫·朗尼克',
+      fifa1:'FIFA/1', fifa2:'FIFA/25',
+      formation1:'4-3-3', formation2:'4-2-3-1',
+      players1:'梅西,迪马利亚,劳塔罗', players2:'阿拉巴,萨比策',
+      captain1:'梅西', captain2:'阿拉巴'},
+    {id:44, group:'K', home:'Colombia', away:'DR Congo', time:'06/24 01:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:1.50, d:4.00, a:6.00},
+      pred:{score:'2:0', conf:75, probH:60, probD:24, probA:16,
+        analysis:'哥伦比亚对阵民主刚果，南美技术流压制非洲力量型球队。'},
+      coach1:'内斯托·洛伦佐', coach2:'塞巴斯蒂安·德萨布雷',
+      fifa1:'FIFA/17', fifa2:'FIFA/59',
+      formation1:'4-3-3', formation2:'4-4-2',
+      players1:'J罗,迪亚斯,博雷', players2:'姆博卡尼',
+      captain1:'J罗', captain2:'姆博卡尼'},
+    {id:45, group:'K', home:'Portugal', away:'Uzbekistan', time:'06/24 04:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:1.08, d:9.00, a:18.0},
+      pred:{score:'4:0', conf:88, probH:88, probD:8, probA:4,
+        analysis:'葡萄牙对阵乌兹别克斯坦，C罗继续进球表演。'},
+      coach1:'罗伯托·马丁内斯', coach2:'斯雷奇科·卡塔内茨',
+      fifa1:'FIFA/8', fifa2:'FIFA/61',
+      formation1:'4-3-3', formation2:'4-2-3-1',
+      players1:'C罗,布鲁诺·费尔南德斯,莱奥', players2:'舒库罗夫',
+      captain1:'C罗', captain2:'舒库罗夫'},
+    {id:46, group:'L', home:'Panama', away:'Croatia', time:'06/24 07:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:5.00, d:3.80, a:1.60},
+      pred:{score:'0:3', conf:78, probH:12, probD:22, probA:66,
+        analysis:'克罗地亚大胜巴拿马，莫德里奇宝刀不老。格子军团取得首胜！'},
+      coach1:'托马斯·克里斯蒂安森', coach2:'兹拉特科·达利奇',
+      fifa1:'FIFA/45', fifa2:'FIFA/10',
+      formation1:'4-4-2', formation2:'4-3-3',
+      players1:'戈麦斯,法加多', players2:'莫德里奇,佩里西奇,格瓦迪奥尔',
+      captain1:'戈麦斯', captain2:'莫德里奇'},
+    {id:47, group:'L', home:'England', away:'Ghana', time:'06/24 10:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:1.30, d:5.00, a:8.50},
+      pred:{score:'3:0', conf:82, probH:78, probD:14, probA:8,
+        analysis:'英格兰大胜加纳，三狮军团提前锁定16强席位！贝林厄姆进球。'},
+      coach1:'加雷斯·索斯盖特', coach2:'奥托·阿多',
+      fifa1:'FIFA/4', fifa2:'FIFA/64',
+      formation1:'3-4-2-1', formation2:'4-2-3-1',
+      players1:'凯恩,贝林厄姆,萨卡', players2:'威廉姆斯,库杜斯',
+      captain1:'凯恩', captain2:'阿尤'},
+
+    // ========== 第3轮（未赛）==========
+    {id:48, group:'A', home:'South Korea', away:'Mexico', time:'06/26 04:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:2.50, d:3.10, a:2.80},
+      pred:{score:'2:2', conf:62, probH:32, probD:34, probA:34,
+        analysis:'韩国vs墨西哥！双方都已出线，此战决定小组第一，孙兴慜vs希门尼斯二番战。'},
+      coach1:'黄善洪', coach2:'安赫尔·洛维拉',
+      fifa1:'FIFA/24', fifa2:'FIFA/11',
+      formation1:'4-2-3-1', formation2:'4-3-3',
+      players1:'孙兴慜,李刚仁,曹圭成', players2:'希门尼斯,洛萨诺',
+      captain1:'孙兴慜', captain2:'希门尼斯'},
+    {id:49, group:'A', home:'Czech Republic', away:'South Africa', time:'06/26 04:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:2.00, d:3.20, a:3.50},
+      pred:{score:'2:0', conf:68, probH:48, probD:28, probA:24,
+        analysis:'捷克对阵南非荣誉战。两队都已出局，此战为尊严而战。捷克实力更胜。'},
+      coach1:'伊万·哈塞克', coach2:'雨果·布罗斯',
+      fifa1:'FIFA/30', fifa2:'FIFA/57',
+      formation1:'4-1-4-1', formation2:'4-2-3-1',
+      players1:'绍切克,林格尔', players2:'恩孔卡',
+      captain1:'绍切克', captain2:'恩孔卡'},
+    {id:50, group:'B', home:'Switzerland', away:'Canada', time:'06/26 09:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:1.50, d:4.00, a:6.00},
+      pred:{score:'2:0', conf:72, probH:58, probD:26, probA:16,
+        analysis:'瑞士对阵加拿大，欧洲球队实力碾压。加拿大首轮拿到历史首分已满足。'},
+      coach1:'格拉尼特·扎卡', coach2:'马什',
+      fifa1:'FIFA/15', fifa2:'FIFA/35',
+      formation1:'4-2-3-1', formation2:'3-4-2-1',
+      players1:'扎卡,沙奇里', players2:'阿方索·戴维斯',
+      captain1:'扎卡', captain2:'阿方索·戴维斯'},
+    {id:51, group:'B', home:'Bosnia', away:'Qatar', time:'06/26 09:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:1.95, d:3.30, a:3.80},
+      pred:{score:'2:0', conf:70, probH:48, probD:28, probA:24,
+        analysis:'波黑对阵卡塔尔，哲科最后一舞。东道主小组垫底，揭幕战未能创造奇迹。'},
+      coach1:'伊万·约瓦诺维奇', coach2:'巴尔博萨',
+      fifa1:'FIFA/55', fifa2:'FIFA/51',
+      formation1:'4-2-3-1', formation2:'4-2-3-1',
+      players1:'哲科,皮亚尼奇', players2:'阿菲夫',
+      captain1:'哲科', captain2:'阿菲夫'},
+    {id:52, group:'C', home:'Scotland', away:'Brazil', time:'06/26 13:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:6.50, d:4.00, a:1.45},
+      pred:{score:'0:3', conf:78, probH:10, probD:20, probA:70,
+        analysis:'苏格兰挑战巴西，桑巴军团火力全开。苏格兰需胜才可能出线。'},
+      coach1:'克雷格·列文', coach2:'多里瓦尔',
+      fifa1:'FIFA/39', fifa2:'FIFA/3',
+      formation1:'3-4-2-1', formation2:'4-2-3-1',
+      players1:'罗伯逊,麦金', players2:'维尼修斯,罗德里戈',
+      captain1:'罗伯逊', captain2:'内马尔'},
+    {id:53, group:'C', home:'Morocco', away:'Haiti', time:'06/26 13:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:1.20, d:6.00, a:12.0},
+      pred:{score:'3:0', conf:82, probH:76, probD:16, probA:8,
+        analysis:'摩洛哥大胜海地，非洲冠军强势晋级。阿什拉夫表现出色！'},
+      coach1:'瓦利德·雷格拉吉', coach2:'塞勒斯坦',
+      fifa1:'FIFA/13', fifa2:'FIFA/89',
+      formation1:'4-3-3', formation2:'4-4-2',
+      players1:'阿什拉夫,齐耶赫', players2:'皮耶',
+      captain1:'阿什拉夫', captain2:'皮耶'},
+    {id:54, group:'D', home:'USA', away:'Turkey', time:'06/26 16:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:2.00, d:3.20, a:3.50},
+      pred:{score:'2:1', conf:65, probH:42, probD:28, probA:30,
+        analysis:'美国对阵土耳其，D组头名之争！普利希奇状态火热，星月军团防守顽强。'},
+      coach1:'波普', coach2:'文森特·孔塞桑',
+      fifa1:'FIFA/16', fifa2:'FIFA/21',
+      formation1:'4-3-3', formation2:'4-1-4-1',
+      players1:'普利希奇,小维阿', players2:'恰尔汗奥卢,伊尔迪拉伊',
+      captain1:'普利希奇', captain2:'恰尔汗奥卢'},
+    {id:55, group:'D', home:'Paraguay', away:'Australia', time:'06/26 16:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:2.40, d:3.10, a:2.80},
+      pred:{score:'1:1', conf:62, probH:34, probD:32, probA:34,
+        analysis:'巴拉圭对阵澳大利亚，争夺小组第三。悬疑大战！'},
+      coach1:'加斯帕尔·法里亚斯', coach2:'格雷厄姆·阿诺德',
+      fifa1:'FIFA/58', fifa2:'FIFA/23',
+      formation1:'4-4-2', formation2:'4-2-3-1',
+      players1:'阿尔米隆', players2:'马修·莱基',
+      captain1:'阿尔米隆', captain2:'马修·莱基'},
+    {id:56, group:'E', home:'Ivory Coast', away:'Curacao', time:'06/27 01:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:1.25, d:5.50, a:9.50},
+      pred:{score:'3:0', conf:82, probH:78, probD:14, probA:8,
+        analysis:'科特迪瓦击败库拉索，非洲大象强势晋级。佩佩进球。'},
+      coach1:'埃马纽埃尔', coach2:'格里·韦尔克曼',
+      fifa1:'FIFA/42', fifa2:'FIFA/88',
+      formation1:'4-2-3-1', formation2:'4-4-2',
+      players1:'佩佩,博格巴', players2:'巴克',
+      captain1:'佩佩', captain2:'巴克'},
+    {id:57, group:'E', home:'Netherlands', away:'Ecuador', time:'06/27 04:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:1.55, d:3.80, a:5.50},
+      pred:{score:'2:1', conf:70, probH:52, probD:28, probA:20,
+        analysis:'荷兰对阵厄瓜多尔，头名之争。橙衣军团整体占优。'},
+      coach1:'罗纳德·科曼', coach2:'费利佩·梅尔卡多',
+      fifa1:'FIFA/7', fifa2:'FIFA/28',
+      formation1:'3-4-1-2', formation2:'4-3-3',
+      players1:'范戴克,德佩,德容', players2:'恩纳·瓦伦西亚',
+      captain1:'范戴克', captain2:'恩纳·瓦伦西亚'},
+    {id:58, group:'E', home:'Germany', away:'Japan', time:'06/27 07:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:1.55, d:3.80, a:5.50},
+      pred:{score:'3:1', conf:72, probH:55, probD:26, probA:19,
+        analysis:'德国vs日本，复仇之战！德国首轮5球大胜，此役再展攻势。'},
+      coach1:'纳格尔斯曼', coach2:'森保一',
+      fifa1:'FIFA/13', fifa2:'FIFA/18',
+      formation1:'4-2-3-1', formation2:'4-2-3-1',
+      players1:'穆西亚拉,维尔茨', players2:'久保建英,三笘薰',
+      captain1:'诺伊尔', captain2:'远藤航'},
+    {id:59, group:'F', home:'Tunisia', away:'Netherlands', time:'06/27 10:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:4.50, d:3.50, a:1.80},
+      pred:{score:'0:2', conf:72, probH:18, probD:26, probA:56,
+        analysis:'突尼斯对阵荷兰，非洲球队难以阻挡橙衣军团，轻松取胜。'},
+      coach1:'卡德里·杰迪', coach2:'罗纳德·科曼',
+      fifa1:'FIFA/41', fifa2:'FIFA/7',
+      formation1:'4-3-3', formation2:'3-4-1-2',
+      players1:'哈兹里', players2:'德佩',
+      captain1:'哈兹里', captain2:'范戴克'},
+    {id:60, group:'F', home:'Japan', away:'Sweden', time:'06/27 10:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:2.80, d:3.10, a:2.40},
+      pred:{score:'1:2', conf:65, probH:30, probD:28, probA:42,
+        analysis:'日本对阵瑞典，伊萨克领衔瑞典火力凶猛。日本需胜才可能出线。'},
+      coach1:'森保一', coach2:'乔恩·达尔·托马森',
+      fifa1:'FIFA/18', fifa2:'FIFA/22',
+      formation1:'4-2-3-1', formation2:'4-4-2',
+      players1:'久保建英', players2:'伊萨克,福斯贝里',
+      captain1:'远藤航', captain2:'伊萨克'},
+    {id:61, group:'G', home:'New Zealand', away:'Belgium', time:'06/27 13:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:5.00, d:3.80, a:1.60},
+      pred:{score:'0:3', conf:78, probH:12, probD:22, probA:66,
+        analysis:'新西兰对阵比利时，卢卡库虐菜。大胜可期！'},
+      coach1:'达里尔·惠特兰', coach2:'多梅尼克·特德斯科',
+      fifa1:'FIFA/74', fifa2:'FIFA/5',
+      formation1:'4-4-2', formation2:'4-2-3-1',
+      players1:'克里斯·伍德', players2:'卢卡库,德布劳内',
+      captain1:'克里斯·伍德', captain2:'德布劳内'},
+    {id:62, group:'G', home:'Iran', away:'Egypt', time:'06/27 16:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:2.50, d:3.10, a:2.80},
+      pred:{score:'1:1', conf:65, probH:35, probD:30, probA:35,
+        analysis:'伊朗对阵埃及，亚洲vs非洲巅峰对决！萨拉赫vs阿兹蒙，两大射手对话。'},
+      coach1:'阿巴西', coach2:'霍萨姆·塞里',
+      fifa1:'FIFA/20', fifa2:'FIFA/10',
+      formation1:'4-1-4-1', formation2:'4-3-3',
+      players1:'阿兹蒙,塔雷米', players2:'萨拉赫,马赫雷斯',
+      captain1:'阿兹蒙', captain2:'萨拉赫'},
+    {id:63, group:'H', home:'Cape Verde', away:'Saudi Arabia', time:'06/27 19:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:2.00, d:3.20, a:3.50},
+      pred:{score:'1:1', conf:62, probH:38, probD:30, probA:32,
+        analysis:'佛得角对阵沙特，争夺小组第三。达瓦萨里领衔沙特进攻。'},
+      coach1:'斯蒂芬·洛科', coach2:'罗伯托·加兰多',
+      fifa1:'FIFA/73', fifa2:'FIFA/59',
+      formation1:'4-4-2', formation2:'4-3-3',
+      players1:'内维斯', players2:'萨勒姆·达瓦萨里',
+      captain1:'内维斯', captain2:'萨勒姆·达瓦萨里'},
+    {id:64, group:'H', home:'Uruguay', away:'Spain', time:'06/27 22:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:2.80, d:3.20, a:2.40},
+      pred:{score:'1:2', conf:65, probH:28, probD:28, probA:44,
+        analysis:'乌拉圭对阵西班牙，努涅斯vs莫拉塔，南美vs欧洲技术流对话。'},
+      coach1:'迭戈·阿隆索', coach2:'路易斯·德拉富恩特',
+      fifa1:'FIFA/14', fifa2:'FIFA/8',
+      formation1:'4-4-2', formation2:'4-3-3',
+      players1:'努涅斯,巴尔韦德', players2:'莫拉塔,威廉姆斯',
+      captain1:'巴尔韦德', captain2:'莫拉塔'},
+    {id:65, group:'I', home:'Senegal', away:'Iraq', time:'06/28 01:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:1.60, d:3.60, a:5.50},
+      pred:{score:'2:0', conf:72, probH:58, probD:26, probA:16,
+        analysis:'塞内加尔对阵伊拉克，非洲冠军轻松取胜晋级。'},
+      coach1:'阿利乌·西塞', coach2:'待定',
+      fifa1:'FIFA/20', fifa2:'FIFA/63',
+      formation1:'4-2-3-1', formation2:'4-3-3',
+      players1:'马内,萨尔', players2:'阿里·贾西姆',
+      captain1:'马内', captain2:'阿里·贾西姆'},
+    {id:66, group:'I', home:'Norway', away:'France', time:'06/28 04:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:5.00, d:3.80, a:1.60},
+      pred:{score:'0:3', conf:80, probH:14, probD:22, probA:64,
+        analysis:'挪威挑战法国，缺少哈兰德难以抵挡卫冕冠军。法国全胜晋级！'},
+      coach1:'斯托尔', coach2:'迪迪埃·德尚',
+      fifa1:'FIFA/36', fifa2:'FIFA/2',
+      formation1:'4-3-3', formation2:'4-3-3',
+      players1:'厄斯特高', players2:'姆巴佩,图拉姆',
+      captain1:'奥德加德', captain2:'姆巴佩'},
+    {id:67, group:'J', home:'Jordan', away:'Argentina', time:'06/28 07:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:8.00, d:4.50, a:1.30},
+      pred:{score:'0:3', conf:85, probH:8, probD:16, probA:76,
+        analysis:'约旦挑战阿根廷，差距悬殊。阿根廷轻松三连胜晋级。'},
+      coach1:'侯赛因·阿穆塔', coach2:'利昂内尔·斯卡洛尼',
+      fifa1:'FIFA/70', fifa2:'FIFA/1',
+      formation1:'4-2-3-1', formation2:'4-3-3',
+      players1:'塔马里', players2:'梅西,劳塔罗',
+      captain1:'塔马里', captain2:'梅西'},
+    {id:68, group:'J', home:'Algeria', away:'Austria', time:'06/28 10:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:2.20, d:3.10, a:3.10},
+      pred:{score:'1:1', conf:65, probH:38, probD:30, probA:32,
+        analysis:'阿尔及利亚对阵奥地利，争夺小组第二。阿拉巴vs马赫雷斯。'},
+      coach1:'弗拉维安·博纳德', coach2:'拉尔夫·朗尼克',
+      fifa1:'FIFA/32', fifa2:'FIFA/25',
+      formation1:'4-2-3-1', formation2:'4-2-3-1',
+      players1:'马赫雷斯', players2:'阿拉巴,萨比策',
+      captain1:'马赫雷斯', captain2:'阿拉巴'},
+    {id:69, group:'K', home:'Uzbekistan', away:'Portugal', time:'06/28 13:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:8.00, d:4.50, a:1.30},
+      pred:{score:'0:4', conf:84, probH:8, probD:16, probA:76,
+        analysis:'乌兹别克斯坦挑战葡萄牙，C罗进球如麻。葡萄牙全胜晋级。'},
+      coach1:'斯雷奇科·卡塔内茨', coach2:'罗伯托·马丁内斯',
+      fifa1:'FIFA/61', fifa2:'FIFA/8',
+      formation1:'4-2-3-1', formation2:'4-3-3',
+      players1:'舒库罗夫', players2:'C罗,莱奥',
+      captain1:'舒库罗夫', captain2:'C罗'},
+    {id:70, group:'K', home:'DR Congo', away:'Colombia', time:'06/28 16:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:4.00, d:3.30, a:1.90},
+      pred:{score:'0:2', conf:72, probH:18, probD:26, probA:56,
+        analysis:'民主刚果对阵哥伦比亚，南美技术流完胜。哥伦比亚晋级16强！'},
+      coach1:'塞巴斯蒂安·德萨布雷', coach2:'内斯托·洛伦佐',
+      fifa1:'FIFA/59', fifa2:'FIFA/17',
+      formation1:'4-4-2', formation2:'4-3-3',
+      players1:'姆博卡尼', players2:'J罗,迪亚斯',
+      captain1:'姆博卡尼', captain2:'J罗'},
+    {id:71, group:'L', home:'Croatia', away:'Ghana', time:'06/28 19:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:1.75, d:3.40, a:4.50},
+      pred:{score:'2:0', conf:72, probH:52, probD:28, probA:20,
+        analysis:'克罗地亚对阵加纳，莫德里奇告别战。格子军团赢下荣誉之战。'},
+      coach1:'兹拉特科·达利奇', coach2:'奥托·阿多',
+      fifa1:'FIFA/10', fifa2:'FIFA/64',
+      formation1:'4-3-3', formation2:'4-2-3-1',
+      players1:'莫德里奇,格瓦迪奥尔', players2:'威廉姆斯,库杜斯',
+      captain1:'莫德里奇', captain2:'阿尤'},
+    {id:72, group:'L', home:'England', away:'Panama', time:'06/28 22:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:1.08, d:9.00, a:18.0},
+      pred:{score:'5:0', conf:88, probH:88, probD:8, probA:4,
+        analysis:'英格兰大胜巴拿马，三狮军团三连胜零失球晋级！凯恩帽子戏法。'},
+      coach1:'加雷斯·索斯盖特', coach2:'托马斯·克里斯蒂安森',
+      fifa1:'FIFA/4', fifa2:'FIFA/45',
+      formation1:'3-4-2-1', formation2:'4-4-2',
+      players1:'凯恩,贝林厄姆,萨卡', players2:'戈麦斯',
+      captain1:'凯恩', captain2:'戈麦斯'},
+
+    // ========== 16强（待小组赛结束后更新）==========
+    {id:73, group:'R16', home:'A组第一', away:'B组第三', time:'07/01 03:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:1.50, d:4.00, a:6.00},
+      pred:{score:'2:0', conf:70, probH:58, probD:26, probA:16,
+        analysis:'A组第一 vs B组第三。等待小组赛结束确认对阵。'},
+      coach1:'待定', coach2:'待定',
+      fifa1:'FIFA/-', fifa2:'FIFA/-',
+      formation1:'-', formation2:'-',
+      players1:'-', players2:'-',
+      captain1:'-', captain2:'-'},
+    {id:74, group:'R16', home:'B组第一', away:'A组第三', time:'07/01 07:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:1.50, d:4.00, a:6.00},
+      pred:{score:'2:1', conf:68, probH:52, probD:28, probA:20,
+        analysis:'B组第一 vs A组第三。'},
+      coach1:'待定', coach2:'待定',
+      fifa1:'FIFA/-', fifa2:'FIFA/-',
+      formation1:'-', formation2:'-',
+      players1:'-', players2:'-',
+      captain1:'-', captain2:'-'},
+    {id:75, group:'R16', home:'C组第一', away:'D/E/F组第三', time:'07/01 11:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:1.40, d:4.20, a:7.00},
+      pred:{score:'3:0', conf:72, probH:62, probD:24, probA:14,
+        analysis:'C组第一 vs D/E/F组第三。'},
+      coach1:'待定', coach2:'待定',
+      fifa1:'FIFA/-', fifa2:'FIFA/-',
+      formation1:'-', formation2:'-',
+      players1:'-', players2:'-',
+      captain1:'-', captain2:'-'},
+    {id:76, group:'R16', home:'D组第一', away:'B/E/F组第三', time:'07/02 03:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:1.60, d:3.60, a:5.50},
+      pred:{score:'2:1', conf:65, probH:48, probD:28, probA:24,
+        analysis:'D组第一 vs B/E/F组第三。'},
+      coach1:'待定', coach2:'待定',
+      fifa1:'FIFA/-', fifa2:'FIFA/-',
+      formation1:'-', formation2:'-',
+      players1:'-', players2:'-',
+      captain1:'-', captain2:'-'},
+    {id:77, group:'R16', home:'E组第一', away:'G/H/I组第三', time:'07/02 07:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:1.40, d:4.20, a:7.00},
+      pred:{score:'2:0', conf:72, probH:62, probD:24, probA:14,
+        analysis:'E组第一 vs G/H/I组第三。'},
+      coach1:'待定', coach2:'待定',
+      fifa1:'FIFA/-', fifa2:'FIFA/-',
+      formation1:'-', formation2:'-',
+      players1:'-', players2:'-',
+      captain1:'-', captain2:'-'},
+    {id:78, group:'R16', home:'G组第一', away:'E/F/H组第三', time:'07/02 11:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:1.50, d:4.00, a:6.00},
+      pred:{score:'2:1', conf:68, probH:52, probD:28, probA:20,
+        analysis:'G组第一 vs E/F/H组第三。'},
+      coach1:'待定', coach2:'待定',
+      fifa1:'FIFA/-', fifa2:'FIFA/-',
+      formation1:'-', formation2:'-',
+      players1:'-', players2:'-',
+      captain1:'-', captain2:'-'},
+    {id:79, group:'R16', home:'F组第一', away:'A/B/C组第三', time:'07/03 03:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:1.50, d:3.80, a:6.00},
+      pred:{score:'2:0', conf:70, probH:58, probD:26, probA:16,
+        analysis:'F组第一 vs A/B/C组第三。'},
+      coach1:'待定', coach2:'待定',
+      fifa1:'FIFA/-', fifa2:'FIFA/-',
+      formation1:'-', formation2:'-',
+      players1:'-', players2:'-',
+      captain1:'-', captain2:'-'},
+    {id:80, group:'R16', home:'H组第一', away:'A/C/D组第三', time:'07/03 07:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:1.50, d:3.80, a:6.00},
+      pred:{score:'2:1', conf:68, probH:52, probD:28, probA:20,
+        analysis:'H组第一 vs A/C/D组第三。'},
+      coach1:'待定', coach2:'待定',
+      fifa1:'FIFA/-', fifa2:'FIFA/-',
+      formation1:'-', formation2:'-',
+      players1:'-', players2:'-',
+      captain1:'-', captain2:'-'},
+    {id:81, group:'R16', home:'I组第一', away:'J/K/L组第三', time:'07/03 11:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:1.35, d:4.50, a:7.50},
+      pred:{score:'3:0', conf:75, probH:66, probD:22, probA:12,
+        analysis:'I组第一 vs J/K/L组第三。'},
+      coach1:'待定', coach2:'待定',
+      fifa1:'FIFA/-', fifa2:'FIFA/-',
+      formation1:'-', formation2:'-',
+      players1:'-', players2:'-',
+      captain1:'-', captain2:'-'},
+    {id:82, group:'R16', home:'J组第一', away:'I/L组第三', time:'07/04 03:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:1.30, d:5.00, a:8.50},
+      pred:{score:'3:0', conf:78, probH:70, probD:20, probA:10,
+        analysis:'J组第一 vs I/L组第三。'},
+      coach1:'待定', coach2:'待定',
+      fifa1:'FIFA/-', fifa2:'FIFA/-',
+      formation1:'-', formation2:'-',
+      players1:'-', players2:'-',
+      captain1:'-', captain2:'-'},
+    {id:83, group:'R16', home:'K组第一', away:'I/J组第三', time:'07/04 07:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:1.40, d:4.20, a:7.00},
+      pred:{score:'2:0', conf:72, probH:62, probD:24, probA:14,
+        analysis:'K组第一 vs I/J组第三。'},
+      coach1:'待定', coach2:'待定',
+      fifa1:'FIFA/-', fifa2:'FIFA/-',
+      formation1:'-', formation2:'-',
+      players1:'-', players2:'-',
+      captain1:'-', captain2:'-'},
+    {id:84, group:'R16', home:'L组第一', away:'J/K组第三', time:'07/04 11:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:1.35, d:4.50, a:7.50},
+      pred:{score:'3:1', conf:75, probH:66, probD:22, probA:12,
+        analysis:'L组第一 vs J/K组第三。'},
+      coach1:'待定', coach2:'待定',
+      fifa1:'FIFA/-', fifa2:'FIFA/-',
+      formation1:'-', formation2:'-',
+      players1:'-', players2:'-',
+      captain1:'-', captain2:'-'},
+
+    // ========== 8强（待更新）==========
+    {id:85, group:'QF', home:'16强73胜者', away:'16强74胜者', time:'07/06 03:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:1.50, d:4.00, a:6.00},
+      pred:{score:'2:1', conf:65, probH:48, probD:28, probA:24,
+        analysis:'8强战。等待16强结果。'},
+      coach1:'-', coach2:'-',
+      fifa1:'FIFA/-', fifa2:'FIFA/-',
+      formation1:'-', formation2:'-',
+      players1:'-', players2:'-',
+      captain1:'-', captain2:'-'},
+    {id:86, group:'QF', home:'16强75胜者', away:'16强76胜者', time:'07/06 07:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:1.50, d:4.00, a:6.00},
+      pred:{score:'2:0', conf:68, probH:55, probD:26, probA:19,
+        analysis:'8强战。'},
+      coach1:'-', coach2:'-',
+      fifa1:'FIFA/-', fifa2:'FIFA/-',
+      formation1:'-', formation2:'-',
+      players1:'-', players2:'-',
+      captain1:'-', captain2:'-'},
+    {id:87, group:'QF', home:'16强77胜者', away:'16强78胜者', time:'07/06 11:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:1.40, d:4.20, a:7.00},
+      pred:{score:'3:1', conf:72, probH:62, probD:24, probA:14,
+        analysis:'8强战。'},
+      coach1:'-', coach2:'-',
+      fifa1:'FIFA/-', fifa2:'FIFA/-',
+      formation1:'-', formation2:'-',
+      players1:'-', players2:'-',
+      captain1:'-', captain2:'-'},
+    {id:88, group:'QF', home:'16强79胜者', away:'16强80胜者', time:'07/07 03:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:1.50, d:4.00, a:6.00},
+      pred:{score:'2:1', conf:65, probH:48, probD:28, probA:24,
+        analysis:'8强战。'},
+      coach1:'-', coach2:'-',
+      fifa1:'FIFA/-', fifa2:'FIFA/-',
+      formation1:'-', formation2:'-',
+      players1:'-', players2:'-',
+      captain1:'-', captain2:'-'},
+    {id:89, group:'QF', home:'16强81胜者', away:'16强82胜者', time:'07/07 07:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:1.40, d:4.20, a:7.00},
+      pred:{score:'3:0', conf:75, probH:68, probD:22, probA:10,
+        analysis:'8强战。'},
+      coach1:'-', coach2:'-',
+      fifa1:'FIFA/-', fifa2:'FIFA/-',
+      formation1:'-', formation2:'-',
+      players1:'-', players2:'-',
+      captain1:'-', captain2:'-'},
+    {id:90, group:'QF', home:'16强83胜者', away:'16强84胜者', time:'07/07 11:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:1.50, d:4.00, a:6.00},
+      pred:{score:'2:0', conf:68, probH:55, probD:26, probA:19,
+        analysis:'8强战。'},
+      coach1:'-', coach2:'-',
+      fifa1:'FIFA/-', fifa2:'FIFA/-',
+      formation1:'-', formation2:'-',
+      players1:'-', players2:'-',
+      captain1:'-', captain2:'-'},
+
+    // ========== 4强（待更新）==========
+    {id:91, group:'SF', home:'8强85胜者', away:'8强86胜者', time:'07/10 03:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:1.60, d:3.60, a:5.50},
+      pred:{score:'2:1', conf:65, probH:48, probD:28, probA:24,
+        analysis:'半决赛。'},
+      coach1:'-', coach2:'-',
+      fifa1:'FIFA/-', fifa2:'FIFA/-',
+      formation1:'-', formation2:'-',
+      players1:'-', players2:'-',
+      captain1:'-', captain2:'-'},
+    {id:92, group:'SF', home:'8强87胜者', away:'8强88胜者', time:'07/10 07:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:1.60, d:3.60, a:5.50},
+      pred:{score:'1:2', conf:65, probH:35, probD:28, probA:37,
+        analysis:'半决赛。'},
+      coach1:'-', coach2:'-',
+      fifa1:'FIFA/-', fifa2:'FIFA/-',
+      formation1:'-', formation2:'-',
+      players1:'-', players2:'-',
+      captain1:'-', captain2:'-'},
+    {id:93, group:'SF', home:'8强89胜者', away:'8强90胜者', time:'07/11 03:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:1.50, d:4.00, a:6.00},
+      pred:{score:'3:1', conf:72, probH:65, probD:22, probA:13,
+        analysis:'半决赛。'},
+      coach1:'-', coach2:'-',
+      fifa1:'FIFA/-', fifa2:'FIFA/-',
+      formation1:'-', formation2:'-',
+      players1:'-', players2:'-',
+      captain1:'-', captain2:'-'},
+
+    // ========== 3/4名（待更新）==========
+    {id:94, group:'3RD', home:'半决赛91负者', away:'半决赛92负者', time:'07/14 03:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:1.80, d:3.30, a:4.20},
+      pred:{score:'1:0', conf:60, probH:45, probD:30, probA:25,
+        analysis:'三四名决赛。'},
+      coach1:'-', coach2:'-',
+      fifa1:'FIFA/-', fifa2:'FIFA/-',
+      formation1:'-', formation2:'-',
+      players1:'-', players2:'-',
+      captain1:'-', captain2:'-'},
+    {id:95, group:'3RD', home:'半决赛93负者', away:'季军赛94胜者', time:'07/14 07:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:1.80, d:3.30, a:4.20},
+      pred:{score:'0:1', conf:60, probH:35, probD:30, probA:35,
+        analysis:'三四名决赛。'},
+      coach1:'-', coach2:'-',
+      fifa1:'FIFA/-', fifa2:'FIFA/-',
+      formation1:'-', formation2:'-',
+      players1:'-', players2:'-',
+      captain1:'-', captain2:'-'},
+
+    // ========== 决赛（待更新）==========
+    {id:96, group:'FNL', home:'半决赛91胜者', away:'半决赛92胜者', time:'07/16 03:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:1.80, d:3.30, a:4.20},
+      pred:{score:'2:1', conf:65, probH:48, probD:28, probA:24,
+        analysis:'2026世界杯决赛！大力神杯最终归属即将揭晓。'},
+      coach1:'-', coach2:'-',
+      fifa1:'FIFA/-', fifa2:'FIFA/-',
+      formation1:'-', formation2:'-',
+      players1:'-', players2:'-',
+      captain1:'-', captain2:'-'},
+    {id:97, group:'FNL', home:'半决赛93胜者', away:'亚军赛95胜者', time:'07/16 07:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:1.60, d:3.60, a:5.50},
+      pred:{score:'1:2', conf:65, probH:38, probD:28, probA:34,
+        analysis:'世界杯决赛下半场。'},
+    {id:98, group:'QF', home:'16强85胜者', away:'16强86胜者', time:'07/08 03:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:1.50, d:4.00, a:6.00},
+      pred:{score:'2:0', conf:68, probH:55, probD:26, probA:19,
+        analysis:'8强战。'},
+      coach1:'-', coach2:'-',
+      fifa1:'FIFA/-', fifa2:'FIFA/-',
+      formation1:'-', formation2:'-',
+      players1:'-', players2:'-',
+      captain1:'-', captain2:'-'},
+    {id:99, group:'QF', home:'16强87胜者', away:'16强88胜者', time:'07/08 07:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:1.50, d:4.00, a:6.00},
+      pred:{score:'2:1', conf:65, probH:48, probD:28, probA:24,
+        analysis:'8强战。'},
+      coach1:'-', coach2:'-',
+      fifa1:'FIFA/-', fifa2:'FIFA/-',
+      formation1:'-', formation2:'-',
+      players1:'-', players2:'-',
+      captain1:'-', captain2:'-'},
+    {id:100, group:'SF', home:'8强97胜者', away:'8强98胜者', time:'07/11 07:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:1.60, d:3.60, a:5.50},
+      pred:{score:'1:2', conf:65, probH:35, probD:28, probA:37,
+        analysis:'半决赛。'},
+      coach1:'-', coach2:'-',
+      fifa1:'FIFA/-', fifa2:'FIFA/-',
+      formation1:'-', formation2:'-',
+      players1:'-', players2:'-',
+      captain1:'-', captain2:'-'},
+    {id:101, group:'SF', home:'8强99胜者', away:'8强100胜者', time:'07/12 03:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:1.50, d:4.00, a:6.00},
+      pred:{score:'3:1', conf:72, probH:65, probD:22, probA:13,
+        analysis:'半决赛。'},
+      coach1:'-', coach2:'-',
+      fifa1:'FIFA/-', fifa2:'FIFA/-',
+      formation1:'-', formation2:'-',
+      players1:'-', players2:'-',
+      captain1:'-', captain2:'-'},
+    {id:102, group:'3RD', home:'半决赛100负者', away:'半决赛101负者', time:'07/14 11:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:1.80, d:3.30, a:4.20},
+      pred:{score:'1:0', conf:60, probH:45, probD:30, probA:25,
+        analysis:'三四名决赛。'},
+      coach1:'-', coach2:'-',
+      fifa1:'FIFA/-', fifa2:'FIFA/-',
+      formation1:'-', formation2:'-',
+      players1:'-', players2:'-',
+      captain1:'-', captain2:'-'},
+    {id:103, group:'FNL', home:'半决赛100胜者', away:'半决赛101胜者', time:'07/16 11:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:1.80, d:3.30, a:4.20},
+      pred:{score:'2:1', conf:65, probH:48, probD:28, probA:24,
+        analysis:'2026世界杯决赛下半场！大力神杯最终归属即将揭晓。'},
+    {id:104, group:'FNL', home:'冠军', away:'亚军', time:'07/20 03:00', homeScore:null, awayScore:null, status:'upcoming',
+      odds:{h:2.00, d:3.30, a:3.80},
+      pred:{score:'?:?', conf:0, probH:50, probD:0, probA:50,
+        analysis:'2026世界杯冠军诞生！大力神杯归属等待揭晓。'},
+      coach1:'-', coach2:'-',
+      fifa1:'FIFA/-', fifa2:'FIFA/-',
+      formation1:'-', formation2:'-',
+      players1:'-', players2:'-',
+      captain1:'-', captain2:'-'}
+  
+      coach1:'-', coach2:'-',
+      fifa1:'FIFA/-', fifa2:'FIFA/-',
+      formation1:'-', formation2:'-',
+      players1:'-', players2:'-',
+      captain1:'-', captain2:'-'}
+  
+      coach1:'-', coach2:'-',
+      fifa1:'FIFA/-', fifa2:'FIFA/-',
+      formation1:'-', formation2:'-',
+      players1:'-', players2:'-',
+      captain1:'-', captain2:'-'}
   ];
-
-  // 计算状态
-  for (var i = 0; i < MATCHES.length; i++) {
-    var m = MATCHES[i];
-    var hasScore = (m.homeScore !== null && typeof m.homeScore !== 'undefined');
-    m.status = getStatus(m.time, hasScore);
-  }
-}
-
-// ===== Tab切换 =====
-function switchTab(tab) {
-  var tabs = document.querySelectorAll('.tab');
-  for (var i = 0; i < tabs.length; i++) {
-    tabs[i].classList.remove('active');
-    if (tabs[i].getAttribute('data-tab') === tab) {
-      tabs[i].classList.add('active');
-    }
-  }
-  var panels = document.querySelectorAll('.tab-panel');
-  for (var j = 0; j < panels.length; j++) {
-    panels[j].style.display = 'none';
-  }
-  var target = document.getElementById('panel-' + tab);
-  if (target) {
-    target.style.display = 'block';
-  }
-  if (tab === 'today') { renderToday(); }
-  if (tab === 'finished') { renderFinished(); }
-  if (tab === 'upcoming') { renderUpcoming(); }
-  if (tab === 'teams') { renderTeams(); }
-}
-
-// ===== 格式化时间显示 =====
-function formatTimeDisp(t) {
-  var parts = t.split(' ');
-  return parts[0].replace('/', '月') + '日 ' + parts[1];
-}
-
-// ===== 渲染单场比赛卡片HTML（精确还原参考图）=====
-function renderCardHTML(m) {
-  var statusClass = m.status;
-  var statusText = '';
-  if (m.status === 'live') {
-    statusText = '● 进行中';
-  } else if (m.status === 'finished') {
-    statusText = '已完赛';
-  } else {
-    statusText = '未开始';
-  }
-
-  // 比分或VS
-  var scoreHTML = '';
-  if (m.status === 'finished' && m.homeScore !== null && m.awayScore !== null) {
-    scoreHTML = '<div class="vs-score">' + m.homeScore + ' : ' + m.awayScore + '</div>';
-  } else if (m.status === 'live') {
-    if (m.homeScore !== null && m.awayScore !== null) {
-      scoreHTML = '<div class="vs-score" style="color:#E74C3C;">' + m.homeScore + ' : ' + m.awayScore + '</div>';
-    } else {
-      scoreHTML = '<div class="vs-text">VS</div><div class="vs-label">' + formatTimeDisp(m.time) + '</div>';
-    }
-  } else {
-    scoreHTML = '<div class="vs-text">VS</div><div class="vs-label">' + formatTimeDisp(m.time) + '</div>';
-  }
-
-  // 球队信息
-  var homeZh = NAME_ZH[m.home] || m.home;
-  var awayZh = NAME_ZH[m.away] || m.away;
-  var homeFlag = FLAGS[m.home] || '🏳';
-  var awayFlag = FLAGS[m.away] || '🏳';
-
-  // 获取扩展数据（从比赛对象或回退到TEAMS）
-  var getCoach1 = m.coach1 || (TEAMS[m.home] ? TEAMS[m.home].coach : '');
-  var getCoach2 = m.coach2 || (TEAMS[m.away] ? TEAMS[m.away].coach : '');
-  var getFifa1 = m.fifa1 || (TEAMS[m.home] ? TEAMS[m.home].fifa : '');
-  var getFifa2 = m.fifa2 || (TEAMS[m.away] ? TEAMS[m.away].fifa : '');
-  var getForm1 = m.formation1 || (TEAMS[m.home] ? TEAMS[m.home].formation : '');
-  var getForm2 = m.formation2 || (TEAMS[m.away] ? TEAMS[m.away].formation : '');
-  var getPlayers1 = m.players1 || (TEAMS[m.home] ? TEAMS[m.home].players : '');
-  var getPlayers2 = m.players2 || (TEAMS[m.away] ? TEAMS[m.away].players : '');
-  var getCaptain1 = m.captain1 || (TEAMS[m.home] ? TEAMS[m.home].captain : '');
-  var getCaptain2 = m.captain2 || (TEAMS[m.away] ? TEAMS[m.away].captain : '');
-
-  // 构建卡片 HTML（不使用模板字符串）
-  var html = '';
-
-  // 卡片开始
-  html += '<div class="match-card" id="match-' + m.id + '">';
-
-  // 顶部：组别 + 时间 + 状态
-  html += '<div class="card-top">';
-  html += '<span class="card-group">' + m.group + '组</span>';
-  html += '<span class="card-time">' + m.time + '</span>';
-  html += '<span class="card-status ' + statusClass + '">' + statusText + '</span>';
-  html += '</div>';
-
-  // 球队区域
-  html += '<div class="card-teams">';
-  // 主队
-  html += '<div class="team-block">';
-  html += '<span class="team-flag">' + homeFlag + '</span>';
-  html += '<span class="team-name-zh">' + homeZh + '</span>';
-  html += '<span class="team-name-en">' + m.home + '</span>';
-  html += '</div>';
-  // VS/比分
-  html += '<div class="vs-block">';
-  html += scoreHTML;
-  html += '</div>';
-  // 客队
-  html += '<div class="team-block">';
-  html += '<span class="team-flag">' + awayFlag + '</span>';
-  html += '<span class="team-name-zh">' + awayZh + '</span>';
-  html += '<span class="team-name-en">' + m.away + '</span>';
-  html += '</div>';
-  html += '</div>';
-
-  // 教练/球员/阵型信息
-  html += '<div class="card-info">';
-  // 教练行
-  html += '<div class="info-row">';
-  html += '<div class="left"><span class="info-item"><span class="info-icon">🧑‍💼</span><span class="info-label">' + getCoach1 + '</span></span>';
-  if (getCaptain1) { html += '<span class="info-item"><span class="info-icon">⭐</span><span class="info-label">' + getCaptain1 + '</span></span>'; }
-  html += '</div>';
-  html += '<div class="right"><span class="info-item" style="justify-content:flex-end;"><span class="info-label">' + getCoach2 + '</span><span class="info-icon">⭐</span></span>';
-  if (getCaptain2) { html += '<span class="info-item" style="justify-content:flex-end;"><span class="info-label">' + getPlayers2 + '</span><span class="info-icon">⭐</span></span>'; }
-  html += '</div>';
-  html += '</div>';
-  // 阵型/FIFA行
-  html += '<div class="info-row">';
-  html += '<div class="left"><span class="info-item"><span class="info-icon">🏟️</span><span class="info-label">' + getForm1 + '</span></span>';
-  html += '<span class="info-item"><span class="info-icon">📋</span><span class="info-label">' + getFifa1 + '</span></span>';
-  html += '</div>';
-  html += '<div class="right"><span class="info-item" style="justify-content:flex-end;"><span class="info-label">' + getForm2 + '</span><span class="info-icon">🏟️</span></span>';
-  html += '<span class="info-item" style="justify-content:flex-end;"><span class="info-label">' + getFifa2 + '</span><span class="info-icon">📋</span></span>';
-  html += '</div>';
-  html += '</div>';
-  // 球员行
-  html += '<div class="info-row">';
-  html += '<div class="left"><span class="info-item"><span class="info-icon">⚽</span><span class="info-label">' + getPlayers1 + '</span></span></div>';
-  html += '<div class="right"><span class="info-item" style="justify-content:flex-end;"><span class="info-label">' + getPlayers2 + '</span><span class="info-icon">⚽</span></span></div>';
-  html += '</div>';
-  html += '</div>';
-
-  // 分隔线
-  html += '<hr class="card-sep">';
-
-  // AI 预测区域
-  if (m.pred) {
-    var p = m.pred;
-    var probH = p.probH || 33;
-    var probD = p.probD || 34;
-    var probA = p.probA || 33;
-
-    html += '<div class="ai-section">';
-
-    // AI引擎 + 置信度
-    html += '<div class="ai-header-row">';
-    html += '<div class="ai-engine">';
-    html += '<span class="ai-engine-badge deepseek">D</span>';
-    html += '<span class="ai-engine-badge zhipu">Z</span>';
-    html += '<span class="ai-engine-text">DeepSeek + 智谱AI双引擎预测</span>';
-    html += '</div>';
-    html += '<span class="ai-confidence-badge">置信度' + p.conf + '%</span>';
-    html += '</div>';
-
-    // 预测比分
-    html += '<div class="ai-score-row">';
-    html += '<span class="ai-score-flags">' + homeFlag + ' </span>';
-    html += '<span class="ai-score-val">' + p.score + '</span>';
-    html += '<span class="ai-score-flags"> ' + awayFlag + '</span>';
-    html += '</div>';
-
-    // 概率条
-    html += '<div class="prob-bars-outer">';
-    html += '<div class="prob-bar-seg win" style="width:' + probH + '%;">' + (probH >= 20 ? '胜' + probH + '%' : '') + '</div>';
-    html += '<div class="prob-bar-seg draw" style="width:' + probD + '%;">' + (probD >= 20 ? '平' + probD + '%' : '') + '</div>';
-    html += '<div class="prob-bar-seg lose" style="width:' + probA + '%;">' + (probA >= 20 ? '负' + probA + '%' : '') + '</div>';
-    html += '</div>';
-    html += '<div class="prob-labels">';
-    html += '<span style="color:#2ECC71;">胜 ' + probH + '%</span>';
-    html += '<span style="color:#F1C40F;">平 ' + probD + '%</span>';
-    html += '<span style="color:#E74C3C;">负 ' + probA + '%</span>';
-    html += '</div>';
-
-    // 分析
-    if (p.analysis) {
-      html += '<div class="ai-analysis">' + p.analysis + '</div>';
-    }
-
-    html += '</div>'; // ai-section
-  }
-
-  // 赔率区域
-  if (m.odds) {
-    html += '<div class="odds-section">';
-    html += '<div class="odds-title">━━ 赔率 ━━</div>';
-    html += '<div class="odds-row">';
-    html += '<div class="odds-col"><div class="odds-col-label">主胜</div><div class="odds-col-val">' + m.odds.h.toFixed(2) + '</div></div>';
-    html += '<div class="odds-col"><div class="odds-col-label">平局</div><div class="odds-col-val">' + m.odds.d.toFixed(2) + '</div></div>';
-    html += '<div class="odds-col"><div class="odds-col-label">客胜</div><div class="odds-col-val">' + m.odds.a.toFixed(2) + '</div></div>';
-    html += '</div>';
-    html += '</div>';
-  }
-
-  // 卡片结束
-  html += '</div>';
-
-  return html;
-}
-
-// ===== 渲染今日赛程 =====
-function renderToday() {
-  var html = '';
-  var todayStr = NOW_DATE;
-  var todayMMDD = todayStr.substring(5);
-  var count = 0;
-  for (var i = 0; i < MATCHES.length; i++) {
-    var m = MATCHES[i];
-    var matchDateParts = m.time.split(' ')[0].split('/');
-    var mm = matchDateParts[0];
-    var dd = matchDateParts[1];
-    if (mm.length < 2) { mm = '0' + mm; }
-    if (dd.length < 2) { dd = '0' + dd; }
-    var matchKey = mm + '-' + dd;
-    if (matchKey === todayMMDD) {
-      html += renderCardHTML(m);
-      count++;
-    }
-  }
-  if (count === 0) {
-    html = '<div class="empty-state"><div class="icon">📅</div><div class="title">今天没有比赛</div><div class="sub">请查看其他赛程标签</div></div>';
-  }
-  var el = document.getElementById('todayMatches');
-  if (el) { el.innerHTML = html; }
-}
-
-// ===== 渲染已完赛 =====
-function renderFinished() {
-  var html = '';
-  var count = 0;
-  for (var i = 0; i < MATCHES.length; i++) {
-    var m = MATCHES[i];
-    if (m.status === 'finished') {
-      html += renderCardHTML(m);
-      count++;
-    }
-  }
-  if (count === 0) {
-    html = '<div class="empty-state"><div class="icon">📋</div><div class="title">暂无已完赛比赛</div></div>';
-  }
-  var el = document.getElementById('finishedMatches');
-  if (el) { el.innerHTML = html; }
-}
-
-// ===== 渲染未来赛程 =====
-function renderUpcoming() {
-  var html = '';
-  var count = 0;
-  for (var i = 0; i < MATCHES.length; i++) {
-    var m = MATCHES[i];
-    if (m.status === 'upcoming') {
-      html += renderCardHTML(m);
-      count++;
-    }
-  }
-  if (count === 0) {
-    html = '<div class="empty-state"><div class="icon">🔮</div><div class="title">暂无未来赛程</div></div>';
-  }
-  var el = document.getElementById('upcomingMatches');
-  if (el) { el.innerHTML = html; }
-}
-
-// ===== 渲染球队档案 =====
-function renderTeams() {
-  var groups = ['A','B','C','D','E','F','G','H','I','J','K','L'];
-  var html = '';
-  for (var g = 0; g < groups.length; g++) {
-    var grp = groups[g];
-    html += '<div style="grid-column:1/-1;font-size:13px;font-weight:700;color:#4A90D9;padding:10px 4px 4px;border-bottom:1px solid rgba(74,144,217,0.2);margin-bottom:4px;">' + grp + '组</div>';
-    for (var t = 0; t < ALL_TEAMS_DATA.length; t++) {
-      var team = ALL_TEAMS_DATA[t];
-      if (team.group === grp) {
-        html += '<div class="team-card">';
-        html += '<div class="flag">' + team.flag + '</div>';
-        html += '<div class="name">' + team.zh + '</div>';
-        html += '<div class="en-name" style="font-size:9px;color:#8892A0;">' + team.name + '</div>';
-        html += '<div class="rank">FIFA排名: #' + team.rank + '</div>';
-        html += '<div class="coach" style="font-size:9.5px;color:#c0c8d8;margin-top:2px;">' + team.coach + '</div>';
-        html += '</div>';
-      }
-    }
-  }
-  var el = document.getElementById('teamGrid');
-  if (el) { el.innerHTML = html; }
-}
-
-// ===== 刷新 =====
-function doRefresh() {
-  var btn = document.getElementById('refreshBtn');
-  var el = document.getElementById('todayRefresh');
-  if (el) { el.innerHTML = '🔄 刷新中...'; }
-  setTimeout(function() {
-    initDate();
-    initMatches();
-    var activeTab = 'today';
-    var tabs = document.querySelectorAll('.tab');
-    for (var i = 0; i < tabs.length; i++) {
-      if (tabs[i].classList.contains('active')) {
-        activeTab = tabs[i].getAttribute('data-tab');
-        break;
-      }
-    }
-    if (activeTab === 'today') { renderToday(); }
-    if (activeTab === 'finished') { renderFinished(); }
-    if (activeTab === 'upcoming') { renderUpcoming(); }
-    if (el) { el.innerHTML = '🔄 数据每5分钟自动刷新'; }
-  }, 600);
-}
-
-// ===== AI 聊天 =====
-function toggleChat() {
-  var panel = document.getElementById('chatPanel');
-  if (panel.classList.contains('show')) {
-    panel.classList.remove('show');
-  } else {
-    panel.classList.add('show');
-  }
-}
-
-function sendChat() {
-  var input = document.getElementById('chatInput');
-  var msg = input.value.trim();
-  if (!msg) { return; }
-  input.value = '';
-  var msgs = document.getElementById('chatMessages');
-
-  // 用户消息
-  var userDiv = document.createElement('div');
-  userDiv.className = 'chat-msg user';
-  userDiv.innerHTML = '<span class="chat-msg-label">🧑 你</span><br>' + msg;
-  msgs.appendChild(userDiv);
-
-  // Bot回复
-  setTimeout(function() {
-    var botDiv = document.createElement('div');
-    botDiv.className = 'chat-msg bot';
-    var reply = getBotReply(msg);
-    botDiv.innerHTML = '<span class="chat-msg-label">🏀 坤坤</span><br>' + reply;
-    msgs.appendChild(botDiv);
-    msgs.scrollTop = msgs.scrollHeight;
-  }, 500);
-
-  msgs.scrollTop = msgs.scrollHeight;
-}
-
-function getBotReply(msg) {
-  var m = msg.toLowerCase();
-  // 查找球队
-  var foundTeam = '';
-  var foundTeamEn = '';
-  var allTeamNames = Object.keys(NAME_ZH);
-  for (var i = 0; i < allTeamNames.length; i++) {
-    var en = allTeamNames[i].toLowerCase();
-    var zh = NAME_ZH[allTeamNames[i]].toLowerCase();
-    if (m.indexOf(en) >= 0 || m.indexOf(zh) >= 0) {
-      foundTeam = NAME_ZH[allTeamNames[i]];
-      foundTeamEn = allTeamNames[i];
-      break;
-    }
-  }
-  if (foundTeam) {
-    var info = null;
-    for (var j = 0; j < ALL_TEAMS_DATA.length; j++) {
-      if (ALL_TEAMS_DATA[j].name === foundTeamEn) { info = ALL_TEAMS_DATA[j]; break; }
-    }
-    if (info) {
-      return '🏀 ' + foundTeam + ' ' + info.flag + '\nFIFA排名: #' + info.rank + '\n主教练: ' + info.coach + '\n阵型: ' + info.formation + '\n队长: ' + info.captain + '\n主力球员: ' + info.players + '\n\n坤坤推荐去"未来赛程"看这支队的预测！🎤';
-    }
-    return '坤坤收到！' + foundTeam + '是吧，去"未来赛程"或"今日赛程"找找看！🏀';
-  }
-  if (m.indexOf('预测') >= 0 || m.indexOf('分析') >= 0 || m.indexOf('比赛') >= 0) {
-    return '想分析哪场？报上球队名，坤坤用双引擎AI给你算！⚡ 比如"巴西"或"葡萄牙vs苏格兰"🎤';
-  }
-  if (m.indexOf('你好') >= 0 || m.indexOf('hi') >= 0 || m.indexOf('hello') >= 0) {
-    return '你好呀！我是坤坤~ 2026世界杯预测找我准没错！想知道哪场比赛的结果？😎🏀';
-  }
-  return '我是坤坤，2026世界杯我看过了！🎤 想了解哪场比赛？报上球队名，我用 DeepSeek+智谱AI 给你分析！😎';
-}
-
-// ===== 初始化 =====
-function init() {
-  initDate();
-  initMatches();
-  // 默认渲染今日
-  renderToday();
-  // 自动刷新定时器
-  setInterval(function() {
-    initDate();
-    initMatches();
-    var activeTab = 'today';
-    var tabs = document.querySelectorAll('.tab');
-    for (var i = 0; i < tabs.length; i++) {
-      if (tabs[i].classList.contains('active')) {
-        activeTab = tabs[i].getAttribute('data-tab');
-        break;
-      }
-    }
-    if (activeTab === 'today') { renderToday(); }
-    if (activeTab === 'finished') { renderFinished(); }
-    if (activeTab === 'upcoming') { renderUpcoming(); }
-  }, 300000);
-}
-
-// 页面加载后初始化
-if (window.addEventListener) {
-  window.addEventListener('load', init);
-} else {
-  window.onload = init;
-}
-</script>
-
-</body>
-</html>
+  };
